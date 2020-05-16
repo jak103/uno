@@ -14,6 +14,7 @@ func main() {
 	e := echo.New()
 
 	// Setup middleware
+	// TODO: figure out how to serve the app html for the frontend
 	e.File("/", "static/index.html")
 	//e.Use(middleware.Static("/static")) TODO: Figure out how to serve the statis js files
 	e.Use(middleware.Gzip())

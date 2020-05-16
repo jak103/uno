@@ -2,6 +2,7 @@
   <div class="about">
     <h1>This is an about page</h1>
     <h2>Current Game id: {{ game_id }}</h2>
+    <v-btn @click.native="startGame">Start Game</v-btn>
     <div v-if="valid">
       Game is valid!
     </div>
@@ -24,5 +25,10 @@
         required: true
       }
     },
+    methods: {
+      startGame: function() {
+        // axios.get()// This will kick off pulling timer.
+      }
+    }
   };
 </script>
