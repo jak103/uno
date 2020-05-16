@@ -14,11 +14,14 @@ func main() {
 	e := echo.New()
 
 	// Setup middleware
-	// TODO: figure out how to serve the app html for the frontend
-	e.File("/", "static/index.html")
-	//e.Use(middleware.Static("/static")) TODO: Figure out how to serve the statis js files
+	e.File("/", "static/index.html")	
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Recover())
+
+	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:   "static",
+		HTML5: true,
+	  }))
 
 	// Setup routes
 	setupRoutes(e)
