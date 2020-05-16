@@ -14,7 +14,9 @@ func main() {
 	e := echo.New()
 
 	// Setup middleware
-	e.File("/", "static/index.html")	
+	e.File("/", "web/dist/index.html")	
+	// e.File("/", "static/index.html")
+
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Recover())
 
@@ -27,5 +29,5 @@ func main() {
 	setupRoutes(e)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":8080"))
 }
