@@ -22,6 +22,7 @@
         </v-row>
       </v-container>
     </v-content>
+
   </v-app>
 </template>
 
