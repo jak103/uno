@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: "LoginPage",
   data: () => {
@@ -37,11 +38,13 @@ export default {
     };
   },
   methods: {
-    login () {
-      if (this.game_id == 12234) {
-        this.valid_game = true
+    async login () {
+      let res = await axios.post('/login/' + this.game_id)
+      console.log(res.data)
+      if (res.data.valid) {
+        this.to = {name: 'About', params: {'game_id': this.game_id, 'valid': res.data.valid}};
       }
-      this.to = {name: 'About', params: {'game_id': this.game_id, 'valid': this.valid_game}};
+      // figure the else out
     },
   }
 };

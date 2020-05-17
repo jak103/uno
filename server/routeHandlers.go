@@ -3,7 +3,10 @@ package main
 import (
 	"net/http"
 	"github.com/labstack/echo"
+	// "fmt"
 )
+
+var game_id string = "12234"
 
 // These variables have to be 
 type Card struct {
@@ -12,33 +15,44 @@ type Card struct {
 }
 
 type Status struct {
-	GameID string `json:"gameID" xml:"gameID"`
 	PlayerTurn string `json:"playerTurn" xml:"playerTurn"`
 	Cards []Card  `json:"cards"`  // 2 cards for now
 }
-// User
-type User struct {
-	Name  string `json:"name" xml:"name"`
-	Email string `json:"email" xml:"email"`
+
+type Response struct {
+	Vaild bool `json:"valid" xml:"valid"`
+	Data interface{} `json:"data" xml:"data"`
 }
+
+func checkId(c echo.Context) *Response {
+	r := &Response{c.Param("id") == "12234", nil}
+	return r
+}
+
 
 func setupRoutes(e *echo.Echo) {
 	//e.GET("/", hello)
 	e.GET("/newgame", newGame)
-	e.GET("/startgame", func(c echo.Context) error {
-		u := Status {
-			GameID: "12234", 
-			PlayerTurn: "56123",
-			Cards: []Card {
-				Card {5,"Blue"},
-				Card {3,"Red"},
-				Card {6,"Green"},
-				Card {8,"Yellow"},
-				Card {9,"Red"},
-			},
-		}
-		return c.JSONPretty(http.StatusOK, u, "    ")
-	})
+	e.GET("/startgame/:id", startGame)
+	e.POST("/login/:id", login)
+}
+
+func login(c echo.Context) error {
+	response := checkId(c)
+	return c.JSON(http.StatusOK, response)
+}
+
+func startGame(c echo.Context) error {
+	response := checkId(c)
+	response.Data = Status{"56123", []Card {
+			Card {5,"Blue"},
+			Card {3,"Red"},
+			Card {6,"Green"},
+			Card {8,"Yellow"},
+			Card {9,"Red"},
+		},
+	}
+	return c.JSONPretty(http.StatusOK, response, "    ")
 }
 
 func hello(c echo.Context) error {
