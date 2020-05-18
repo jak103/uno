@@ -2,8 +2,7 @@
   <v-app>
     <v-content>
       <!-- Imports the login. See index.js -->
-      <v-btn to="/">Login</v-btn>
-      <router-view/> 
+      <router-view />
     </v-content>
   </v-app>
 </template>
@@ -12,15 +11,14 @@
 // import HelloWorld from './components/HelloWorld';
 // import axios from 'axios';
 export default {
-  name: 'App',
+  name: "App",
 
-  components: {
-  },
+  components: {},
   data: () => ({
     //
   }),
   methods: {
     //
-  }
+  },
 };
 </script>

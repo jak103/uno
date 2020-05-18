@@ -3,25 +3,18 @@ package main
 import (
 	"net/http"
 	"github.com/labstack/echo"
-	// "fmt"
-)
+	)
 
 var game_id string = "12234"
 
-// These variables have to be 
 type Card struct {
 	Number int `json:"number"`
 	Color string `json:"color"`
 }
 
-type Status struct {
-	PlayerTurn string `json:"playerTurn" xml:"playerTurn"`
-	Cards []Card  `json:"cards"`  // 2 cards for now
-}
-
 type Response struct {
-	Vaild bool `json:"valid" xml:"valid"`
-	Data interface{} `json:"data" xml:"data"`
+	Valid bool `json:"valid"`  // Valid game id
+	Payload map[string]interface{} `json:"payload"`
 }
 
 func checkId(c echo.Context) *Response {
@@ -29,13 +22,21 @@ func checkId(c echo.Context) *Response {
 	return r
 }
 
+func newMap() map[string]interface{} {
+	tmp := make(map[string]interface{})
+	tmp["current_card"] = []*Card{&Card{4, "red"}}
+	return tmp
+}
+
 
 func setupRoutes(e *echo.Echo) {
 	//e.GET("/", hello)
 	e.GET("/newgame", newGame)
-	e.GET("/startgame/:id", startGame)
+	e.POST("/startgame/:id", startGame)
 	e.POST("/login/:id", login)
+	e.POST("/newgame", newGame)
 }
+
 
 func login(c echo.Context) error {
 	response := checkId(c)
@@ -44,21 +45,25 @@ func login(c echo.Context) error {
 
 func startGame(c echo.Context) error {
 	response := checkId(c)
-	response.Data = Status{"56123", []Card {
-			Card {5,"Blue"},
-			Card {3,"Red"},
-			Card {6,"Green"},
-			Card {8,"Yellow"},
-			Card {9,"Red"},
-		},
+	pay := newMap()
+
+	pay["cards"] = []*Card {
+			&Card{5,"blue"},
+			&Card{3,"red"},
+			&Card{6,"green"},
+			&Card{8,"yellow"},
+			&Card{9,"red"},
 	}
-	return c.JSONPretty(http.StatusOK, response, "    ")
+	pay["current_player"] = "Ryan"
+	pay["players"] = []string{"Bill", "Bob", "Jill", "Ryan"}
+	
+	response.Payload = pay
+	return c.JSON(http.StatusOK, response)
 }
 
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
-}
 
 func newGame(c echo.Context) error {
-	return c.String(http.StatusOK, "New game")
+	pay := newMap()
+	pay["game_id"] = 12234
+	return c.JSON(http.StatusOK, &Response{true, pay})
 }
