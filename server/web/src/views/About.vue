@@ -14,6 +14,7 @@
               <v-btn v-else to="/">Create a new game</v-btn>
             </v-card>
           </v-row>
+
           <!-- Game Players -->
           <v-row>
             <v-card
@@ -27,6 +28,7 @@
               {{ player }}
             </v-card>
           </v-row>
+
           <!-- Current Card and actions -->
           <v-row v-if="current_player != ''">
             <v-card :class="'ma-3 pa-6'" outlined tile>
@@ -39,7 +41,7 @@
                 :color="card.color"
               />
             </v-card>
-            <v-card :class="'ma-3 pa-6'" outlined tile v-if="current_player == this_user">
+            <v-card :class="'ma-3 pa-6'" outlined tile v-if="current_player == this.username">
               <v-btn>Take from pile</v-btn>
               <br />
               <br />or
@@ -52,6 +54,8 @@
             </v-card>
           </v-row>
         </v-col>
+
+        <!-- Current cards in the deck -->
         <v-col :class="'mb-6'" v-if="current_card != ''">
           <v-card :class="'ma-3 pa-6'" outlined tile>Click to play a card from your hand</v-card>
           <Card
@@ -78,6 +82,10 @@ export default {
     valid: {
       type: Boolean,
       required: false
+    },
+    username: {
+      type: String,
+      required: false
     }
   },
   data() {
@@ -86,7 +94,6 @@ export default {
       current_player: "",
       players: [],
       current_card: [],
-      this_user: "Ryan"
     };
   },
   components: {
@@ -94,7 +101,7 @@ export default {
   },
   methods: {
     updateData() {
-      axios.get("/update/" + this.game_id).then(res => {
+      axios.get("/update/" + this.game_id + "/" + this.username).then(res => {
         if (res.data.valid) {
           this.valid = res.data.valid;
           this.cards = res.data.payload.cards;

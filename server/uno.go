@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/labstack/echo"
 	"math/rand"
+	"fmt"
 )
 
 
@@ -69,9 +70,21 @@ func createNewGame(c echo.Context) *Response {
 	return &Response{true, payload}
 }
 
+func contains(arr []string, val string) (int, bool) {
+	for i, item := range arr {
+		if item == val {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
 func joinGame(c echo.Context) *Response {
 	if checkID(c.Param("game")) {
-		players = append(players, c.Param("username"))
+		if _, found :=contains(players, c.Param("username")); !found {
+			players = append(players, c.Param("username"))
+		}
+		fmt.Println(players)
 		return &Response{true, nil}	
 	}
 	return &Response{false, nil}
