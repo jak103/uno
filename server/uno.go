@@ -8,6 +8,20 @@ import (
 
 
 ////////////////////////////////////////////////////////////
+// Structs used for the talking with frontend
+////////////////////////////////////////////////////////////
+type Response struct {
+	ValidGame bool 				   `json:"valid"`  // Valid game id
+	Payload map[string]interface{} `json:"payload"`
+}
+
+type Card struct {
+	Number int 	 `json:"number"`
+	Color string `json:"color"`
+}
+
+
+////////////////////////////////////////////////////////////
 // Utility functions used in place of firebase
 ////////////////////////////////////////////////////////////
 func randColor(i int) string {
@@ -29,25 +43,13 @@ func randColor(i int) string {
 // All the data needed for a simulation of the game
 // eventually, this will be replaced with firebase
 ////////////////////////////////////////////////////////////
-var gameID string = "12234"
-var currCard []*Card = []*Card{&Card{5, "red"}}  // The cards are much easier to render as a list
+var gameID string = ""
+var currCard []*Card = nil   // The cards are much easier to render as a list
 var players []string = []string{"Bill", "Bob", "Jill"}
 var playerIndex = rand.Intn(len(players))
 var currPlayer string = players[playerIndex]
+var allCards map[string][]*Card = make(map[string][]*Card) // k: username, v: list of cards
 
-
-////////////////////////////////////////////////////////////
-// Structs used for the talking with frontend
-////////////////////////////////////////////////////////////
-type Response struct {
-	ValidGame bool 				   `json:"valid"`  // Valid game id
-	Payload map[string]interface{} `json:"payload"`
-}
-
-type Card struct {
-	Number int 	 `json:"number"`
-	Color string `json:"color"`
-}
 
 ////////////////////////////////////////////////////////////
 // Utility functions
@@ -56,18 +58,21 @@ func newRandomCard() []*Card {
 	return []*Card{&Card{rand.Intn(9), randColor(rand.Intn(3))}}
 }
 
-func newPayload() map[string]interface{} {
-	return make(map[string]interface{})
+func newPayload(user ...string) map[string]interface{} { // User will default to "" if not passed
+	payload := make(map[string]interface{})
+	
+	// Update known variables
+	payload["current_card"] = currCard
+	payload["current_player"] = currPlayer
+	payload["all_players"] = players
+	payload["deck"] = allCards[user[0]] // returns nil if currPlayer = "" or user not in allCards
+	payload["game_id"] = gameID
+	
+	return payload
 }
 
 func checkID(id string) bool {
 	return id == gameID
-}
-
-func createNewGame(c echo.Context) *Response {
-	payload := newPayload()
-	payload["game_id"] = gameID
-	return &Response{true, payload}
 }
 
 func contains(arr []string, val string) (int, bool) {
@@ -79,29 +84,41 @@ func contains(arr []string, val string) (int, bool) {
 	return -1, false
 }
 
+func getCards(username string) []*Card {
+	return allCards[username]
+}
+
+
+////////////////////////////////////////////////////////////
+// These are all of the functions for the game -> essentially public functions
+////////////////////////////////////////////////////////////
+func updateGame(c echo.Context) *Response {
+	success := false
+	if success = checkID(c.Param("game")); success {
+		return &Response{true, newPayload(c.Param("username"))}
+	} else {
+		return &Response{false, nil}
+	}
+	
+}
+
+func createNewGame(c echo.Context) *Response {
+	gameID = "12234"
+	return &Response{true, newPayload()}
+}
+
 func joinGame(c echo.Context) *Response {
 	if checkID(c.Param("game")) {
-		if _, found :=contains(players, c.Param("username")); !found {
-			players = append(players, c.Param("username"))
+		user := c.Param("username")
+		if _, found := contains(players, user); !found {
+			players = append(players, user)
+			allCards[user] = nil // No cards yet
 		}
-		fmt.Println(players)
-		return &Response{true, nil}	
+		return &Response{true, newPayload()}
 	}
-	return &Response{false, nil}
+	return &Response{false, nil}  // bad game_id
 }
 
-func newResponse(c echo.Context) *Response {
-	payload := make(map[string]interface{})
-	payload["current_card"] = currCard
-	payload["current_player"] = currPlayer
-	payload["players"] = players
-	return &Response{checkID(c.Param("game")), payload}
-}
-
-
-////////////////////////////////////////////////////////////
-// These are all of the functions for the game
-////////////////////////////////////////////////////////////
 func playCard(c *Card, r *Response) bool {
 	success := false
 	if c.Color == currCard[0].Color  || c.Number == currCard[0].Number {
@@ -117,15 +134,24 @@ func playCard(c *Card, r *Response) bool {
 	return success
 }
 
+// TODO: Keep track of current card that is top of the deck
 func drawCard(r *Response) {
 	r.Payload["current_card"] = newRandomCard()
 }
 
-func dealCards(r *Response) {
-	cards := []*Card{}
-	for i := 0; i < 7; i++ {
-		cards = append(cards, &Card{rand.Intn(9), randColor(rand.Intn(3))})
+// TODO: need to deal the actual cards, not just random numbers
+func dealCards() {
+	// The game has started, no more players are joining
+	// loop through players, set their cards
+	for k, _ := range allCards {
+		cards := []*Card{}
+		for i := 0; i < 7; i++ {
+			cards = append(cards, &Card{rand.Intn(9), randColor(rand.Intn(3))})
+		}
+		allCards[k] = cards
 	}
-	
-	r.Payload["deck"] = cards
+
+	for k, v := range allCards {
+		fmt.Println("Player: ", k, " has: ", v)		
+	}
 }

@@ -24,9 +24,7 @@
               :class="'ma-3 pa-6'"
               outlined
               tile
-            >
-              {{ player }}
-            </v-card>
+            >{{ player }}</v-card>
           </v-row>
 
           <!-- Current Card and actions -->
@@ -46,12 +44,14 @@
               <br />
               <br />or
               <br />
-              <br />
               <v-btn>Draw from deck</v-btn>
             </v-card>
-            <v-card v-else :class="'ma-3 pa-6'" outlined tile>
-              Waiting for {{ current_player }} to play
-            </v-card>
+            <v-card
+              v-else
+              :class="'ma-3 pa-6'"
+              outlined
+              tile
+            >Waiting for {{ current_player }} to play</v-card>
           </v-row>
         </v-col>
 
@@ -93,7 +93,7 @@ export default {
       cards: [],
       current_player: "",
       players: [],
-      current_card: [],
+      current_card: []
     };
   },
   components: {

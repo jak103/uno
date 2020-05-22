@@ -5,12 +5,17 @@ import (
 	"github.com/labstack/echo"
 )
 
+
+var sim bool = true
+
 func setupRoutes(e *echo.Echo) {
 	e.GET("/newgame", newGame)
 	e.POST("/startgame/:game/:username", startGame)
 	e.POST("/login/:game/:username", login)
 	e.GET("/update/:game/:username", update)
 }
+
+
 
 func newGame(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, createNewGame(c), "    ")
@@ -21,13 +26,15 @@ func login(c echo.Context) error {
 }
 
 func startGame(c echo.Context) error {
-
-	response := newResponse(c)
-	dealCards(response)
-
-	return c.JSONPretty(http.StatusOK, response, "    ")
+	dealCards()
+	return c.JSONPretty(http.StatusOK, update(c), "    ")
 }
 
 func update(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, newResponse(c), "    ")
+	// if sim {
+	// 	resp := (c)
+
+	// } else {
+	return c.JSONPretty(http.StatusOK, updateGame(c), "    ")
+	// }
 }
