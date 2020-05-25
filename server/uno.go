@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/labstack/echo"
 	"math/rand"
-	"fmt"
 )
 
 
@@ -44,28 +43,30 @@ func randColor(i int) string {
 // eventually, this will be replaced with firebase
 ////////////////////////////////////////////////////////////
 var gameID string = ""
-var currCard []*Card = nil   // The cards are much easier to render as a list
-var players []string = []string{"Bill", "Bob", "Jill"}
-var playerIndex = rand.Intn(len(players))
+var currCard []Card = nil   // The cards are much easier to render as a list
+var players []string = []string{"Bill", "Bob", "Joe"}
+var playerIndex = rand.Intn(len(players))  // Used to iterate through the players
 var currPlayer string = players[playerIndex]
-var allCards map[string][]*Card = make(map[string][]*Card) // k: username, v: list of cards
+var allCards map[string][]Card = make(map[string][]Card) // k: username, v: list of cards
+var gameStarted bool = false
 
 
 ////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
-func newRandomCard() []*Card {
-	return []*Card{&Card{rand.Intn(9), randColor(rand.Intn(3))}}
+func newRandomCard() []Card {
+	return []Card{Card{rand.Intn(9), randColor(rand.Intn(3))}}
 }
 
-func newPayload(user ...string) map[string]interface{} { // User will default to "" if not passed
+func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 	
-	// Update known variables
+
+	// Update known variables 
 	payload["current_card"] = currCard
 	payload["current_player"] = currPlayer
 	payload["all_players"] = players
-	payload["deck"] = allCards[user[0]] // returns nil if currPlayer = "" or user not in allCards
+	payload["deck"] = allCards[user] // returns nil if currPlayer = "" or user not in allCards
 	payload["game_id"] = gameID
 	
 	return payload
@@ -84,9 +85,6 @@ func contains(arr []string, val string) (int, bool) {
 	return -1, false
 }
 
-func getCards(username string) []*Card {
-	return allCards[username]
-}
 
 
 ////////////////////////////////////////////////////////////
@@ -94,17 +92,15 @@ func getCards(username string) []*Card {
 ////////////////////////////////////////////////////////////
 func updateGame(c echo.Context) *Response {
 	success := false
-	if success = checkID(c.Param("game")); success {
+	if success = checkID(c.Param("game")); success && gameStarted {
 		return &Response{true, newPayload(c.Param("username"))}
-	} else {
-		return &Response{false, nil}
 	}
-	
+	return &Response{false, nil}
 }
 
 func createNewGame(c echo.Context) *Response {
 	gameID = "12234"
-	return &Response{true, newPayload()}
+	return &Response{true, newPayload("")}
 }
 
 func joinGame(c echo.Context) *Response {
@@ -114,12 +110,12 @@ func joinGame(c echo.Context) *Response {
 			players = append(players, user)
 			allCards[user] = nil // No cards yet
 		}
-		return &Response{true, newPayload()}
+		return &Response{true, newPayload(c.Param("username"))}
 	}
 	return &Response{false, nil}  // bad game_id
 }
 
-func playCard(c *Card, r *Response) bool {
+func playCard(c Card, r *Response) bool {
 	success := false
 	if c.Color == currCard[0].Color  || c.Number == currCard[0].Number {
 		playerIndex = (playerIndex + 1) % len(players)
@@ -143,15 +139,15 @@ func drawCard(r *Response) {
 func dealCards() {
 	// The game has started, no more players are joining
 	// loop through players, set their cards
-	for k, _ := range allCards {
-		cards := []*Card{}
+	gameStarted = true
+
+	for k := range players {
+		cards := []Card{}
 		for i := 0; i < 7; i++ {
-			cards = append(cards, &Card{rand.Intn(9), randColor(rand.Intn(3))})
+			cards = append(cards, Card{rand.Intn(9), randColor(rand.Intn(3))})
 		}
-		allCards[k] = cards
+		allCards[players[k]] = cards
 	}
 
-	for k, v := range allCards {
-		fmt.Println("Player: ", k, " has: ", v)		
-	}
+	currCard = []Card{Card{rand.Intn(9), randColor(rand.Intn(3))}}
 }

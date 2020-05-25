@@ -15,8 +15,6 @@ func setupRoutes(e *echo.Echo) {
 	e.GET("/update/:game/:username", update)
 }
 
-
-
 func newGame(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, createNewGame(c), "    ")
 }

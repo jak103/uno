@@ -101,19 +101,23 @@ export default {
   },
   methods: {
     updateData() {
+      console.log("Username: " + this.username)
       axios.get("/update/" + this.game_id + "/" + this.username).then(res => {
         if (res.data.valid) {
           this.valid = res.data.valid;
-          this.cards = res.data.payload.cards;
+          this.cards = res.data.payload.deck;
           this.current_player = res.data.payload.current_player;
-          this.players = res.data.payload.players;
+          this.players = res.data.payload.all_players;
           this.current_card = res.data.payload.current_card;
+          console.log(res.data)
         }
         console.log("Updating");
       });
     },
     startGame() {
-      this.updateData();
+      axios.post("/startgame/" + this.game_id + "/" + this.username).then(() => {
+        this.updateData();
+      })
     },
     playCard() {
       console.log("Playing card!");
