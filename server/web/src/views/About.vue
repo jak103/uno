@@ -28,31 +28,22 @@
           </v-row>
 
           <!-- Current Card and actions -->
-          <v-row v-if="current_player != ''">
-            <v-card :class="'ma-3 pa-6'" outlined tile>
-              Current Card
-              <br />
-              <Card
-                v-for="card in current_card"
-                :number="card.number"
-                :key="card.color"
-                :color="card.color"
-              />
-            </v-card>
-            <v-card :class="'ma-3 pa-6'" outlined tile v-if="current_player == this.username">
-              <v-btn>Take from pile</v-btn>
-              <br />
-              <br />or
-              <br />
-              <v-btn>Draw from deck</v-btn>
-            </v-card>
-            <v-card
-              v-else
-              :class="'ma-3 pa-6'"
-              outlined
-              tile
-            >Waiting for {{ current_player }} to play</v-card>
-          </v-row>
+          <v-col cols="12">
+            <v-row v-if="current_player != ''">
+              <v-card :class="'ma-3 pa-6'" outlined tile class="center-text">
+                <Card
+                  v-for="card in current_card"
+                  :number="card.number"
+                  :key="card.color"
+                  :color="card.color"
+                />
+              </v-card>
+            </v-row>
+            <v-row>
+              <v-btn block v-if="this.username == this.current_player">Draw from deck</v-btn>
+              <v-btn v-else>Waiting for {{ current_player }} to play</v-btn>
+            </v-row>
+          </v-col>
         </v-col>
 
         <!-- Current cards in the deck -->
@@ -63,7 +54,7 @@
             :key="i"
             :number="card.number"
             :color="card.color"
-            @click.native="playCard"
+            @click.native="playCard(card)"
           ></Card>
         </v-col>
       </v-row>
@@ -101,7 +92,6 @@ export default {
   },
   methods: {
     updateData() {
-      console.log("Username: " + this.username)
       axios.get("/update/" + this.game_id + "/" + this.username).then(res => {
         if (res.data.valid) {
           this.valid = res.data.valid;
@@ -109,18 +99,32 @@ export default {
           this.current_player = res.data.payload.current_player;
           this.players = res.data.payload.all_players;
           this.current_card = res.data.payload.current_card;
-          console.log(res.data)
         }
-        console.log("Updating");
       });
     },
     startGame() {
-      axios.post("/startgame/" + this.game_id + "/" + this.username).then(() => {
-        this.updateData();
-      })
+      axios
+        .post("/startgame/" + this.game_id + "/" + this.username)
+        .then(() => {
+          this.updateData();
+        });
     },
-    playCard() {
-      console.log("Playing card!");
+    playCard(card) {
+      console.log(card);
+      axios
+        .post(
+          "/play/" +
+            this.game_id +
+            "/" +
+            this.username +
+            "/" +
+            card.number +
+            "/" +
+            card.color
+        )
+        .then(() => {
+          this.updateData();
+        });
     }
   },
   created() {

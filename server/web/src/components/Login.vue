@@ -37,13 +37,14 @@ export default {
       game_id: null,
       user_name: "",
       to: {},
-      status: ""
+      status: "",
+      sim: true // Only true while debugging
     };
   },
   methods: {
     async login() {
       if (this.user_name != "") {
-        let res = await axios.post("/login/" + this.game_id + "/ryan");
+        let res = await axios.post("/login/" + this.game_id + "/" + this.user_name);
         if (res.data.valid) {
           this.to = {
             name: "About",

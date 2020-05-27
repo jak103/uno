@@ -44,9 +44,9 @@ func randColor(i int) string {
 ////////////////////////////////////////////////////////////
 var gameID string = ""
 var currCard []Card = nil   // The cards are much easier to render as a list
-var players []string = []string{"Bill", "Bob", "Joe"}
-var playerIndex = rand.Intn(len(players))  // Used to iterate through the players
-var currPlayer string = players[playerIndex]
+var players []string = []string{}
+var playerIndex = 0  // Used to iterate through the players
+var currPlayer string = ""
 var allCards map[string][]Card = make(map[string][]Card) // k: username, v: list of cards
 var gameStarted bool = false
 
@@ -60,7 +60,6 @@ func newRandomCard() []Card {
 
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
-	
 
 	// Update known variables 
 	payload["current_card"] = currCard
@@ -84,7 +83,6 @@ func contains(arr []string, val string) (int, bool) {
 	}
 	return -1, false
 }
-
 
 
 ////////////////////////////////////////////////////////////
@@ -115,24 +113,36 @@ func joinGame(c echo.Context) *Response {
 	return &Response{false, nil}  // bad game_id
 }
 
-func playCard(c Card, r *Response) bool {
-	success := false
-	if c.Color == currCard[0].Color  || c.Number == currCard[0].Number {
-		playerIndex = (playerIndex + 1) % len(players)
-		currPlayer = players[playerIndex]
-		currCard[0] = c
+func playCard(c echo.Context, card Card) *Response {
+	if checkID(c.Param("game")) && currPlayer == c.Param("username") {
+		if card.Color == currCard[0].Color || card.Number == currCard[0].Number { 
+			// Valid card can be played
+			playerIndex = (playerIndex + 1) % len(players)
+			currPlayer = players[playerIndex]
+			currCard[0] = card
 
-		r.Payload["current_card"] = currCard
-		r.Payload["current_player"] = currPlayer
-		success = true
+			for index, item := range allCards[c.Param("username")] {
+				if item == currCard[0] {
+					allCards[c.Param("username")] = append(allCards[c.Param("username")][:index], allCards[c.Param("username")][index+1:]...)
+					break
+				}
+			}
+		}
+		return &Response{true, newPayload(c.Param("username"))}
 	}
 
-	return success
+	return &Response{false, nil}
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(r *Response) {
-	r.Payload["current_card"] = newRandomCard()
+func drawCard(c echo.Context) *Response {
+	if checkID(c.Param("game")) {
+		currCard = newRandomCard()
+		playerIndex = (playerIndex + 1) % len(players)
+		allCards[c.Param("username")] = append(allCards[c.Param("username")], currCard[0])
+		return &Response{true, newPayload(c.Param("username"))}
+	}
+	return &Response{false, nil}
 }
 
 // TODO: need to deal the actual cards, not just random numbers
@@ -140,6 +150,7 @@ func dealCards() {
 	// The game has started, no more players are joining
 	// loop through players, set their cards
 	gameStarted = true
+	currPlayer = players[rand.Intn(len(players))]
 
 	for k := range players {
 		cards := []Card{}
@@ -149,5 +160,5 @@ func dealCards() {
 		allCards[players[k]] = cards
 	}
 
-	currCard = []Card{Card{rand.Intn(9), randColor(rand.Intn(3))}}
+	currCard = newRandomCard()	
 }
