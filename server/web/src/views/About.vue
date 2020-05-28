@@ -39,16 +39,21 @@
                 />
               </v-card>
             </v-row>
-            <v-row>
-              <v-btn block v-if="this.username == this.current_player">Draw from deck</v-btn>
-              <v-btn v-else>Waiting for {{ current_player }} to play</v-btn>
-            </v-row>
           </v-col>
         </v-col>
 
         <!-- Current cards in the deck -->
         <v-col :class="'mb-6'" v-if="current_card != ''">
-          <v-card :class="'ma-3 pa-6'" outlined tile>Click to play a card from your hand</v-card>
+          <v-card
+            v-if="username == current_player"
+            :class="'ma-3 pa-6'"
+            outlined
+            tile
+          >Click to play a card from your hand or 
+          <v-btn v-if="username == current_player" @click.native="drawCard">Draw from deck</v-btn>
+          </v-card>
+
+          <v-card v-else :class="'ma-3 pa-6'" outlined tile>Waiting for {{ current_player }}</v-card>
           <Card
             v-for="(card, i) in cards"
             :key="i"
@@ -110,11 +115,7 @@ export default {
         });
     },
     playCard(card) {
-      console.log(card);
-      axios
-        .post(
-          "/play/" +
-            this.game_id +
+      axios.post("/play/" + this.game_id +
             "/" +
             this.username +
             "/" +
@@ -125,6 +126,14 @@ export default {
         .then(() => {
           this.updateData();
         });
+    },
+    drawCard() {
+      var f = "/draw/" + this.game_id + "/" + this.username;
+      console.log(f)
+      axios.post(f).then(res => {
+        console.log(res.data);
+        this.updateData();
+      });
     }
   },
   created() {

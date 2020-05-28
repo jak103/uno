@@ -136,10 +136,10 @@ func playCard(c echo.Context, card Card) *Response {
 
 // TODO: Keep track of current card that is top of the deck
 func drawCard(c echo.Context) *Response {
-	if checkID(c.Param("game")) {
-		currCard = newRandomCard()
+	if checkID(c.Param("game")) && c.Param("username") == currPlayer {
 		playerIndex = (playerIndex + 1) % len(players)
-		allCards[c.Param("username")] = append(allCards[c.Param("username")], currCard[0])
+		currPlayer = players[playerIndex]
+		allCards[c.Param("username")] = append(allCards[c.Param("username")], newRandomCard()[0])
 		return &Response{true, newPayload(c.Param("username"))}
 	}
 	return &Response{false, nil}

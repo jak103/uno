@@ -11,10 +11,11 @@ var sim bool = true
 
 func setupRoutes(e *echo.Echo) {
 	e.GET("/newgame", newGame)
+	e.GET("/update/:game/:username", update)
 	e.POST("/startgame/:game/:username", startGame)
 	e.POST("/login/:game/:username", login)
-	e.GET("/update/:game/:username", update)
 	e.POST("/play/:game/:username/:number/:color", play)
+	e.POST("/draw/:game/:username", draw)
 }
 
 func newGame(c echo.Context) error {
@@ -39,3 +40,7 @@ func play(c echo.Context) error {
 
 	return c.JSONPretty(http.StatusOK, playCard(c, Card{num, c.Param("color")}), "  ")
 }
+
+func draw(c echo.Context) error {
+	return c.JSONPretty(http.StatusOK, drawCard(c), "  ")
+}	
