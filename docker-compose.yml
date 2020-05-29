@@ -1,12 +1,22 @@
 version: '3.6'
 
 services:
-  dev:
+  client:
+    image: node:12-slim
+    working_dir: /client
+    volumes:
+      - ./client:/client      
+    command:
+      npm run-script build-watch
+    environment:
+      NODE_ENV: development
+
+  server:
     image: golang:1.14.2
     container_name: golang
-    working_dir: /code
+    working_dir: /server
     volumes:
-      - .:/code
+      - ./server:/server
     command: bash -c "sleep infinity"
 
   db:

@@ -1,30 +1,29 @@
 package main
 
 import (
-	"github.com/labstack/echo"
 	"math/rand"
-)
 
+	"github.com/labstack/echo"
+)
 
 ////////////////////////////////////////////////////////////
 // Structs used for the talking with frontend
 ////////////////////////////////////////////////////////////
 type Response struct {
-	ValidGame bool 				   `json:"valid"`  // Valid game id
-	Payload map[string]interface{} `json:"payload"`
+	ValidGame bool                   `json:"valid"` // Valid game id
+	Payload   map[string]interface{} `json:"payload"`
 }
 
 type Card struct {
-	Number int 	 `json:"number"`
-	Color string `json:"color"`
+	Number int    `json:"number"`
+	Color  string `json:"color"`
 }
-
 
 ////////////////////////////////////////////////////////////
 // Utility functions used in place of firebase
 ////////////////////////////////////////////////////////////
 func randColor(i int) string {
-	switch (i) {
+	switch i {
 	case 0:
 		return "red"
 	case 1:
@@ -37,31 +36,29 @@ func randColor(i int) string {
 	return ""
 }
 
-
 ////////////////////////////////////////////////////////////
 // All the data needed for a simulation of the game
 // eventually, this will be replaced with firebase
 ////////////////////////////////////////////////////////////
 var gameID string = ""
-var currCard []Card = nil   // The cards are much easier to render as a list
+var currCard []Card = nil // The cards are much easier to render as a list
 var players []string = []string{}
-var playerIndex = 0  // Used to iterate through the players
+var playerIndex = 0 // Used to iterate through the players
 var currPlayer string = ""
 var allCards map[string][]Card = make(map[string][]Card) // k: username, v: list of cards
 var gameStarted bool = false
-
 
 ////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
 func newRandomCard() []Card {
-	return []Card{Card{rand.Intn(9), randColor(rand.Intn(3))}}
+	return []Card{Card{rand.Intn(10), randColor(rand.Intn(4))}}
 }
 
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 
-	// Update known variables 
+	// Update known variables
 	payload["current_card"] = currCard
 	payload["current_player"] = currPlayer
 	payload["all_players"] = players
@@ -69,7 +66,6 @@ func newPayload(user string) map[string]interface{} { // User will default to ""
 	payload["game_id"] = gameID
 	payload["game_over"] = checkForWinner()
 
-	
 	return payload
 }
 
@@ -85,7 +81,6 @@ func contains(arr []string, val string) (int, bool) {
 	}
 	return -1, false
 }
-
 
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
@@ -112,12 +107,12 @@ func joinGame(c echo.Context) *Response {
 		}
 		return &Response{true, newPayload(c.Param("username"))}
 	}
-	return &Response{false, nil}  // bad game_id
+	return &Response{false, nil} // bad game_id
 }
 
 func playCard(c echo.Context, card Card) *Response {
 	if checkID(c.Param("game")) && currPlayer == c.Param("username") {
-		if card.Color == currCard[0].Color || card.Number == currCard[0].Number { 
+		if card.Color == currCard[0].Color || card.Number == currCard[0].Number {
 			// Valid card can be played
 			playerIndex = (playerIndex + 1) % len(players)
 			currPlayer = players[playerIndex]
@@ -157,12 +152,12 @@ func dealCards() {
 	for k := range players {
 		cards := []Card{}
 		for i := 0; i < 7; i++ {
-			cards = append(cards, Card{rand.Intn(9), randColor(rand.Intn(3))})
+			cards = append(cards, Card{rand.Intn(10), randColor(rand.Intn(4))})
 		}
 		allCards[players[k]] = cards
 	}
 
-	currCard = newRandomCard()	
+	currCard = newRandomCard()
 }
 
 // TODO: make sure this reflects on the front end
