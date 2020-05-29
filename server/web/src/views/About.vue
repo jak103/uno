@@ -49,9 +49,11 @@
             :class="'ma-3 pa-6'"
             outlined
             tile
-          >Click to play a card from your hand or 
-          <v-btn v-if="username == current_player" @click.native="drawCard">Draw from deck</v-btn>
+          >
+            Click to play a card from your hand or
+            <v-btn v-if="username == current_player" @click.native="drawCard">Draw from deck</v-btn>
           </v-card>
+          <v-card v-else-if="game_over != ''">{{game_over}} has won the game!</v-card>
 
           <v-card v-else :class="'ma-3 pa-6'" outlined tile>Waiting for {{ current_player }}</v-card>
           <Card
@@ -89,7 +91,8 @@ export default {
       cards: [],
       current_player: "",
       players: [],
-      current_card: []
+      current_card: [],
+      game_over: ""
     };
   },
   components: {
@@ -104,6 +107,9 @@ export default {
           this.current_player = res.data.payload.current_player;
           this.players = res.data.payload.all_players;
           this.current_card = res.data.payload.current_card;
+          if (res.data.game_over != "") {
+            this.game_over = res.data.game_over;
+          }
         }
       });
     },
@@ -115,7 +121,10 @@ export default {
         });
     },
     playCard(card) {
-      axios.post("/play/" + this.game_id +
+      axios
+        .post(
+          "/play/" +
+            this.game_id +
             "/" +
             this.username +
             "/" +
@@ -129,7 +138,7 @@ export default {
     },
     drawCard() {
       var f = "/draw/" + this.game_id + "/" + this.username;
-      console.log(f)
+      console.log(f);
       axios.post(f).then(res => {
         console.log(res.data);
         this.updateData();

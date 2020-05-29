@@ -67,6 +67,8 @@ func newPayload(user string) map[string]interface{} { // User will default to ""
 	payload["all_players"] = players
 	payload["deck"] = allCards[user] // returns nil if currPlayer = "" or user not in allCards
 	payload["game_id"] = gameID
+	payload["game_over"] = checkForWinner()
+
 	
 	return payload
 }
@@ -161,4 +163,14 @@ func dealCards() {
 	}
 
 	currCard = newRandomCard()	
+}
+
+// TODO: make sure this reflects on the front end
+func checkForWinner() string {
+	for k := range players {
+		if len(allCards[players[k]]) == 0 {
+			return players[k]
+		}
+	}
+	return ""
 }
