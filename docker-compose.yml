@@ -3,6 +3,7 @@ version: '3.6'
 services:
   client:
     image: node:12-slim
+    container_name: vue-client
     working_dir: /client
     volumes:
       - ./client:/client      
@@ -13,19 +14,22 @@ services:
 
   server:
     image: golang:1.14.2
-    container_name: golang
+    container_name: go-server
     working_dir: /server
     volumes:
+      - ./client/dist:/client/dist
       - ./server:/server
+    ports:
+      - 8080:8080
     command: bash -c "sleep infinity"
 
   db:
     image: firebase
     build: ./firebase
-    container_name: firebase
-    working_dir: /code
+    container_name: firebase-db
+    working_dir: /server
     volumes:
-      - ./firebase:/code
+      - ./firebase:/server
       - ./firebase/.config:/home/node/.config
       - ./firebase/.cache:/home/node/.cache
     ports:

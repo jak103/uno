@@ -16,11 +16,12 @@ func main() {
 	// Setup middleware
 	e.File("/", "/client/dist/index.html")
 
+	e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Recover())
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:  "/client/dist",
+		Root:  "/client/dist/",
 		HTML5: true,
 	}))
 
