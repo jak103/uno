@@ -14,6 +14,7 @@ services:
 
   server:
     image: golang:1.14.2
+    build: ./server
     container_name: go-server
     working_dir: /server
     volumes:
@@ -21,7 +22,9 @@ services:
       - ./server:/server
     ports:
       - 8080:8080
-    command: bash -c "sleep infinity"
+    command: gin --appPort 8080 --all -i run .
+    #command: bash -c "sleep infinity"
+
 
   db:
     image: firebase

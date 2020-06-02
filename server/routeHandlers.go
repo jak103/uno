@@ -2,10 +2,10 @@ package main
 
 import (
 	"net/http"
-	"github.com/labstack/echo"
 	"strconv"
-)
 
+	"github.com/labstack/echo"
+)
 
 var sim bool = true
 
@@ -43,4 +43,4 @@ func play(c echo.Context) error {
 
 func draw(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, drawCard(c), "  ")
-}	
+}
