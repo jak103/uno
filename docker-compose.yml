@@ -8,7 +8,9 @@ services:
     volumes:
       - ./client:/client      
     command:
-      npm run-script build-watch
+      npm run-script serve
+    ports:
+      - 3000:3000
     environment:
       NODE_ENV: development
 
@@ -39,4 +41,5 @@ services:
       - 9005:9005
       - 9000:9000
       - 4400:4400
+      - 4000:4000
     command: firebase emulators:start

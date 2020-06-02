@@ -100,7 +100,7 @@ export default {
   },
   methods: {
     updateData() {
-      axios.get("/update/" + this.game_id + "/" + this.username).then(res => {
+      axios.get("http://localhost:8080/update/" + this.game_id + "/" + this.username).then(res => {
         if (res.data.valid) {
           this.valid = res.data.valid;
           this.cards = res.data.payload.deck;
@@ -115,7 +115,7 @@ export default {
     },
     startGame() {
       axios
-        .post("/startgame/" + this.game_id + "/" + this.username)
+        .post("http://localhost:8080/startgame/" + this.game_id + "/" + this.username)
         .then(() => {
           this.updateData();
         });
@@ -123,7 +123,7 @@ export default {
     playCard(card) {
       axios
         .post(
-          "/play/" +
+          "http://localhost:8080/play/" +
             this.game_id +
             "/" +
             this.username +
@@ -137,7 +137,7 @@ export default {
         });
     },
     drawCard() {
-      var f = "/draw/" + this.game_id + "/" + this.username;
+      var f = "http://localhost:8080/draw/" + this.game_id + "/" + this.username;
       console.log(f);
       axios.post(f).then(res => {
         console.log(res.data);
