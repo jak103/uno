@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"log"
 	"math/rand"
 
+	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo"
+	"google.golang.org/api/iterator"
 )
 
 ////////////////////////////////////////////////////////////
@@ -17,6 +22,19 @@ type Response struct {
 type Card struct {
 	Number int    `json:"number"`
 	Color  string `json:"color"`
+}
+
+func createClient(ctx context.Context) *firestore.Client {
+	// Sets your Google Cloud Platform project ID.
+	projectID := "usu-devops"
+
+	client, err := firestore.NewClient(ctx, projectID)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	// Close client when done with
+	// defer client.Close()
+	return client
 }
 
 ////////////////////////////////////////////////////////////
@@ -94,11 +112,39 @@ func updateGame(c echo.Context) *Response {
 }
 
 func createNewGame(c echo.Context) *Response {
+
+	ctx := context.Background()
+	client := createClient(ctx)
+
+	_, _, err := client.Collection("users").Add(ctx, map[string]interface{}{
+		"first": "Ada",
+		"last":  "Lovelace",
+		"born":  1815,
+	})
+	if err != nil {
+		log.Fatalf("Failed adding alovelace: %v", err)
+	}
+
 	gameID = "12234"
 	return &Response{true, newPayload("")}
 }
 
 func joinGame(c echo.Context) *Response {
+	ctx := context.Background()
+	client := createClient(ctx)
+
+	iter := client.Collection("users").Documents(ctx)
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate: %v", err)
+		}
+		fmt.Println(doc.Data())
+	}
+
 	if checkID(c.Param("game")) {
 		user := c.Param("username")
 		if _, found := contains(players, user); !found {
