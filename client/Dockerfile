@@ -1,10 +1,11 @@
 FROM node:12-slim
 
+WORKDIR /client
+
 RUN npm install -g @vue/cli
 RUN npm install -g @vue/cli-service-global
 RUN yarn add @vue/cli-service-global
 
-WORKDIR /client
-COPY package.json ./client/package.json
+COPY package*.json ./
 
 RUN npm install
