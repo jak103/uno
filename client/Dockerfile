@@ -4,5 +4,7 @@ RUN npm install -g @vue/cli
 RUN npm install -g @vue/cli-service-global
 RUN yarn add @vue/cli-service-global
 
-COPY package.json .
+WORKDIR /client
+COPY package.json ./client/package.json
+
 RUN npm install
