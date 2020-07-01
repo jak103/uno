@@ -2,12 +2,9 @@ package main
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo"
 )
-
-var sim bool = true
 
 func setupRoutes(e *echo.Echo) {
 	e.GET("/newgame", newGame)
@@ -23,22 +20,19 @@ func newGame(c echo.Context) error {
 }
 
 func login(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, joinGame(c), "  ")
+	return c.JSONPretty(http.StatusOK, joinGameIfValid(c), "  ")
 }
 
 func startGame(c echo.Context) error {
-	dealCards()
-	return c.JSONPretty(http.StatusOK, update(c), "  ")
+	return c.JSONPretty(http.StatusOK, dealCardsAndStartGame(c), "  ")
 }
 
 func update(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, updateGame(c), "  ")
+	return c.JSONPretty(http.StatusOK, heartBeat(c), "  ")
 }
 
 func play(c echo.Context) error {
-	num, _ := strconv.Atoi(c.Param("number"))
-
-	return c.JSONPretty(http.StatusOK, playCard(c, Card{num, c.Param("color")}), "  ")
+	return c.JSONPretty(http.StatusOK, playCard(c), "  ")
 }
 
 func draw(c echo.Context) error {

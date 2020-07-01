@@ -4,33 +4,6 @@ import (
 	"testing"
 )
 
-func TestColors(t *testing.T) {
-	red := 0
-	blue := 1
-	green := 2
-	yellow := 3
-
-	test := randColor(red)
-	if test != "red" {
-        t.Error("Color test: red..got: ", test)
-	}
-
-	test = randColor(blue)
-	if test != "blue" {
-        t.Error("Color test: blue..got: ", test)
-	}
-
-	test = randColor(green)
-	if test != "green" {
-        t.Error("Color test: green..got: ", test)
-	}
-
-	test = randColor(yellow)
-	if test != "yellow" {
-        t.Error("Color test: yellow..got: ", test)
-	}
-}
-
 func TestContains(t *testing.T) {
 	var players []string = []string{"one", "two", "three", "four"};
 
@@ -48,5 +21,37 @@ func TestContains(t *testing.T) {
 
 	if _, has := contains(players, "seven"); has {
 		t.Error("Array should not contain: \"seven\", but returned true");
+	}
+}
+
+func TestDrawFromDeck(t *testing.T) {
+	deck := []Card{
+		Card{5, "red"},
+		Card{3, "green"},
+		Card{2, "yellow"},
+		Card{6, "blue"},
+		Card{9, "red"},
+	}
+
+	if length := len(deck); length != 4 {
+		t.Error("Deck should be length 4, but failed")
+	}
+
+	card := drawFromDeck(deck)
+
+	if length := len(deck); length != 3 {
+		t.Error("Deck should be length 3, but failed")
+	}
+
+	card = drawFromDeck(deck)
+
+	if length := len(deck); length != 2 {
+		t.Error("Deck should be length 2, but failed")
+	}
+
+	card = drawFromDeck(deck)
+
+	if length := len(deck); length != 1 {
+		t.Error("Deck should be length 1, but failed")
 	}
 }
