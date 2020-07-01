@@ -122,16 +122,16 @@ func createNewGame(c echo.Context) *Response {
 	return &Response{true, newPayload("")}
 }
 
-func joinGame(game string, username string) *Response {
+func joinGame(game string, username string) bool {
 	if checkID(game) {
 		user := username
 		if _, found := contains(players, user); !found {
 			players = append(players, user)
 			allCards[user] = nil // No cards yet
 		}
-		return &Response{true, newPayload(username)}
+		return true
 	}
-	return &Response{false, nil} // bad game_id
+	return false // bad game_id
 }
 
 func playCard(c echo.Context, card Card) *Response {

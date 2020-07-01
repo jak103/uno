@@ -28,7 +28,14 @@ func newGame(c echo.Context) error {
 }
 
 func login(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, joinGame(c.Param("game"), c.Param("username")), "  ")
+	var payload *Response
+	validGame := joinGame(c.Param("game"), c.Param("username"));
+	if validGame {
+		payload = &Response{true, newPayload(c.Param("username"))}
+	} else {
+		payload = &Response{false, nil}
+	}
+	return c.JSONPretty(http.StatusOK, payload, "  ")
 }
 
 func startGame(c echo.Context) error {
