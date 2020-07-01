@@ -2,10 +2,11 @@ version: '3.6'
 
 services:
   client:
-    image: node:12-slim
+    image: vue-client:latest
+    build: ./client
     container_name: vue-client-tester
     working_dir: /client
     volumes:
       - /client/node_modules/
       - ./client:/client      
-    command: npm run test-integration-headless
+    command: npm run-script test-integration-headless

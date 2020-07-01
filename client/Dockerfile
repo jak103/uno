@@ -3,7 +3,7 @@ FROM node:12-slim
 WORKDIR /client
 
 RUN apt-get update && \
-    apt-get install chromium -y
+    apt-get install libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb chromium -y
 
 RUN mkdir /client/node_modules && \
     npm install -g @vue/cli && \
