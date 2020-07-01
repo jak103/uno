@@ -24,12 +24,13 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func newGame(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, createNewGame(c), "  ")
+	createNewGame()
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload("")}, "  ")
 }
 
 func login(c echo.Context) error {
 	var payload *Response
-	validGame := joinGame(c.Param("game"), c.Param("username"));
+	validGame := joinGame(c.Param("game"), c.Param("username"))
 	if validGame {
 		payload = &Response{true, newPayload(c.Param("username"))}
 	} else {

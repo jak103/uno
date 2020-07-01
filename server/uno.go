@@ -104,22 +104,9 @@ func updateGame(c echo.Context) *Response {
 	return &Response{false, nil}
 }
 
-func createNewGame(c echo.Context) *Response {
-
-	ctx := context.Background()
-	client := createClient(ctx)
-
-	_, _, err := client.Collection("users").Add(ctx, map[string]interface{}{
-		"first": "Ada",
-		"last":  "Lovelace",
-		"born":  1815,
-	})
-	if err != nil {
-		log.Fatalf("Failed adding alovelace: %v", err)
-	}
-
+func createNewGame() string {
 	gameID = "12234"
-	return &Response{true, newPayload("")}
+	return gameID
 }
 
 func joinGame(game string, username string) bool {
