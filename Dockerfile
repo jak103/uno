@@ -1,4 +1,4 @@
-FROM node:12-slim AS client
+FROM vue-client:latest AS client
 WORKDIR /client
 ENV NODE_ENV=production
 COPY ./client/package*.json ./
@@ -7,7 +7,7 @@ COPY ./client/ ./
 RUN npm run build
 
 
-FROM golang:1.14.2 AS server
+FROM go-server:latest AS server
 WORKDIR /server/
 COPY ./server/* /server/
 RUN go build -o uno .

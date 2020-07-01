@@ -2,6 +2,9 @@ FROM node:12-slim
 
 WORKDIR /client
 
+RUN apt-get update && \
+    apt-get install chromium -y
+
 RUN mkdir /client/node_modules && \
     npm install -g @vue/cli && \ 
     npm install -g @vue/cli-service-global && \

@@ -7,7 +7,9 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build-watch": "vue-cli-service build-watch",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "test-integration": "cypress run --browser chrome",
+    "test-integration-headless": "cypress run --browser chromium"
   },
   "dependencies": {
     "@vue/cli-service-global": "^4.4.6",
