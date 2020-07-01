@@ -51,7 +51,8 @@ func play(c echo.Context) error {
 }
 
 func draw(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, drawCard(c), "  ")
+	valid := drawCard(c.Param("game"), c.Param("username"))
+	return respondIfValid(c, valid)
 }
 
 func respondIfValid(c echo.Context, valid bool) error {

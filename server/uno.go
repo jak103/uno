@@ -6,7 +6,6 @@ import (
 	"math/rand"
 
 	"cloud.google.com/go/firestore"
-	"github.com/labstack/echo"
 )
 
 ////////////////////////////////////////////////////////////
@@ -142,14 +141,14 @@ func playCard(game string, username string, card Card) bool {
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(c echo.Context) *Response {
-	if checkID(c.Param("game")) && c.Param("username") == currPlayer {
+func drawCard(game string, username string) bool {
+	if checkID(game) && username == currPlayer {
 		playerIndex = (playerIndex + 1) % len(players)
 		currPlayer = players[playerIndex]
-		allCards[c.Param("username")] = append(allCards[c.Param("username")], newRandomCard()[0])
-		return &Response{true, newPayload(c.Param("username"))}
+		allCards[username] = append(allCards[username], newRandomCard()[0])
+		return true
 	}
-	return &Response{false, nil}
+	return false
 }
 
 // TODO: need to deal the actual cards, not just random numbers
