@@ -29,23 +29,18 @@ func newGame(c echo.Context) error {
 }
 
 func login(c echo.Context) error {
-	var payload *Response
 	validGame := joinGame(c.Param("game"), c.Param("username"))
-	if validGame {
-		payload = &Response{true, newPayload(c.Param("username"))}
-	} else {
-		payload = &Response{false, nil}
-	}
-	return c.JSONPretty(http.StatusOK, payload, "  ")
+	return respondIfGameValid(c, validGame)
 }
 
 func startGame(c echo.Context) error {
 	dealCards()
-	return c.JSONPretty(http.StatusOK, update(c), "  ")
+	return update(c)
 }
 
 func update(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, updateGame(c), "  ")
+	valid := updateGame(c.Param("game"), c.Param("username"))
+	return respondIfGameValid(c, valid)
 }
 
 func play(c echo.Context) error {
@@ -56,4 +51,14 @@ func play(c echo.Context) error {
 
 func draw(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, drawCard(c), "  ")
+}
+
+func respondIfGameValid(c echo.Context, valid bool) error {
+	var payload *Response
+	if valid {
+		payload = &Response{true, newPayload(c.Param("username"))}
+	} else {
+		payload = &Response{false, nil}
+	}
+	return c.JSONPretty(http.StatusOK, payload, "  ")
 }

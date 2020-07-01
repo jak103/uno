@@ -96,12 +96,12 @@ func contains(arr []string, val string) (int, bool) {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func updateGame(c echo.Context) *Response {
+func updateGame(game string, username string) bool {
 	success := false
-	if success = checkID(c.Param("game")); success && gameStarted {
-		return &Response{true, newPayload(c.Param("username"))}
+	if success = checkID(game); success && gameStarted {
+		return true
 	}
-	return &Response{false, nil}
+	return false
 }
 
 func createNewGame() string {
