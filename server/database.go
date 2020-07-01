@@ -5,6 +5,8 @@ import(
 	"log"
 	"cloud.google.com/go/firestore"
 
+	// Debuggings
+	"fmt"
 )
 // DB can be initialized 2 different ways
 type DB struct {}
@@ -48,9 +50,13 @@ func (db *DB) addNewGame() string { // TODO: Should return an error if it doesn'
 }
 
 func (db *DB) addUserToGame(username string) {
-	allCards[username] = nil; // No cards yet
-	players = append(players, username)
-	numberOfPlayers++;
+	if _, there := allCards[username]; !there {
+		allCards[username] = nil; // No cards yet
+		players = append(players, username)
+		numberOfPlayers++;
+	}
+
+	fmt.Println("Number of players: ", numberOfPlayers)
 }
 
 func (db *DB) updateCards(cards map[string][]Card) {

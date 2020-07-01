@@ -32,6 +32,16 @@ func withJSONPayload(gameCode string, username string) map[string]interface{} {
 	return payload
 }
 
+func drawCard(c echo.Context) *Response {
+	validGameID, id, user := getParams(c)
+
+	if validGameID = db.isValidGame(id); validGameID && db.hasGameStarted(id) {
+		
+		return &Response{validGameID, withJSONPayload(id, user)}
+	}
+	return &Response{validGameID, nil}
+}
+
 func playCard(c echo.Context) *Response {
 	num, _ := strconv.Atoi(c.Param("number"))
 	color := c.Param("Color")
@@ -80,7 +90,6 @@ func joinGameIfValid(c echo.Context) *Response { // If user can join
 	}
 	return &Response{validGameID, nil}
 }
-
 
 func createNewGame(c echo.Context) *Response {
 	id := db.addNewGame()

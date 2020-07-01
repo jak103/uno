@@ -61,9 +61,9 @@ func drawFromDeck(deck []Card) []Card {
 func dealCards(gameCode string) {
 	cards := db.getAllCards(gameCode)
 
-	for player, deck := range cards {
+	for player := range cards {
 		for i := 0; i < 7; i++ {
-			deck = append(deck, Card{rand.Intn(10), randColor(rand.Intn(4))})
+			cards[player] = append(cards[player], Card{rand.Intn(10), randColor(rand.Intn(4))})
 		}
 	}
 
@@ -72,7 +72,7 @@ func dealCards(gameCode string) {
 
 
 func checkForWinner(gameCards map[string][]Card) string {
-	for player, cards := range gameCards {
+	for player := range gameCards {
 		if len(gameCards[player]) == 0 {
 			return player
 		}	
