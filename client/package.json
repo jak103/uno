@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve --port 3000",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build-watch": "vue-cli-service build-watch"
+    "build-watch": "vue-cli-service build-watch",
+    "cypress:open": "cypress open"
   },
   "dependencies": {
     "@vue/cli-service-global": "^4.4.6",
@@ -22,6 +23,7 @@
     "@vue/cli-plugin-router": "~4.3.0",
     "@vue/cli-service": "~4.3.0",
     "babel-eslint": "^10.1.0",
+    "cypress": "^4.9.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "sass": "^1.19.0",
