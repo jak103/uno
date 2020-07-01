@@ -120,14 +120,6 @@ func createNewGame(c echo.Context) *Response {
 	ctx := context.Background()
 	client := createClient(ctx)
 
-	randomGameID := createNewGameID()
-	available_games := client.Collection("avaliable_games")
-	_, found := available_games[randomGameID]
-	for !found {
-		randomGameID = createNewGameID()
-	}
-
-
 
 	fmt.Println("Adding tmp stuff to firestore")
 	_, _, err := client.Collection("users").Add(ctx, map[string]interface{}{
