@@ -30,7 +30,7 @@ func newGame(c echo.Context) error {
 
 func login(c echo.Context) error {
 	validGame := joinGame(c.Param("game"), c.Param("username"))
-	return respondIfGameValid(c, validGame)
+	return respondIfValid(c, validGame)
 }
 
 func startGame(c echo.Context) error {
@@ -40,20 +40,21 @@ func startGame(c echo.Context) error {
 
 func update(c echo.Context) error {
 	valid := updateGame(c.Param("game"), c.Param("username"))
-	return respondIfGameValid(c, valid)
+	return respondIfValid(c, valid)
 }
 
 func play(c echo.Context) error {
 	num, _ := strconv.Atoi(c.Param("number"))
-
-	return c.JSONPretty(http.StatusOK, playCard(c, Card{num, c.Param("color")}), "  ")
+	card := Card{num, c.Param("color")}
+	valid := playCard(c.Param("game"), c.Param("username"), card)
+	return respondIfValid(c, valid)
 }
 
 func draw(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, drawCard(c), "  ")
 }
 
-func respondIfGameValid(c echo.Context, valid bool) error {
+func respondIfValid(c echo.Context, valid bool) error {
 	var payload *Response
 	if valid {
 		payload = &Response{true, newPayload(c.Param("username"))}

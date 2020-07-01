@@ -121,25 +121,24 @@ func joinGame(game string, username string) bool {
 	return false // bad game_id
 }
 
-func playCard(c echo.Context, card Card) *Response {
-	if checkID(c.Param("game")) && currPlayer == c.Param("username") {
+func playCard(game string, username string, card Card) bool {
+	if checkID(game) && currPlayer == username {
 		if card.Color == currCard[0].Color || card.Number == currCard[0].Number {
 			// Valid card can be played
 			playerIndex = (playerIndex + 1) % len(players)
 			currPlayer = players[playerIndex]
 			currCard[0] = card
 
-			for index, item := range allCards[c.Param("username")] {
+			for index, item := range allCards[username] {
 				if item == currCard[0] {
-					allCards[c.Param("username")] = append(allCards[c.Param("username")][:index], allCards[c.Param("username")][index+1:]...)
+					allCards[username] = append(allCards[username][:index], allCards[username][index+1:]...)
 					break
 				}
 			}
 		}
-		return &Response{true, newPayload(c.Param("username"))}
+		return true
 	}
-
-	return &Response{false, nil}
+	return false
 }
 
 // TODO: Keep track of current card that is top of the deck
