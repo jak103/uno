@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"strconv"
 
 	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo"
@@ -100,6 +101,10 @@ func contains(arr []string, val string) (int, bool) {
 	return -1, false
 }
 
+func createNewGameID() string {
+	return strconv.Itoa(rand.Intn(999999))
+}
+
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
@@ -112,10 +117,19 @@ func updateGame(c echo.Context) *Response {
 }
 
 func createNewGame(c echo.Context) *Response {
-
 	ctx := context.Background()
 	client := createClient(ctx)
 
+	randomGameID := createNewGameID()
+	available_games := client.Collection("avaliable_games")
+	_, found := available_games[randomGameID]
+	for !found {
+		randomGameID = createNewGameID()
+	}
+
+
+
+	fmt.Println("Adding tmp stuff to firestore")
 	_, _, err := client.Collection("users").Add(ctx, map[string]interface{}{
 		"first": "Ada",
 		"last":  "Lovelace",
@@ -136,9 +150,11 @@ func joinGame(c echo.Context) *Response {
 	iter := client.Collection("users").Documents(ctx)
 	for {
 		doc, err := iter.Next()
+
 		if err == iterator.Done {
 			break
 		}
+
 		if err != nil {
 			log.Fatalf("Failed to iterate: %v", err)
 		}
