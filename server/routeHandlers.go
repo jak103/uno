@@ -9,6 +9,11 @@ import (
 
 var sim bool = true
 
+type Response struct {
+	ValidGame bool                   `json:"valid"` // Valid game id
+	Payload   map[string]interface{} `json:"payload"`
+}
+
 func setupRoutes(e *echo.Echo) {
 	e.GET("/newgame", newGame)
 	e.GET("/update/:game/:username", update)

@@ -12,11 +12,6 @@ import (
 ////////////////////////////////////////////////////////////
 // Structs used for the talking with frontend
 ////////////////////////////////////////////////////////////
-type Response struct {
-	ValidGame bool                   `json:"valid"` // Valid game id
-	Payload   map[string]interface{} `json:"payload"`
-}
-
 type Card struct {
 	Number int    `json:"number"`
 	Color  string `json:"color"`
