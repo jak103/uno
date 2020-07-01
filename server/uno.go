@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"math/rand"
 
 	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo"
-	"google.golang.org/api/iterator"
 )
 
 ////////////////////////////////////////////////////////////
@@ -130,21 +128,6 @@ func createNewGame(c echo.Context) *Response {
 }
 
 func joinGame(game string, username string) *Response {
-	ctx := context.Background()
-	client := createClient(ctx)
-
-	iter := client.Collection("users").Documents(ctx)
-	for {
-		doc, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			log.Fatalf("Failed to iterate: %v", err)
-		}
-		fmt.Println(doc.Data())
-	}
-
 	if checkID(game) {
 		user := username
 		if _, found := contains(players, user); !found {
