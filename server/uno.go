@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"math/rand"
 
 	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo"
-	"google.golang.org/api/iterator"
 )
 
 ////////////////////////////////////////////////////////////
@@ -113,37 +111,38 @@ func updateGame(c echo.Context) *Response {
 
 func createNewGame(c echo.Context) *Response {
 
-	ctx := context.Background()
-	client := createClient(ctx)
+	/*
+		ctx := context.Background()
+			client := createClient(ctx)
 
-	_, _, err := client.Collection("users").Add(ctx, map[string]interface{}{
-		"first": "Ada",
-		"last":  "Lovelace",
-		"born":  1815,
-	})
-	if err != nil {
-		log.Fatalf("Failed adding alovelace: %v", err)
-	}
-
+			_, _, err := client.Collection("users").Add(ctx, map[string]interface{}{
+				"first": "Ada",
+				"last":  "Lovelace",
+				"born":  1815,
+			})
+			if err != nil {
+				log.Fatalf("Failed adding alovelace: %v", err)
+			}
+	*/
 	gameID = "12234"
 	return &Response{true, newPayload("")}
 }
 
 func joinGame(c echo.Context) *Response {
 	ctx := context.Background()
-	client := createClient(ctx)
+	//client := createClient(ctx)
 
-	iter := client.Collection("users").Documents(ctx)
-	for {
-		doc, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			log.Fatalf("Failed to iterate: %v", err)
-		}
-		fmt.Println(doc.Data())
-	}
+	// iter := client.Collection("users").Documents(ctx)
+	// for {
+	// 	doc, err := iter.Next()
+	// 	if err == iterator.Done {
+	// 		break
+	// 	}
+	// 	if err != nil {
+	// 		log.Fatalf("Failed to iterate: %v", err)
+	// 	}
+	// 	fmt.Println(doc.Data())
+	// }
 
 	if checkID(c.Param("game")) {
 		user := c.Param("username")
