@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   client:
-    image: node:12-slim
+    image: vue-client:latest
     build: ./client
     container_name: vue-client
     working_dir: /client
@@ -16,7 +16,7 @@ services:
       NODE_ENV: development
 
   server:
-    image: golang:1.14.2
+    image: go-server:latest
     build: ./server
     container_name: go-server
     working_dir: /server
