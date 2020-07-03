@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"time"
 
 	// "cloud.google.com/go/firestore"
 	// "google.golang.org/api/iterator"
@@ -36,38 +37,35 @@ func randColor(i int) string {
 	return ""
 }
 
-func canPlayNewCard(newCard Card, currentCard Card) bool {
+func canPlayNewCard(newCard, currentCard Card) bool {
 	if newCard.Color == currentCard.Color || newCard.Number == currentCard.Number {
 		return true
 	}
 	return false
 }
 
-func drawFromDeck(deck []Card) []Card {
+func drawFromDeck(deck []Card) ([]Card, int) {
 	newCardIndex := rand.Intn(len(deck))
 	cardDrawn := []Card{deck[newCardIndex]}
 
-	//Remove from deck: https://yourbasic.org/golang/delete-element-slice/
-	go func() {
-		deck[newCardIndex] = deck[len(deck)-1]
-		deck[len(deck)-1] = Card{}
-		deck = deck[:len(deck)-1]
-	}() // This starts the thread
-	
-	return cardDrawn
+	return cardDrawn, newCardIndex
 }
 
 // TODO: need to deal the actual cards, not just random numbers
-func dealCards(gameCode string) {
-	cards := db.getAllCards(gameCode)
-
-	for player := range cards {
+func dealCards(playersCards *map[string][]Card, drawPileCards *[]Card) []Card {
+	for player := range *(playersCards) {
 		for i := 0; i < 7; i++ {
-			cards[player] = append(cards[player], Card{rand.Intn(10), randColor(rand.Intn(4))})
+			// TODO: Test this and make sure its working
+			index := rand.Intn(len(*(drawPileCards)))
+			randomCard := (*drawPileCards)[index]
+			(*playersCards)[player] = append((*playersCards)[player], randomCard)
+			
+			(*drawPileCards)[len((*drawPileCards))-1], (*drawPileCards)[index] = (*drawPileCards)[index], (*drawPileCards)[len((*drawPileCards))-1]
+			(*drawPileCards) = (*drawPileCards)[:len((*drawPileCards))-1]
 		}
 	}
 
-	db.updateCards(cards);
+	return []Card{(*drawPileCards)[0]} // TODO: Create function that will remove a card from a deck
 }
 
 
@@ -78,4 +76,22 @@ func checkForWinner(gameCards map[string][]Card) string {
 		}	
 	}
 	return ""
+}
+
+func createDeck() []Card {
+	colors := []string{"yellow", "green", "blue", "red"}
+	deck := []Card{}
+	for _, color := range(colors) {
+		for i := 1; i < 10; i++ {
+			deck = append(deck, Card{i, color});
+		} 
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	for i := len(deck) - 1; i > 0; i-- { // Fisher–Yates shuffle
+		j := rand.Intn(i + 1)
+		deck[i], deck[j] = deck[j], deck[i]
+	}
+
+	return deck
 }

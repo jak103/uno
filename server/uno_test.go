@@ -33,25 +33,28 @@ func TestDrawFromDeck(t *testing.T) {
 		Card{9, "red"},
 	}
 
+	if length := len(deck); length != 5 {
+		t.Error("Deck should be length 5, but failed, got: ", length)
+	}
+
+	_, index := drawFromDeck(deck)
+	deck[len(deck)-1], deck[index] = deck[index], deck[len(deck)-1]
+	deck = deck[:len(deck)-1]
 	if length := len(deck); length != 4 {
-		t.Error("Deck should be length 4, but failed")
+		t.Error("Deck should be length 4, but failed, got: ", length)
 	}
 
-	card := drawFromDeck(deck)
-
+	_, index = drawFromDeck(deck)
+	deck[len(deck)-1], deck[index] = deck[index], deck[len(deck)-1]
+	deck = deck[:len(deck)-1]
 	if length := len(deck); length != 3 {
-		t.Error("Deck should be length 3, but failed")
+		t.Error("Deck should be length 3, but failed, got: ", length)
 	}
 
-	card = drawFromDeck(deck)
-
+	_, index = drawFromDeck(deck)
+	deck[len(deck)-1], deck[index] = deck[index], deck[len(deck)-1]
+	deck = deck[:len(deck)-1]
 	if length := len(deck); length != 2 {
-		t.Error("Deck should be length 2, but failed")
-	}
-
-	card = drawFromDeck(deck)
-
-	if length := len(deck); length != 1 {
-		t.Error("Deck should be length 1, but failed")
+		t.Error("Deck should be length 2, but failed, got: ", length)
 	}
 }

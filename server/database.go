@@ -17,6 +17,7 @@ var players []string = []string{}
 var playerIndex = 0 // Used to iterate through the players
 var currPlayer string = ""
 var allCards map[string][]Card = make(map[string][]Card) // k: username, v: list of cards
+var deck []Card = nil
 var gameStarted bool = false
 var gameID string = ""
 var numberOfPlayers int = 0
@@ -59,7 +60,7 @@ func (db *DB) addUserToGame(username string) {
 	fmt.Println("Number of players: ", numberOfPlayers)
 }
 
-func (db *DB) updateCards(cards map[string][]Card) {
+func (db *DB) updatePlayerCards(cards map[string][]Card, gamecode string) {
 	allCards = cards
 }
 
@@ -77,6 +78,25 @@ func (db *DB) removeCardFromPlayersDeck(card Card, gameCode, user string) {
 	allCards[user][index] = allCards[user][len(allCards[user])-1]
 	allCards[user][len(allCards[user])-1] = Card{}
 	allCards[user] = allCards[user][:len(allCards[user])-1]
+}
+
+func (db *DB) removeCardFromDeck(card Card, gameCode string) {
+	var index = -1
+	for i, item := range deck {
+		if item == card {
+			index = i
+			break
+		}
+	}
+	// https://stackoverflow.com/questions/37334119/how-to-delete-an-element-from-a-slice-in-golang#:~:text=If%20you%20want%20to%20keep,1%3A%5D...)%20%7D
+	if found := (index != -1); found {
+		deck[len(deck)-1], deck[index] = deck[index], deck[len(deck)-1]
+		deck = deck[:len(deck)-1]
+	}
+}
+
+func (db *DB) setDeckOfCardsForDrawPile(cards []Card, gameCode string) {
+	deck = cards
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -113,4 +133,8 @@ func (db *DB) isValidGame(gameCode string) bool {
 func (db *DB) isInDeck(card Card, gameCode, user string) bool {
 	_, hasCard := playerHasCard(allCards[user], card)
 	return hasCard 
+}
+
+func (db *DB) getDeckOfCards(gameCode string) []Card {
+	return deck
 }
