@@ -8,7 +8,11 @@ services:
     working_dir: /client
     volumes:
       - ./client:/client      
+<<<<<<< HEAD
     command: npm run-script serve
+=======
+    command: npm run-script install-serve
+>>>>>>> origin/dev
     #command: bash -c "sleep infinity"
     ports:
       - 3000:3000
