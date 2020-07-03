@@ -16,7 +16,7 @@
                   <v-text-field id="userName" label="USERNAME" type="text" v-model="user_name"></v-text-field>
                   <v-btn id="joinGame" @click.native="login" color="primary" :to="to">Join Game</v-btn>
                   <v-btn id="newGame" color="primary" @click.native="newGame">Create new game</v-btn>
-                  <v-card v-if="status != ''">{{ status }}</v-card>
+                  <v-card id="status" v-if="status != ''">{{ status }}</v-card>
                 </v-form>
               </v-card-text>
             </v-card>

@@ -1,20 +1,21 @@
 /// <reference types="cypress" />
 
-context('Actions', () => {
+context('Login', () => {
   beforeEach(() => {
+    cy.log("Hitting browser");
     cy.visit('http://localhost:3000')
   });
 
-  // https://on.cypress.io/interacting-with-elements
+  it("should join a game", () => {
+    cy.log("creating new game");
+    cy.get("#newGame").click();
 
-  it("should hit the login page", () => {
-    cy.get("#gameId")
-        .type("12344").should("have.value", "12344");
+    cy.log("Confirm the new game is created");
+    cy.get("#status").contains("New game id is:");
+    cy.get("#gameId").should("have.value", "12234");
+    cy.get("#userName").type("test").should("have.value", "test");
 
-    cy.get("#userName")
-        .type("test").should("have.value", "test");
-
-    cy.get("#newGame")
-        .click()
+    cy.log("Join the game");
+    cy.get("#joinGame").click();
   });
 });
