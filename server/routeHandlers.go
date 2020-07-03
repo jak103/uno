@@ -28,7 +28,7 @@ func login(c echo.Context) error {
 
 func startGame(c echo.Context) error {
 	dealCards()
-	return c.JSONPretty(http.StatusOK, update(c), "  ")
+	return c.JSONPretty(http.StatusOK, updateGame(c), "  ")
 }
 
 func update(c echo.Context) error {
