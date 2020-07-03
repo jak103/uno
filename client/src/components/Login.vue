@@ -12,10 +12,10 @@
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <v-text-field label="GAME ID" type="text" v-model="game_id"></v-text-field>
-                  <v-text-field label="USERNAME" type="text" v-model="user_name"></v-text-field>
-                  <v-btn @click.native="login" color="primary" :to="to">Join Game</v-btn>
-                  <v-btn color="primary" @click.native="newGame">Create new game</v-btn>
+                  <v-text-field id="gameId" label="GAME ID" type="text" v-model="game_id"></v-text-field>
+                  <v-text-field id="userName" label="USERNAME" type="text" v-model="user_name"></v-text-field>
+                  <v-btn id="joinGame" @click.native="login" color="primary" :to="to">Join Game</v-btn>
+                  <v-btn id="newGame" color="primary" @click.native="newGame">Create new game</v-btn>
                   <v-card v-if="status != ''">{{ status }}</v-card>
                 </v-form>
               </v-card-text>
