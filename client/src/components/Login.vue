@@ -13,6 +13,7 @@
               <v-card-text>
                 <v-form>
                   <v-text-field label="GAME ID" type="text" v-model="game_id"></v-text-field>
+                  <v-text-field label="USERNAME" type="text" v-model="user_name"></v-text-field>
                   <v-btn @click.native="login" color="primary" :to="to">Join Game</v-btn>
                   <v-btn color="primary" @click.native="newGame">Create new game</v-btn>
                   <v-card v-if="status != ''">{{ status }}</v-card>
@@ -34,23 +35,29 @@ export default {
     return {
       valid_game: false,
       game_id: null,
+      user_name: "",
       to: {},
-      status: ""
+      status: "",
+      sim: true // Only true while debugging
     };
   },
   methods: {
     async login() {
-      let res = await axios.post("/login/" + this.game_id);
-      if (res.data.valid) {
-        this.to = {
-          name: "About",
-          params: { game_id: this.game_id, valid: res.data.valid }
-        };
+      if (this.user_name != "") {
+        let res = await axios.post("http://localhost:8080/login/" + this.game_id + "/" + this.user_name);
+        if (res.data.valid) {
+          this.to = {
+            name: "About",
+            params: { game_id: this.game_id, valid: res.data.valid, username: this.user_name}
+          };
+        }
+      } else {
+        alert("Please enter a username. This will be displayed to other players")
       }
     },
     async newGame() {
       console.log("New game!");
-      let res = await axios.post("/newgame");
+      let res = await axios.get("http://localhost:8080/newgame");
       this.game_id = res.data.payload.game_id;
       this.status = "New game id is: " + this.game_id;
     }

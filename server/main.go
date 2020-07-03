@@ -10,20 +10,21 @@ import (
 func main() {
 	fmt.Println("USU - UNO v0.0.0")
 
-
 	// New Echo server
 	e := echo.New()
 
 	// Setup middleware
-	e.File("/", "web/dist/index.html")	
+	e.File("/", "/client/dist/index.html")
 
+	e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:   "web/dist",
+		Root:  "/client/dist/",
 		HTML5: true,
-	  }))
+	}))
 
 	// Setup routes
 	setupRoutes(e)
