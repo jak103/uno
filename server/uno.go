@@ -143,7 +143,6 @@ func joinGame(c echo.Context) *Response {
 	// 	}
 	// 	fmt.Println(doc.Data())
 	// }
-
 	if checkID(c.Param("game")) {
 		user := c.Param("username")
 		if _, found := contains(players, user); !found {
