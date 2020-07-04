@@ -6,7 +6,6 @@ import (
 	"math/rand"
 
 	"cloud.google.com/go/firestore"
-	"github.com/labstack/echo"
 )
 
 ////////////////////////////////////////////////////////////
@@ -125,20 +124,20 @@ func createNewGame() string {
 func joinGame(game string, username string) bool {
 	if checkID(game) {
 		user := username
-	//ctx := context.Background()
-	//client := createClient(ctx)
+		//ctx := context.Background()
+		//client := createClient(ctx)
 
-	// iter := client.Collection("users").Documents(ctx)
-	// for {
-	// 	doc, err := iter.Next()
-	// 	if err == iterator.Done {
-	// 		break
-	// 	}
-	// 	if err != nil {
-	// 		log.Fatalf("Failed to iterate: %v", err)
-	// 	}
-	// 	fmt.Println(doc.Data())
-	// }
+		// iter := client.Collection("users").Documents(ctx)
+		// for {
+		// 	doc, err := iter.Next()
+		// 	if err == iterator.Done {
+		// 		break
+		// 	}
+		// 	if err != nil {
+		// 		log.Fatalf("Failed to iterate: %v", err)
+		// 	}
+		// 	fmt.Println(doc.Data())
+		// }
 
 		if _, found := contains(players, user); !found {
 			players = append(players, user)
@@ -151,15 +150,16 @@ func joinGame(game string, username string) bool {
 
 func playCard(game string, username string, card Card) bool {
 	if checkID(game) && currPlayer == username {
+		cards := allCards[username]
 		if card.Color == currCard[0].Color || card.Number == currCard[0].Number {
 			// Valid card can be played
 			playerIndex = (playerIndex + 1) % len(players)
 			currPlayer = players[playerIndex]
 			currCard[0] = card
 
-			for index, item := range allCards[username] {
+			for index, item := range cards {
 				if item == currCard[0] {
-					allCards[username] = append(allCards[username][:index], allCards[username][index+1:]...)
+					allCards[username] = append(cards[:index], cards[index+1:]...)
 					break
 				}
 			}
