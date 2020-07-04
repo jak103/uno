@@ -12,11 +12,11 @@ import (
 func TestNewGame(t *testing.T) {
 	// Setup
 	e := echo.New()
+	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodPost, "/newgame", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	setupRoutes(e)
 
 	// Assertions
 	if assert.NoError(t, newGame(c)) {

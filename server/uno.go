@@ -129,7 +129,7 @@ func createNewGame(c echo.Context) *Response {
 }
 
 func joinGame(c echo.Context) *Response {
-	ctx := context.Background()
+	//ctx := context.Background()
 	//client := createClient(ctx)
 
 	// iter := client.Collection("users").Documents(ctx)
