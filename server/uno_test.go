@@ -47,18 +47,30 @@ func TestNewRandomCard(t *testing.T) {
 }
 
 func TestContains(t *testing.T) {
+	/*
+		The 'contains' func takes in both an array and a value as a paramenter.
+		If it finds the value in the array, it will return both the index where
+		the value is as well as the boolean value 'true'. If the value is not in
+		the array it will return both the integer value '-1' instead of an index
+		as well as the boolean value 'false'
+	*/
 
-	assert.Equal(t, "0", "0")
-
+	// this tests the 'contains' funct with an array that contains the value
 	hasRed := []string{"blue", "green", "red", "yellow"}
-	//noRed := []string{"blue", "green", "orange", "yellow"}
-	//notExactlyRed := []string{" red", "red ", "rred", "RED"}
+	hasRedIntVal, hasRedBoolVal := contains(hasRed, "red")
+	assert.Equal(t, hasRedIntVal, 2) // "red" is in index 2 of array
+	assert.Equal(t, hasRedBoolVal, true)
 
-	hasRed_intVal, hasRed_boolVal := contains(hasRed, "red")
-	//noRed_intVal, noRed_boolVal := contains(noRed, "red")
-	//notExactlyRed_intVal, notExactlyRed_boolVal := contains(notExactlyRed, "red")
+	// this tests the 'contains' funct with an array that doesn't contain the value
+	noRed := []string{"blue", "green", "orange", "yellow"}
+	noRedIntVal, noRedBoolVal := contains(noRed, "red")
+	assert.Equal(t, noRedIntVal, -1) // returns -1 if value not found
+	assert.Equal(t, noRedBoolVal, false)
 
-	assert.Equal(t, hasRed_intVal, 2) // "red" is in index 2 of array
-	assert.Equal(t, hasRed_boolVal, true)
+	// this tests the 'contains' funct with an array that 'almost' contains the value
+	notExactlyRed := []string{" red", "red ", "rred", "RED"}
+	notExactlyRedIntVal, notExactlyRedBoolVal := contains(notExactlyRed, "red")
+	assert.Equal(t, notExactlyRedIntVal, -1) // returns -1 if value not found
+	assert.Equal(t, notExactlyRedBoolVal, false)
 
 }
