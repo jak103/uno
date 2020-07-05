@@ -19,11 +19,11 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func newGame(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, createNewGame(c), "  ")
+	return c.JSONPretty(http.StatusOK, createNewGame(), "  ")
 }
 
 func login(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, joinGame(c), "  ")
+	return c.JSONPretty(http.StatusOK, joinGame(c.Param("game"), c.Param("username")), "  ")
 }
 
 func startGame(c echo.Context) error {
@@ -32,15 +32,15 @@ func startGame(c echo.Context) error {
 }
 
 func update(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, updateGame(c), "  ")
+	return c.JSONPretty(http.StatusOK, updateGame(c.Param("game"), c.Param("username")), "  ")
 }
 
 func play(c echo.Context) error {
 	num, _ := strconv.Atoi(c.Param("number"))
 
-	return c.JSONPretty(http.StatusOK, playCard(c, Card{num, c.Param("color")}), "  ")
+	return c.JSONPretty(http.StatusOK, playCard(c.Param("game"), c.Param("username"), Card{num, c.Param("color")}), "  ")
 }
 
 func draw(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, drawCard(c), "  ")
+	return c.JSONPretty(http.StatusOK, drawCard(c.Param("game"), c.Param("username")), "  ")
 }

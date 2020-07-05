@@ -6,17 +6,18 @@ import (
 	"math/rand"
 
 	"cloud.google.com/go/firestore"
-	"github.com/labstack/echo"
 )
 
-////////////////////////////////////////////////////////////
-// Structs used for the talking with frontend
-////////////////////////////////////////////////////////////
+// Payload is asimple type alias for easier and less typing
+type Payload = map[string]interface{}
+
+// Response is a struct that simply holds if a call was valid and the new game state frontend
 type Response struct {
-	ValidGame bool                   `json:"valid"` // Valid game id
-	Payload   map[string]interface{} `json:"payload"`
+	ValidGame bool    `json:"valid"` // Valid game id
+	Payload   Payload `json:"payload"`
 }
 
+// Card is a simple struct that hold a number(int) and color(string)
 type Card struct {
 	Number int    `json:"number"`
 	Color  string `json:"color"`
@@ -71,8 +72,8 @@ func newRandomCard() []Card {
 	return []Card{Card{rand.Intn(10), randColor(rand.Intn(4))}}
 }
 
-func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
-	payload := make(map[string]interface{})
+func newPayload(user string) Payload { // User will default to "" if not passed
+	payload := make(Payload)
 
 	// Update known variables
 	payload["current_card"] = currCard
@@ -101,15 +102,15 @@ func contains(arr []string, val string) (int, bool) {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func updateGame(c echo.Context) *Response {
+func updateGame(game, username string) *Response {
 	success := false
-	if success = checkID(c.Param("game")); success && gameStarted {
-		return &Response{true, newPayload(c.Param("username"))}
+	if success = checkID(game); success && gameStarted {
+		return &Response{true, newPayload(username)}
 	}
 	return &Response{false, nil}
 }
 
-func createNewGame(c echo.Context) *Response {
+func createNewGame() Response {
 
 	/*
 		ctx := context.Background()
@@ -125,10 +126,10 @@ func createNewGame(c echo.Context) *Response {
 			}
 	*/
 	gameID = "12234"
-	return &Response{true, newPayload("")}
+	return Response{true, newPayload("")}
 }
 
-func joinGame(c echo.Context) *Response {
+func joinGame(game, username string) *Response {
 	//ctx := context.Background()
 	//client := createClient(ctx)
 
@@ -143,45 +144,45 @@ func joinGame(c echo.Context) *Response {
 	// 	}
 	// 	fmt.Println(doc.Data())
 	// }
-	if checkID(c.Param("game")) {
-		user := c.Param("username")
+	if checkID(game) {
+		user := username
 		if _, found := contains(players, user); !found {
 			players = append(players, user)
 			allCards[user] = nil // No cards yet
 		}
-		return &Response{true, newPayload(c.Param("username"))}
+		return &Response{true, newPayload(username)}
 	}
 	return &Response{false, nil} // bad game_id
 }
 
-func playCard(c echo.Context, card Card) *Response {
-	if checkID(c.Param("game")) && currPlayer == c.Param("username") {
+func playCard(game, username string, card Card) *Response {
+	if checkID(game) && currPlayer == username {
 		if card.Color == currCard[0].Color || card.Number == currCard[0].Number {
 			// Valid card can be played
 			playerIndex = (playerIndex + 1) % len(players)
 			currPlayer = players[playerIndex]
 			currCard[0] = card
 
-			for index, item := range allCards[c.Param("username")] {
+			for index, item := range allCards[username] {
 				if item == currCard[0] {
-					allCards[c.Param("username")] = append(allCards[c.Param("username")][:index], allCards[c.Param("username")][index+1:]...)
+					allCards[username] = append(allCards[username][:index], allCards[username][index+1:]...)
 					break
 				}
 			}
 		}
-		return &Response{true, newPayload(c.Param("username"))}
+		return &Response{true, newPayload(username)}
 	}
 
 	return &Response{false, nil}
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(c echo.Context) *Response {
-	if checkID(c.Param("game")) && c.Param("username") == currPlayer {
+func drawCard(game, username string) *Response {
+	if checkID(game) && username == currPlayer {
 		playerIndex = (playerIndex + 1) % len(players)
 		currPlayer = players[playerIndex]
-		allCards[c.Param("username")] = append(allCards[c.Param("username")], newRandomCard()[0])
-		return &Response{true, newPayload(c.Param("username"))}
+		allCards[username] = append(allCards[username], newRandomCard()[0])
+		return &Response{true, newPayload(username)}
 	}
 	return &Response{false, nil}
 }
