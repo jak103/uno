@@ -14,6 +14,7 @@ func TestRandColor(t *testing.T) {
 	   input and return an empty string ("") for invalid input
 
 	*/
+
 	testRed := randColor(0)    // <0> should return "red"
 	testBlue := randColor(1)   // <1> should return "blue"
 	testGreen := randColor(2)  // <2> should return "green"
@@ -34,12 +35,30 @@ func TestNewRandomCard(t *testing.T) {
 
 	   the 'newRandomCard' function also needs to return a string
 	   value that is either "red", "blue", "green", or "yellow" for valid
-	   input and return an empty string ("") for invalid input
+	   input and return an empty string ("") for invalid input, which is
+	   tested in 'TestRandColor'
 	*/
 
 	myCard := newRandomCard()[0]
 
 	assert.Less(t, myCard.Number, 10)
 	assert.Greater(t, myCard.Number, -1)
+
+}
+
+func TestContains(t *testing.T) {
+
+	assert.Equal(t, "0", "0")
+
+	hasRed := []string{"blue", "green", "red", "yellow"}
+	//noRed := []string{"blue", "green", "orange", "yellow"}
+	//notExactlyRed := []string{" red", "red ", "rred", "RED"}
+
+	hasRed_intVal, hasRed_boolVal := contains(hasRed, "red")
+	//noRed_intVal, noRed_boolVal := contains(noRed, "red")
+	//notExactlyRed_intVal, notExactlyRed_boolVal := contains(notExactlyRed, "red")
+
+	assert.Equal(t, hasRed_intVal, 2) // "red" is in index 2 of array
+	assert.Equal(t, hasRed_boolVal, true)
 
 }
