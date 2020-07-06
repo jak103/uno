@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// test to make sure the correct colors are being returned from RandColor
+// this test is not super helpful - it is being used to get used to unit testing in golang
 func TestRandColor(t *testing.T) {
 	assert.Equal(t, randColor(0), "red")
 	assert.Equal(t, randColor(1), "blue")
@@ -25,9 +27,7 @@ func TestContains(t *testing.T) {
 	assert.Equal(t, found, true)
 
 	// make sure a missing string is not found at any index
-	//index, found := contains(data, "Invalid entry")
-	//assert.Equal(t, index, -1)
-	//assert.Equal(t, found, false)
+	index, found = contains(data, "Invalid entry")
+	assert.Equal(t, index, -1)
+	assert.Equal(t, found, false)
 }
-
-// go test -cover
