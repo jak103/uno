@@ -192,8 +192,9 @@ func dealCards() {
 	// The game has started, no more players are joining
 	// loop through players, set their cards
 	gameStarted = true
-	currPlayer = players[rand.Intn(len(players))]
-
+	playerIndex = rand.Intn(len(players))
+	currPlayer = players[playerIndex]
+	
 	for k := range players {
 		cards := []Card{}
 		for i := 0; i < 7; i++ {
@@ -201,7 +202,7 @@ func dealCards() {
 		}
 		allCards[players[k]] = cards
 	}
-
+	
 	currCard = newRandomCard()
 }
 
