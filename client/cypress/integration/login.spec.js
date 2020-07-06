@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-context('Login', () => {
+describe('Login', () => {
   beforeEach(() => {
     cy.log("Hitting browser");
     cy.visit('http://localhost:3000')
