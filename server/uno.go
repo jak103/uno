@@ -157,7 +157,7 @@ func joinGame(c echo.Context) *Response {
 
 func playCard(c echo.Context, card Card) *Response {
 	if checkID(c.Param("game")) && currPlayer == c.Param("username") {
-		if card.Color == currCard[0].Color || card.Number == currCard[0].Number {
+		if checkForCardInHand(card, c.Param("username")) && (card.Color == currCard[0].Color || card.Number == currCard[0].Number) {
 			// Valid card can be played
 			playerIndex = (playerIndex + 1) % len(players)
 			currPlayer = players[playerIndex]
