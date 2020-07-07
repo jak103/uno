@@ -6,17 +6,11 @@ import (
 	"math/rand"
 
 	"cloud.google.com/go/firestore"
-	"github.com/labstack/echo"
 )
 
 ////////////////////////////////////////////////////////////
 // Structs used for the talking with frontend
 ////////////////////////////////////////////////////////////
-type Response struct {
-	ValidGame bool                   `json:"valid"` // Valid game id
-	Payload   map[string]interface{} `json:"payload"`
-}
-
 type Card struct {
 	Number int    `json:"number"`
 	Color  string `json:"color"`
@@ -101,16 +95,15 @@ func contains(arr []string, val string) (int, bool) {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func updateGame(c echo.Context) *Response {
+func updateGame(game string, username string) bool {
 	success := false
-	if success = checkID(c.Param("game")); success && gameStarted {
-		return &Response{true, newPayload(c.Param("username"))}
+	if success = checkID(game); success && gameStarted {
+		return true
 	}
-	return &Response{false, nil}
+	return false
 }
 
-func createNewGame(c echo.Context) *Response {
-
+func createNewGame() string {
 	/*
 		ctx := context.Background()
 			client := createClient(ctx)
@@ -125,66 +118,66 @@ func createNewGame(c echo.Context) *Response {
 			}
 	*/
 	gameID = "12234"
-	return &Response{true, newPayload("")}
+	return gameID
 }
 
-func joinGame(c echo.Context) *Response {
-	//ctx := context.Background()
-	//client := createClient(ctx)
+func joinGame(game string, username string) bool {
+	if checkID(game) {
+		user := username
+		//ctx := context.Background()
+		//client := createClient(ctx)
 
-	// iter := client.Collection("users").Documents(ctx)
-	// for {
-	// 	doc, err := iter.Next()
-	// 	if err == iterator.Done {
-	// 		break
-	// 	}
-	// 	if err != nil {
-	// 		log.Fatalf("Failed to iterate: %v", err)
-	// 	}
-	// 	fmt.Println(doc.Data())
-	// }
+		// iter := client.Collection("users").Documents(ctx)
+		// for {
+		// 	doc, err := iter.Next()
+		// 	if err == iterator.Done {
+		// 		break
+		// 	}
+		// 	if err != nil {
+		// 		log.Fatalf("Failed to iterate: %v", err)
+		// 	}
+		// 	fmt.Println(doc.Data())
+		// }
 
-	if checkID(c.Param("game")) {
-		user := c.Param("username")
 		if _, found := contains(players, user); !found {
 			players = append(players, user)
 			allCards[user] = nil // No cards yet
 		}
-		return &Response{true, newPayload(c.Param("username"))}
+		return true
 	}
-	return &Response{false, nil} // bad game_id
+	return false // bad game_id
 }
 
-func playCard(c echo.Context, card Card) *Response {
-	if checkID(c.Param("game")) && currPlayer == c.Param("username") {
+func playCard(game string, username string, card Card) bool {
+	if checkID(game) && currPlayer == username {
+		cards := allCards[username]
 		if card.Color == currCard[0].Color || card.Number == currCard[0].Number {
 			// Valid card can be played
 			playerIndex = (playerIndex + 1) % len(players)
 			currPlayer = players[playerIndex]
 			currCard[0] = card
 
-			for index, item := range allCards[c.Param("username")] {
+			for index, item := range cards {
 				if item == currCard[0] {
-					allCards[c.Param("username")] = append(allCards[c.Param("username")][:index], allCards[c.Param("username")][index+1:]...)
+					allCards[username] = append(cards[:index], cards[index+1:]...)
 					break
 				}
 			}
 		}
-		return &Response{true, newPayload(c.Param("username"))}
+		return true
 	}
-
-	return &Response{false, nil}
+	return false
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(c echo.Context) *Response {
-	if checkID(c.Param("game")) && c.Param("username") == currPlayer {
+func drawCard(game string, username string) bool {
+	if checkID(game) && username == currPlayer {
 		playerIndex = (playerIndex + 1) % len(players)
 		currPlayer = players[playerIndex]
-		allCards[c.Param("username")] = append(allCards[c.Param("username")], newRandomCard()[0])
-		return &Response{true, newPayload(c.Param("username"))}
+		allCards[username] = append(allCards[username], newRandomCard()[0])
+		return true
 	}
-	return &Response{false, nil}
+	return false
 }
 
 // TODO: need to deal the actual cards, not just random numbers
