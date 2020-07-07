@@ -6,23 +6,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAdd(t *testing.T) {
 
-	assert.Equal(t, 12, add(8, 4))
-}
-
+/*Example formatting of a test from class sample code
 func TestSubtract(t *testing.T) {
 	assert.Equal(t, 6, subtract(9, 3))
 }
+*/
 
-func TestMultiple(t *testing.T) {
-	assert.Equal(t, 100, multiply(10, 10))
-}
+/******************************************************************************
+This function will test the function randColor in uno.go
+		randColor can return "red", "blue", "green", "yellow" or ""
+******************************************************************************/
+func TestRandColor(t *testing.T) {
+	
+	
 
-func TestDivide(t *testing.T) {
-	assert.Equal(t, 10, divide(100, 10))
-}
-
-func TestMain(t *testing.T) {
-	main()
 }
