@@ -19,6 +19,10 @@ This function will test the function randColor in uno.go
 ******************************************************************************/
 func TestRandColor(t *testing.T) {
 	
-	
+	assert.Equal(t, "red", randColor(0))
+	assert.Equal(t, "blue", randColor(1))
+	assert.Equal(t, "green", randColor(2))
+	assert.Equal(t, "yellow", randColor(3))
+	assert.Equal(t, "", randColor(4))
 
 }
