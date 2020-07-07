@@ -33,6 +33,6 @@ func TestDefaultPayload(t *testing.T) {
 	assert.Equal("", nilPayload["current_player"], "Player should be empty")
 	assert.Equal(emptyPlayerArray, nilPayload["all_players"], "Players list should be empty")
 	assert.Equal(emptyCardArray, nilPayload["deck"], "Card should be empty")
-	assert.Equal("", nilPayload["game_id"], "Game id should be empty")
+	assert.Equal("12234", nilPayload["game_id"], "Game id should be empty") // default id
 	assert.Equal("", nilPayload["game_over"], "Game over should be empty")
 }
