@@ -23,7 +23,7 @@ func newGame(c echo.Context) error {
 }
 
 func login(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, joinGame(c), "  ")
+	return c.JSONPretty(http.StatusOK, joinGame(c.Param("game"), c.Param("username")), "  ")
 }
 
 func startGame(c echo.Context) error {

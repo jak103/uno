@@ -128,7 +128,7 @@ func createNewGame(c echo.Context) *Response {
 	return &Response{true, newPayload("")}
 }
 
-func joinGame(c echo.Context) *Response {
+func joinGame(game string, user string) *Response {
 	//ctx := context.Background()
 	//client := createClient(ctx)
 
@@ -144,13 +144,12 @@ func joinGame(c echo.Context) *Response {
 	// 	fmt.Println(doc.Data())
 	// }
 
-	if checkID(c.Param("game")) {
-		user := c.Param("username")
+	if checkID(game) {
 		if _, found := contains(players, user); !found {
 			players = append(players, user)
 			allCards[user] = nil // No cards yet
 		}
-		return &Response{true, newPayload(c.Param("username"))}
+		return &Response{true, newPayload(user)}
 	}
 	return &Response{false, nil} // bad game_id
 }
