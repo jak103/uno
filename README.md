@@ -1,11 +1,10 @@
-Read me
+# Read me
 
-
-## To run 
+## To run
 
 `cd server/ && go run .`
 
-In seperate terminal
+In separate terminal
 
 `cd server/web && npm run-script build-watch`
 
