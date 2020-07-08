@@ -1,6 +1,6 @@
-Read me
+![Go](https://github.com/jak103/uno/workflows/Go/badge.svg?branch=master)
 
-Testing github actions
+Read me
 
 ## To run 
 
