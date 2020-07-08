@@ -18,8 +18,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: NPM install, lint, build & test
+    - name: Use Node.js
       uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
     - run: npm ci
     - run: npm run lint
     - run: npm run build --if-present
