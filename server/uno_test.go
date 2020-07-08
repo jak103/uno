@@ -64,7 +64,8 @@ This function will test the function contains in uno.go
 func TestContains(t *testing.T){
 
 	deck := []string{"Red1", "Red2", "Red3", "Red4", "Red5", "Red6", "Red7", "Red8", "Red9"}
+	testCard := contains(deck, "Red1")
 
-	assert.True(t, contains(deck, "Red1"))
+	assert.True(t, testCard)
 
 }
