@@ -51,3 +51,20 @@ func TestCheckID(t *testing.T){
 	assert.Equal(t, true, checkID("12234"))
 
 }
+
+
+/******************************************************************************
+This function will test the function contains in uno.go
+		contains is given an array and a value, and will check the array for
+		that value - returning the index and true if it found it.
+		if the value is not found in the array it returns -1 and false
+		--- currently our cards are random, but this could be useful later for
+			testing if our deck contains all the cards an uno deck should have.
+******************************************************************************/
+func TestContains(t *testing.T){
+
+	deck := []string{"Red1", "Red2", "Red3", "Red4", "Red5", "Red6", "Red7", "Red8", "Red9"}
+
+	assert.True(t, contains(deck, "Red1"))
+
+}
