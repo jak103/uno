@@ -12,7 +12,7 @@ server:
 
 # Add 'documentation' label to any change in a readme file
 documentation:
-    - any ['README*', 'readme*']
+    - any ['**/*/*README*', '**/*/*readme*']
 
 # Add 'automation' label to any change to github folder or subfolder
 automation:
