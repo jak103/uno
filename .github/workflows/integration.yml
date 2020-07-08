@@ -20,5 +20,5 @@ jobs:
       - name: Start the application
         run: docker-compose up -d
 
-      - name: start the unit tests
+      - name: start the integration tests
         run: docker-compose -f integration-tests.yml up
