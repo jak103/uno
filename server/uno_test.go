@@ -48,6 +48,6 @@ This function will test the function checkID in uno.go
 ******************************************************************************/
 func TestCheckID(t *testing.T){
 
-	assert.Equal(t, true, checkID(12234))
+	assert.Equal(t, true, checkID("12234"))
 
 }
