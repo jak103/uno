@@ -34,9 +34,11 @@ This function will test the function newRandomCard in uno.go
 ******************************************************************************/
 func TestNewRandomCard(t *testing.T){
 
-	assert.Less(t, newRandomCard().Number, 10)
-	assert.Greater(t, newRandomCard().Number, -1)
+	testCard := newRandomCard()[0] 
+
+	assert.Greater(t, testCard.Number, -1)
+	assert.Less(t, testCard.Number, 10)
+	
 
 }
-
 
