@@ -20,6 +20,6 @@ func TestNewGame(t *testing.T) {
 
 	// Assertions
 	if assert.NoError(t, newGame(c)) {
-		assert.Equal(t, http.StatusOK, -1)
+		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
