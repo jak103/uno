@@ -1,19 +1,19 @@
 # Add 'test' label to any change to *.spec.js or *_test.go files in test folders
 test:
-    - any ['client/**/*.spec.js', 'server/**/*_test.go']
+- any ['client/**/*.spec.js', 'server/**/*_test.go']
 
 # Add 'client' label to any change in client folder or any subfolders
 client:
-    - client/**/*
+- client/**/*
 
 # Add 'server' label to any change in server folder or any subfolders
 server:
-    - server/**/*
+- server/**/*
 
 # Add 'documentation' label to any change in a readme file
 documentation:
-    - any ['**/*/*README*', '**/*/*readme*']
+- any ['README*', 'readme*']
 
 # Add 'automation' label to any change to github folder or subfolder
 automation:
-    - .github/**/*
+- .github/**/*
