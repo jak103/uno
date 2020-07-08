@@ -26,3 +26,17 @@ func TestRandColor(t *testing.T) {
 	assert.Equal(t, "", randColor(4))
 
 }
+
+
+/******************************************************************************
+This function will test the function newRandomCard in uno.go
+		newRandomCard can return a random colored card numbered between 0 to 9
+******************************************************************************/
+func TestNewRandomCard(t *testing,T){
+
+	assert.Less(t, newRandomCard().Number, 10)
+	assert.Greater(t, newRandomCard().Number, -1)
+
+}
+
+
