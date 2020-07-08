@@ -19,6 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: NPM install, lint, build & test
+      uses: actions/setup-node@v1
     - run: npm ci
     - run: npm run lint
     - run: npm run build --if-present
