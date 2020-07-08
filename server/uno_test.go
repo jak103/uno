@@ -42,3 +42,12 @@ func TestNewRandomCard(t *testing.T){
 
 }
 
+/******************************************************************************
+This function will test the function checkID in uno.go
+		right now it is hard coded to give the id 12234
+******************************************************************************/
+func TestCheckID(t &testing.T){
+
+	assert.Equal(t, true, checkID(12234))
+
+}
