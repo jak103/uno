@@ -30,3 +30,17 @@ func TestNewRandomCard(t *testing.T) {
 	}
 
 }
+
+func TestContains(t *testing.T) {
+    fmt.Println("Testing contains()")
+    colors := []string{"red", "blue", "green", "yellow"}
+    // If list contains string, should return (index, true)
+    index, found := contains(colors, "yellow")
+    assert.Equal(t, true, found)
+    assert.Equal(t, 3, index)
+
+    // If the list does not find string, should return (-1, false)
+    index, found = contains(colors, "orange")
+    assert.Equal(t, false, found)
+    assert.Equal(t, -1, index)
+}
