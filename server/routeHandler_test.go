@@ -23,8 +23,7 @@ func runTest(url string) (echo.Context, *httptest.ResponseRecorder) {
 }
 
 func NewGame(t *testing.T) {
-//a, b := vals()
-	c, r := runTest("/newgame")
+	c, r = runTest("/newgame")
 	
 
 	// Assertions
