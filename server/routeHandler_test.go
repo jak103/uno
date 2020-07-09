@@ -23,12 +23,13 @@ func runTest(url string) (echo.Context, *httptest.ResponseRecorder) {
 }
 
 func NewGame(t *testing.T) {
-	c, rec := runTest("/newgame")
+//a, b := vals()
+	c, r := runTest("/newgame")
 	
 
 	// Assertions
 	if assert.NoError(t, newGame(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, http.StatusOK, r.Code)
 	}
 }
 
