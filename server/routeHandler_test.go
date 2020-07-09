@@ -23,3 +23,17 @@ func TestNewGame(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
+
+// Testing Login Function using same logic from TestNewGame
+func TestLogin(t *testing.T) {
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodPost, "/login", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	if assert.NoError(t,login(c)){
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}

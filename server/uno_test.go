@@ -1,26 +1,25 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	// "github.com/labstack/echo"
 )
 
+//Testing Random Colors
 func TestRandColor(t *testing.T) {
-	// Setup
 	assert.Equal(t,randColor(0),"red")
 	assert.Equal(t,randColor(1),"blue")
 	assert.Equal(t,randColor(2),"green")
 	assert.Equal(t,randColor(3),"yellow")
 }
 
+// Testing Check failure in TestCheckID
 func TestCheckID(t *testing.T) {
-	fmt.Print("hello\n")
 	assert.Equal(t,checkID("user"),bool(false))
 }
 
+//Testing Contains Method. Seeing if a given card is found
 func TestContains(t *testing.T){
 	test := []string {"number", "reverse", "wild", "plus two"}
 	index, isItThere := contains(test,"number")
@@ -28,6 +27,7 @@ func TestContains(t *testing.T){
 	assert.Equal(t,isItThere,bool(true))
 }
 
+//Testing if randcom card generated is less than 10 and greater than -1
 func TestNewRandomCard(t *testing.T){
 	test := newRandomCard() 
 
@@ -35,7 +35,16 @@ func TestNewRandomCard(t *testing.T){
 	assert.Less(t,test[0].Number,10)
 }
 
-// func TestCreateNewGame(t *testing.T){
-// 	test := createNewGame(e)
-// 	fmt.Print(test)
-// }
+// Testing if Winners are found.
+func TestCheckWinner(t *testing.T){
+	players = []string {"player1", "player2", "player3"}
+	allCards = make(map[string][]Card)
+
+	dealCards()
+
+	assert.Equal(t, "", checkForWinner())
+
+	allCards[players[0]] = make([]Card,0)
+
+	assert.Equal(t, "player1", checkForWinner())
+}
