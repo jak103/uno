@@ -26,19 +26,19 @@ func runTest(url, urlMethod) {
 }
 
 func NewGame(t *testing.T) {
-	runTest("/newgame", newGame)
+	runTest("/newgame", newGame())
 }
 
-func UpdateGame(t *testing.T) {
-	runTest("/update/:game/:username", update)
+func TestUpdate(t *testing.T) {
+	runTest("/update/:game/:username", update())
 }
 
-func Login(t *testing.T) {
-	runTest("/login/:game/:username", login)
+func TestLogin(t *testing.T) {
+	runTest("/login/:game/:username", login())
 }
 
-func DrawCard(t *testing.T) {
-	runTest("/draw/:game/:username", draw)
+func TestDraw(t *testing.T) {
+	runTest("/draw/:game/:username", draw())
 }
 
 
