@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func runTest(url, urlMethod) {
+func runTest(url) (c){
 
 	// Setup
 	e := echo.New()
@@ -19,26 +19,43 @@ func runTest(url, urlMethod) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
+	return c
+}
+
+func NewGame(t *testing.T) {
+	c := runTest("/newgame")
+
 	// Assertions
-	if assert.NoError(t, urlMethod(c)) {
+	if assert.NoError(t, newGame(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
 
-func NewGame(t *testing.T) {
-	runTest("/newgame", newGame())
+func UpdateGame(t *testing.T) {
+	c := runTest("/update/:game/:username")
+
+	// Assertions
+	if assert.NoError(t, update(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
 }
 
-func TestUpdate(t *testing.T) {
-	runTest("/update/:game/:username", update())
+func Login(t *testing.T) {
+	c := runTest("/login/:game/:username")
+
+	// Assertions
+	if assert.NoError(t, login(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
 }
 
-func TestLogin(t *testing.T) {
-	runTest("/login/:game/:username", login())
-}
+func DrawCard(t *testing.T) {
+	c := runTest("/draw/:game/:username")
 
-func TestDraw(t *testing.T) {
-	runTest("/draw/:game/:username", draw())
+	// Assertions
+	if assert.NoError(t, draw(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
 }
 
 
