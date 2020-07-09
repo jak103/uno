@@ -40,3 +40,10 @@ func Login(t *testing.T) {
 func DrawCard(t *testing.T) {
 	runTest("/draw/:game/:username", draw)
 }
+
+
+
+
+
+
+
