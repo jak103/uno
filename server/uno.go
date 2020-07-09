@@ -67,8 +67,8 @@ var gameStarted bool = false
 ////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
-func newRandomCard() []Card {
-	return []Card{Card{rand.Intn(10), randColor(rand.Intn(4))}}
+func newRandomCard() Card {
+	return Card{rand.Intn(10), randColor(rand.Intn(4))}
 }
 
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
@@ -181,7 +181,7 @@ func drawCard(c echo.Context) *Response {
 	if checkID(c.Param("game")) && c.Param("username") == currPlayer {
 		playerIndex = (playerIndex + 1) % len(players)
 		currPlayer = players[playerIndex]
-		allCards[c.Param("username")] = append(allCards[c.Param("username")], newRandomCard()[0])
+		allCards[c.Param("username")] = append(allCards[c.Param("username")], newRandomCard())
 		return &Response{true, newPayload(c.Param("username"))}
 	}
 	return &Response{false, nil}
@@ -197,12 +197,12 @@ func dealCards() {
 	for k := range players {
 		cards := []Card{}
 		for i := 0; i < 7; i++ {
-			cards = append(cards, Card{rand.Intn(10), randColor(rand.Intn(4))})
+			cards = append(cards, newRandomCard())
 		}
 		allCards[players[k]] = cards
 	}
 
-	currCard = newRandomCard()
+	currCard = []Card{newRandomCard()}
 }
 
 // TODO: make sure this reflects on the front end
