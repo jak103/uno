@@ -1,5 +1,6 @@
-Read me
+![Go](https://github.com/mcmullinboy15/uno/workflows/Go/badge.svg)
 
+Read me
 
 ## To run 
 

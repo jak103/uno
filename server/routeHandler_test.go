@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func runTest(url string) echo.Context; *httptest.ResponseRecorder {
+func runTest(url string) echo.Context, *httptest.ResponseRecorder {
 
 	// Setup
 	e := echo.New()
