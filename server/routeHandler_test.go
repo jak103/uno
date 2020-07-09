@@ -23,3 +23,68 @@ func TestNewGame(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
+
+func TestLogin(t *testing.T) {
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodPost, "/login/12234/asdf", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	if assert.NoError(t, login(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
+func TestStartGame(t *testing.T) {
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodPost, "/startgame/12234/asdf", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	if assert.NoError(t, login(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
+func TestUpdate(t *testing.T) {
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodPost, "/update/12234/asdf", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	if assert.NoError(t, login(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
+func TestPlay(t *testing.T) {
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodPost, "/play/12234/asdf/3/green", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	if assert.NoError(t, login(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
+func TestDraw(t *testing.T) {
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodPost, "/draw/12234/asdf", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	if assert.NoError(t, login(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
