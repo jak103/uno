@@ -20,6 +20,7 @@ func TestRandColor(t *testing.T) {
 }
 
 func TestCreateNewGame(t *testing.T){
+	// an attempt to mimic the routehandler's newgame test
 	e := echo.New()
 	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodPost, "/newgame", nil)
@@ -32,18 +33,14 @@ func TestCreateNewGame(t *testing.T){
 	assert.Equal(t, createNewGame(c), r)
 }
 
-// func TestPlayCard(t *testing.T){
-// 	e := echo.New()
-// 	setupRoutes(e)
-// 	gameID = "12234"
-// 	currCard[0] = Card{1,"red"}
-	
-// 	req := httptest.NewRequest(http.MethodPost, "/play/12234/me/3/red", nil)
-// 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-// 	rec := httptest.NewRecorder()
-// 	c := e.NewContext(req, rec)
-	
-// 	r := playCard(c,Card{1,randColor(3)})
-// 	assert.Equal(t,r.ValidGame, false)
+func TestContains(t *testing.T){
+	names := []string {"John","Steven","Derek"}
 
-// }
+	i, value := contains(names, "Steven")
+	assert.Equal(t, 1, i)
+	assert.Equal(t, true, value)
+
+	i, value = contains(names, "Jhon")
+	assert.Equal(t, -1, i)
+	assert.Equal(t, false, value)
+}
