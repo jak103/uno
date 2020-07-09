@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func runTest(url string) echo.Context; *Response {
+func runTest(url string) echo.Context; Response {
 
 	// Setup
 	e := echo.New()
