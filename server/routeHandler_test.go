@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func runTest(url string) echo.Context {
+func runTest(url string) echo.Context, *Response {
 
 	// Setup
 	e := echo.New()
@@ -19,11 +19,12 @@ func runTest(url string) echo.Context {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	return c
+	return c, rec
 }
 
 func NewGame(t *testing.T) {
-	c := runTest("/newgame")
+	c, rec := runTest("/newgame")
+	
 
 	// Assertions
 	if assert.NoError(t, newGame(c)) {
