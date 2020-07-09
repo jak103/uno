@@ -24,44 +24,52 @@ func TestNewGame(t *testing.T) {
 	}
 }
 
-//	"http://localhost:8080/play/" +
-//	this.game_id +
-//	"/" +
-//	this.username +
-//	"/" +
-//	card.number +
-//	"/" +
-//	card.color
-
-func ValidCardTest(t *testing.T) {
-
+func TestUpdate(t *testing.T) {
+	// Setup
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/newgame", nil)
+	req := httptest.NewRequest(http.MethodPost, "/update/:game/:username", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if assert.NoError(t, )
+	// Assertions
+	if assert.NoError(t, update(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+
 }
 
-// Make sure that the Username is Set
-// Make sure that the Usernames accross computers are not overlapping
-func UserNameTest(t *testing.T) {
-
+func TestLogin(t *testing.T) {
+	// Setup
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/newgame", nil)
+	req := httptest.NewRequest(http.MethodPost, "/login/:game/:username", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 
-	if assert.NoError(t, )
+	// Assertions
+	if assert.NoError(t, login(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
 }
 
-func YourTurnTest(t *testing.T) {
+func TestDraw(t *testing.T) {
+	// Setup
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodPost, "/draw/:game/:username", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 
-
+	// Assertions
+	if assert.NoError(t, draw(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
 }
 
-func WonTheGameTest(t *testing.T) {
 
 
-}
+
