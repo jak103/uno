@@ -9,66 +9,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewGame(t *testing.T) {
+func runTest(url, urlMethod) {
+
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/newgame", nil)
+	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, newGame(c)) {
+	if assert.NoError(t, urlMethod(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
 
-func TestUpdate(t *testing.T) {
-	// Setup
-	e := echo.New()
-	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/update/:game/:username", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-
-	// Assertions
-	if assert.NoError(t, update(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-	}
-
+func NewGame(t *testing.T) {
+	runTest("/newgame", newGame)
 }
 
-func TestLogin(t *testing.T) {
-	// Setup
-	e := echo.New()
-	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/login/:game/:username", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-
-	// Assertions
-	if assert.NoError(t, login(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-	}
+func UpdateGame(t *testing.T) {
+	runTest("/update/:game/:username", update)
 }
 
-func TestDraw(t *testing.T) {
-	// Setup
-	e := echo.New()
-	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/draw/:game/:username", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-
-	// Assertions
-	if assert.NoError(t, draw(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-	}
+func Login(t *testing.T) {
+	runTest("/login/:game/:username", login)
 }
+
+func DrawCard(t *testing.T) {
+	runTest("/draw/:game/:username", draw)
+}
+
+
+
 
 
 
