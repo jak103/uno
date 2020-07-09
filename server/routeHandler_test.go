@@ -23,3 +23,5 @@ func TestNewGame(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
+
+
