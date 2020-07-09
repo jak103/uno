@@ -5,6 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"fmt"
+
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,6 +14,7 @@ import (
 // Route handlers unit tests
 
 func TestNewGame(t *testing.T) {
+	fmt.Println("Testing newGame()")
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
@@ -27,6 +30,7 @@ func TestNewGame(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
+	fmt.Println("Testing login()")
 	e := echo.New()
 	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodPost, "/login", nil)
@@ -40,6 +44,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+	fmt.Println("Testing update()")
     e := echo.New()
     setupRoutes(e)
     req := httptest.NewRequest(http.MethodPost, "/update", nil)
@@ -53,6 +58,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestPlay(t *testing.T) {
+	fmt.Println("Testing play()")
     e := echo.New()
     setupRoutes(e)
     req := httptest.NewRequest(http.MethodPost, "/play", nil)
@@ -66,6 +72,7 @@ func TestPlay(t *testing.T) {
 }
 
 func TestDraw(t *testing.T) {
+	fmt.Println("Testing draw()")
     e := echo.New()
     setupRoutes(e)
     req := httptest.NewRequest(http.MethodPost, "/draw", nil)
