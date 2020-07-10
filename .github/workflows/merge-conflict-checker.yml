@@ -1,3 +1,4 @@
+name: Merge Conflict Finder
 on: 
     - push
     - pull_request
