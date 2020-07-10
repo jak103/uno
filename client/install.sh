@@ -6,4 +6,4 @@ if [[ "${UNAME}" == CYGWIN* || "${UNAME}" == MINGW* || "${UNAME}" == MSYS* ]]; t
   export MSYS_NO_PATHCONV=1
 fi
 
-docker run --rm -v .:/client -w /client node:12-slim bash -c "npm install"
+docker run --rm -v ${PWD}:/client -w /client node:12-slim bash -c "npm install"
