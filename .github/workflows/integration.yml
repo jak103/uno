@@ -18,7 +18,7 @@ jobs:
         run: docker-compose build
 
       - name: Install dependencies
-        run: ./client/install.sh
+        run: cd client; chmod +x install.sh; ./install.sh
 
       - name: Start the application
         run: docker-compose up -d
