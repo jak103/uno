@@ -22,7 +22,7 @@ func runTest(url string) (echo.Context, *httptest.ResponseRecorder) {
 	return c, rec
 }
 
-func NewGame(t *testing.T) {
+func TestNewGame(t *testing.T) {
 	c, rec = runTest("/newgame")
 	
 	// Assertions
@@ -31,7 +31,7 @@ func NewGame(t *testing.T) {
 	}
 }
 
-func UpdateGame(t *testing.T) {
+func TestUpdateGame(t *testing.T) {
 	c, rec = runTest("/update/:game/:username")
 
 	// Assertions
@@ -40,7 +40,7 @@ func UpdateGame(t *testing.T) {
 	}
 }
 
-func Login(t *testing.T) {
+func TestLogin(t *testing.T) {
 	c, rec = runTest("/login/:game/:username")
 
 	// Assertions
@@ -49,7 +49,7 @@ func Login(t *testing.T) {
 	}
 }
 
-func DrawCard(t *testing.T) {
+func TestDrawCard(t *testing.T) {
 	c, rec = runTest("/draw/:game/:username")
 
 	// Assertions
