@@ -9,14 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func runTest(url string) (httptest.ResponseRecorder) {
+func runTest(url string) (*http.Request) {
 
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
 
 	return req
 }
