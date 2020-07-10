@@ -9,21 +9,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func runTest(url string) (echo.Context, *httptest.ResponseRecorder) {
+func runTest(url string) (httptest.ResponseRecorder) {
 
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
 
-	return c, rec
+
+	return req
 }
 
 func TestNewGame(t *testing.T) {
-	c, rec = runTest("/newgame")
+	req = runTest("/newgame")
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 	
 	// Assertions
 	if assert.NoError(t, newGame(c)) {
