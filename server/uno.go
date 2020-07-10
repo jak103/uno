@@ -1,11 +1,7 @@
 package main
 
 import (
-	"context"
-	"log"
 	"math/rand"
-
-	"cloud.google.com/go/firestore"
 )
 
 ////////////////////////////////////////////////////////////
@@ -14,19 +10,6 @@ import (
 type Card struct {
 	Number int    `json:"number"`
 	Color  string `json:"color"`
-}
-
-func createClient(ctx context.Context) *firestore.Client {
-	// Sets your Google Cloud Platform project ID.
-	projectID := "usu-devops"
-
-	client, err := firestore.NewClient(ctx, projectID)
-	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
-	}
-	// Close client when done with
-	// defer client.Close()
-	return client
 }
 
 ////////////////////////////////////////////////////////////
@@ -104,19 +87,6 @@ func updateGame(game string, username string) bool {
 }
 
 func createNewGame() string {
-	/*
-		ctx := context.Background()
-			client := createClient(ctx)
-
-			_, _, err := client.Collection("users").Add(ctx, map[string]interface{}{
-				"first": "Ada",
-				"last":  "Lovelace",
-				"born":  1815,
-			})
-			if err != nil {
-				log.Fatalf("Failed adding alovelace: %v", err)
-			}
-	*/
 	gameID = "12234"
 	return gameID
 }
@@ -124,20 +94,6 @@ func createNewGame() string {
 func joinGame(game string, username string) bool {
 	if checkID(game) {
 		user := username
-		//ctx := context.Background()
-		//client := createClient(ctx)
-
-		// iter := client.Collection("users").Documents(ctx)
-		// for {
-		// 	doc, err := iter.Next()
-		// 	if err == iterator.Done {
-		// 		break
-		// 	}
-		// 	if err != nil {
-		// 		log.Fatalf("Failed to iterate: %v", err)
-		// 	}
-		// 	fmt.Println(doc.Data())
-		// }
 
 		if _, found := contains(players, user); !found {
 			players = append(players, user)
