@@ -9,21 +9,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func runTest(url string) (*http.Request) {
+func runTest(url string) (echo.Context, *httptest.ResponseRecorder) {
 
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 
-	return req
+	return c, rec
 }
 
 func TestNewGame(t *testing.T) {
-	req := runTest("/newgame")
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec = runTest("/newgame")
 	
 	// Assertions
 	if assert.NoError(t, newGame(c)) {
@@ -32,9 +32,7 @@ func TestNewGame(t *testing.T) {
 }
 
 func TestUpdateGame(t *testing.T) {
-	req := runTest("/update/:game/:username")
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec = runTest("/update/:game/:username")
 
 	// Assertions
 	if assert.NoError(t, update(c)) {
@@ -43,9 +41,7 @@ func TestUpdateGame(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	req := runTest("/login/:game/:username")
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec = runTest("/login/:game/:username")
 
 	// Assertions
 	if assert.NoError(t, login(c)) {
@@ -54,9 +50,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestDrawCard(t *testing.T) {
-	req := runTest("/draw/:game/:username")
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec = runTest("/draw/:game/:username")
 
 	// Assertions
 	if assert.NoError(t, draw(c)) {
