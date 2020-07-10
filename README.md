@@ -1,6 +1,8 @@
-# Read me
+![Go](https://github.com/jak103/uno/workflows/Go/badge.svg?branch=master)
 
-## To run
+Read me
+
+## To run 
 
 `cd server/ && go run .`
 
