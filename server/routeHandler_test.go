@@ -32,7 +32,9 @@ func TestNewGame(t *testing.T) {
 }
 
 func TestUpdateGame(t *testing.T) {
-	c, rec = runTest("/update/:game/:username")
+	req := runTest("/update/:game/:username")
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 
 	// Assertions
 	if assert.NoError(t, update(c)) {
@@ -41,7 +43,9 @@ func TestUpdateGame(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	c, rec = runTest("/login/:game/:username")
+	req := runTest("/login/:game/:username")
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 
 	// Assertions
 	if assert.NoError(t, login(c)) {
@@ -50,7 +54,9 @@ func TestLogin(t *testing.T) {
 }
 
 func TestDrawCard(t *testing.T) {
-	c, rec = runTest("/draw/:game/:username")
+	req := runTest("/draw/:game/:username")
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 
 	// Assertions
 	if assert.NoError(t, draw(c)) {
