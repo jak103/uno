@@ -9,4 +9,3 @@ services:
     working_dir: /client
     volumes:
       - ./client:/client
-    command: npm run-script test-integration-headless
