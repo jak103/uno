@@ -21,7 +21,7 @@ func runTest(url string) (*http.Request) {
 }
 
 func TestNewGame(t *testing.T) {
-	req = runTest("/newgame")
+	req := runTest("/newgame")
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	
