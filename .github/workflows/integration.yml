@@ -17,6 +17,10 @@ jobs:
       - name: Build the Docker image
         run: docker-compose build
 
+      - uses: actions/setup-node@v1
+      - name: Run NPM install
+        run: npm install
+
       - name: Start the application
         run: docker-compose up -d
 
