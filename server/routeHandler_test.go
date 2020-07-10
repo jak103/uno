@@ -23,7 +23,7 @@ func runTest(url string) (echo.Context, *httptest.ResponseRecorder) {
 }
 
 func TestNewGame(t *testing.T) {
-	c, rec = runTest("/newgame")
+	var c, rec = runTest("/newgame")
 	
 	// Assertions
 	if assert.NoError(t, newGame(c)) {
@@ -32,7 +32,7 @@ func TestNewGame(t *testing.T) {
 }
 
 func TestUpdateGame(t *testing.T) {
-	c, rec = runTest("/update/:game/:username")
+	var c, rec = runTest("/update/:game/:username")
 
 	// Assertions
 	if assert.NoError(t, update(c)) {
@@ -41,7 +41,7 @@ func TestUpdateGame(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	c, rec = runTest("/login/:game/:username")
+	var c, rec = runTest("/login/:game/:username")
 
 	// Assertions
 	if assert.NoError(t, login(c)) {
@@ -50,7 +50,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestDrawCard(t *testing.T) {
-	c, rec = runTest("/draw/:game/:username")
+	var c, rec = runTest("/draw/:game/:username")
 
 	// Assertions
 	if assert.NoError(t, draw(c)) {
