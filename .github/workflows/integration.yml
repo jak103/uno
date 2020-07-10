@@ -19,7 +19,7 @@ jobs:
 
       - uses: actions/setup-node@v1
       - name: Run NPM install
-        run: npm install
+        run: cd client ; npm install
 
       - name: Start the application
         run: docker-compose up -d
