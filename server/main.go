@@ -7,6 +7,8 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
+// trigger action test
+
 func main() {
 	fmt.Println("USU - UNO v0.0.0")
 
