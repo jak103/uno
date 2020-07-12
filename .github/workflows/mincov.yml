@@ -22,10 +22,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # Runs a single command using the runners shell
+    # Runs a minimum code coverage check
     - uses: devmasx/coverage-check-action@v1.1.0
       with:
-        type: lcov
-        result_path: coverage/example.lcov
-        min_coverage: 50
+        type: simplecov
+        result_path: coverage/.last_run.json
+        min_coverage: 90
         token: ${{secrets.GITHUB_TOKEN}}
