@@ -125,7 +125,7 @@ func createNewGame(c echo.Context) *Response {
 			}
 	*/
 	gameID = "12234"
-	return &Response{true, newPayload("")}
+	return &Response{true, newPayload(" ")}
 }
 
 func joinGame(c echo.Context) *Response {
@@ -198,7 +198,7 @@ func dealCards() {
 	for k := range players {
 		cards := []Card{}
 		for i := 0; i < 7; i++ {
-			cards = append(cards, newRandomCard()[0]})
+			cards = append(cards, newRandomCard()[0])
 		}
 		allCards[players[k]] = cards
 	}
