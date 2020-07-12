@@ -31,7 +31,8 @@ on:
   pull_request:
     branches:
       - master
-      - dev
+      - devwork
+  workflow_dispatch:
 
 name: Deploy to Amazon ECS
 
