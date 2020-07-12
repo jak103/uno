@@ -20,7 +20,7 @@ func TestRandColor(t *testing.T) {
 }
 
 func TestCreateNewGame(t *testing.T){
-	// an attempt to mimic the routehandler's newgame test
+	// an attempt to mimic the routehandler's newgame function
 	e := echo.New()
 	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodPost, "/newgame", nil)
