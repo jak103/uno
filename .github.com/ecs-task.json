@@ -1,0 +1,114 @@
+{
+    "family": "",
+    "taskRoleArn": "",
+    "executionRoleArn": "",
+    "networkMode": "none",
+    "containerDefinitions": [
+        {
+            "name": "uno-container",
+            "image": "ubuntu-latest",
+            "cpu": 1,
+            "memory": 128,
+            "memoryReservation": 0,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }, {
+                    "containerPort": 443,
+                    "hostPort": 443,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [
+                "echo \"Running\""
+            ],
+            // "mountPoints": [
+            //     {
+            //         "sourceVolume": "",
+            //         "containerPath": "",
+            //         "readOnly": true
+            //     }
+            // ],
+            "linuxParameters": {
+                "capabilities": {
+                    "add": [
+                        ""
+                    ],
+                    "drop": [
+                        ""
+                    ]
+                },
+                "devices": [
+                    {
+                        "hostPath": "",
+                        "containerPath": "",
+                        "permissions": [
+                            "write"
+                        ]
+                    }
+                ],
+                "initProcessEnabled": true,
+                "sharedMemorySize": 0,
+                "tmpfs": [
+                    {
+                        "containerPath": "",
+                        "size": 0,
+                        "mountOptions": [
+                            ""
+                        ]
+                    }
+                ],
+                "maxSwap": 0,
+                "swappiness": 0
+            },
+            "user": "root",
+            "workingDirectory": "",
+            "disableNetworking": false,
+            "privileged": true,
+            "readonlyRootFilesystem": true,
+            "dnsServers": [
+                "8.8.8.8",
+                "8.8.4.4"
+            ],
+        }
+    ],
+    "volumes": [
+        {
+            "name": "uno-volume",
+            "host": {
+                "sourcePath": "/"
+            },
+            "dockerVolumeConfiguration": {
+                "scope": "shared",
+                "autoprovision": true,
+                "driver": "",
+                "driverOpts": {
+                    "KeyName": ""
+                },
+                "labels": {
+                    "KeyName": ""
+                }
+            },
+            "efsVolumeConfiguration": {
+                "fileSystemId": "",
+                "rootDirectory": "",
+                "transitEncryption": "DISABLED",
+                "transitEncryptionPort": 0,
+                "authorizationConfig": {
+                    "accessPointId": "",
+                    "iam": "DISABLED"
+                }
+            }
+        }
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "cpu": "1",
+    "memory": "1 gb",
+    "pidMode": "host",
+    "ipcMode": "task"
+}
