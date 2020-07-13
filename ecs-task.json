@@ -25,13 +25,6 @@
             "entryPoint": [
                 "echo \"Running\""
             ],
-            // "mountPoints": [
-            //     {
-            //         "sourceVolume": "",
-            //         "containerPath": "",
-            //         "readOnly": true
-            //     }
-            // ],
             "linuxParameters": {
                 "capabilities": {
                     "add": [
