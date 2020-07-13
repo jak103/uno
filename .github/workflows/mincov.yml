@@ -22,9 +22,15 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # Runs code coverage
+    # Create coverage file in the server directory
+    - name: genearte-coverage-file
+      working-directory: server
+      run: |
+        go test -race -covermode atomic -coverprofile=testprofile.cov ./... 
+  
+    # Runs code coverage in the server directory
     - name: actions-goveralls  
       uses: shogo82148/actions-goveralls@v1.4.0
       with:
-        path-to-profile: profile.cov
+        path-to-profile: testprofile.cov
         working-directory: server 
