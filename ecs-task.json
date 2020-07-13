@@ -4,7 +4,7 @@
     "containerDefinitions": [
         {
             "name": "uno-container",
-            "image": "ubuntu-latest",
+            "image": "TO BE FILLED IN BUILD",
             "portMappings": [
                 {
                     "containerPort": 80,
@@ -16,54 +16,12 @@
             ],
             "entryPoint": [
                 "/uno/uno"
-            ],
-            "linuxParameters": {
-                "capabilities": {},
-                "devices": [],
-                "initProcessEnabled": true,
-                "sharedMemorySize": 0,
-                "tmpfs": [],
-                "maxSwap": 0,
-                "swappiness": 0
-            },
-            "user": "root",
-            "workingDirectory": "",
-            "disableNetworking": false,
-            "privileged": true,
-            "readonlyRootFilesystem": true,
-            "dnsServers": [
-                "8.8.8.8",
-                "8.8.4.4"
             ]
-        }
-    ],
-    "volumes": [
-        {
-            "name": "uno-volume",
-            "host": {
-                "sourcePath": "/"
-            },
-            "dockerVolumeConfiguration": {
-                "scope": "shared",
-                "autoprovision": true,
-            },
-            "efsVolumeConfiguration": {
-                "fileSystemId": "",
-                "rootDirectory": "",
-                "transitEncryption": "DISABLED",
-                "transitEncryptionPort": 0,
-                "authorizationConfig": {
-                    "accessPointId": "",
-                    "iam": "DISABLED"
-                }
-            }
         }
     ],
     "requiresCompatibilities": [
         "EC2"
     ],
     "cpu": "1",
-    "memory": "1 gb",
-    "pidMode": "host",
-    "ipcMode": "task"
+    "memory": "1024"
 }
