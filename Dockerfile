@@ -15,6 +15,6 @@ RUN go build -o uno .
 
 FROM scratch
 WORKDIR /uno
-COPY --from=server /server/uno ./uno/uno
+COPY --from=server /server/uno /uno/uno
 COPY --from=client /client/dist/* /uno/web/
 ENV PATH=/uno

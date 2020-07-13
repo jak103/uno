@@ -1,59 +1,28 @@
 {
-    "family": "",
-    "taskRoleArn": "",
-    "executionRoleArn": "",
-    "networkMode": "none",
+    "family": "uno-task",
+    "networkMode": "bridge",
     "containerDefinitions": [
         {
             "name": "uno-container",
             "image": "ubuntu-latest",
-            "cpu": 1,
-            "memory": 128,
-            "memoryReservation": 0,
             "portMappings": [
                 {
                     "containerPort": 80,
                     "hostPort": 80,
-                    "protocol": "tcp"
                 }, {
                     "containerPort": 443,
                     "hostPort": 443,
-                    "protocol": "tcp"
                 }
             ],
-            "essential": true,
             "entryPoint": [
-                "echo \"Running\""
+                "/uno/uno"
             ],
             "linuxParameters": {
-                "capabilities": {
-                    "add": [
-                        ""
-                    ],
-                    "drop": [
-                        ""
-                    ]
-                },
-                "devices": [
-                    {
-                        "hostPath": "",
-                        "containerPath": "",
-                        "permissions": [
-                            "write"
-                        ]
-                    }
-                ],
+                "capabilities": {},
+                "devices": [],
                 "initProcessEnabled": true,
                 "sharedMemorySize": 0,
-                "tmpfs": [
-                    {
-                        "containerPath": "",
-                        "size": 0,
-                        "mountOptions": [
-                            ""
-                        ]
-                    }
-                ],
+                "tmpfs": [],
                 "maxSwap": 0,
                 "swappiness": 0
             },
@@ -77,13 +46,6 @@
             "dockerVolumeConfiguration": {
                 "scope": "shared",
                 "autoprovision": true,
-                "driver": "",
-                "driverOpts": {
-                    "KeyName": ""
-                },
-                "labels": {
-                    "KeyName": ""
-                }
             },
             "efsVolumeConfiguration": {
                 "fileSystemId": "",
