@@ -1,4 +1,5 @@
 ![Go](https://github.com/jak103/uno/workflows/Go/badge.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/brent-buffenbarger/uno/badge.svg)](https://coveralls.io/github/brent-buffenbarger/uno)
 
 Read me
 
