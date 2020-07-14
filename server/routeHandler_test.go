@@ -27,7 +27,7 @@ func TestNewGame(t *testing.T) {
 func TestLogin(t *testing.T) {
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/login", nil)
+	req := httptest.NewRequest(http.MethodPost, "/login/12234/jared", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
@@ -40,7 +40,7 @@ func TestLogin(t *testing.T) {
 func TestPlay(t *testing.T) {
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/post", nil)
+	req := httptest.NewRequest(http.MethodPost, "/post/12234/jared/5/yellow", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
@@ -53,7 +53,7 @@ func TestPlay(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/update", nil)
+	req := httptest.NewRequest(http.MethodPost, "/update/12234/jared", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
@@ -66,7 +66,7 @@ func TestUpdate(t *testing.T) {
 func TestDraw(t *testing.T) {
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/draw", nil)
+	req := httptest.NewRequest(http.MethodPost, "/draw/12234/jared", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
