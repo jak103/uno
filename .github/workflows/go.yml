@@ -31,7 +31,9 @@ jobs:
         fi
 
     - name: Build
+      working-director: server
       run: go build -v .
 
     - name: Test
+      working-director: server
       run: go test -v .
