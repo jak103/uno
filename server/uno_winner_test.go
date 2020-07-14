@@ -11,10 +11,8 @@ package main
  	allCards = make(map[string][]Card)
  	dealCards()
 
-  	// Test checkForWinner when there is no winner
- 	assert.Equal(t, "", checkForWinner())
-
-  	// Test checkForWinner when there is a winner
+	assert.Equal(t, "", checkForWinner())
+	 
  	allCards[players[2]] = make([]Card, 0)
  	assert.Equal(t, "winner", checkForWinner())
  } 
