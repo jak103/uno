@@ -1,9 +1,12 @@
+Building and running Unit tests:  ![Docker Image CI](https://github.com/Jaredcscott/uno/workflows/Docker%20Image%20CI/badge.svg)
+
 Read me
+
 
 
 ## To run 
 
-`cd server/ && go run .`
+`cd server/ `
 
 In seperate terminal
 
