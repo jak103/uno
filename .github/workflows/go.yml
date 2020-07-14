@@ -37,4 +37,4 @@ jobs:
 
     - name: Test
       working-directory: server
-      run: go test -v .
+      run: go test -v . && go test -cover
