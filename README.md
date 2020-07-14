@@ -1,4 +1,6 @@
+![Go](https://github.com/mattwhite180/uno/workflows/Go/badge.svg)
 ![Docker Image CI](https://github.com/mattwhite180/uno/workflows/Docker%20Image%20CI/badge.svg?branch=master)
+
 
 ## To run (in docker)
 docker-compose build
