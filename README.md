@@ -3,7 +3,7 @@
 Read me
 
 ## To run 
-
+<!-- Testing github actions -->
 `cd server/ && go run .`
 
 In seperate terminal
