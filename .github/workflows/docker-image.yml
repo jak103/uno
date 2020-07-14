@@ -20,9 +20,6 @@ jobs:
     - name: Install Dependencies
       run: npm install
       working-directory: client
-    - name: Run client
-      run: npm run serve
-      working-directory: client
       
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
