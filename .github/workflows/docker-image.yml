@@ -20,5 +20,33 @@ jobs:
     - name: Install Dependencies
       run: npm install
       working-directory: client
+    - name: Start Docker containers
+      run: docker-compose up
+    - name: Run client
+      run: npm run serve
+      working-directory: client
       
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+      working-directory: server
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+      working-directory: server
+
+    - name: Get dependencies
+      run: |
+        go get -v -t -d ./...
+        if [ -f Gopkg.toml ]; then
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
+        fi
+      working-directory: server
+
+
+    - name: Test
+      run: go test -cover 
     
