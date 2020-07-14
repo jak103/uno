@@ -1,4 +1,5 @@
 ![Go](https://github.com/jak103/uno/workflows/Go/badge.svg?branch=master)
+![Docker-Image](https://github.com/jtknutti/uno/workflows/docker-image/badge.svg?branch=master)
 
 Read me
 
