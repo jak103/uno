@@ -1,4 +1,5 @@
-Read me
+![Docker Image CI](https://github.com/mattwhite180/uno/workflows/Docker%20Image%20CI/badge.svg?branch=master)
+
 ## To run (in docker)
 docker-compose build
 docker-compose run --service-ports db firebase login
