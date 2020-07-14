@@ -1,5 +1,12 @@
 # action.yml
 name: 'Hello World'
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
 description: 'Greet someone and record the time'
 inputs:
   who-to-greet:  # id of input
