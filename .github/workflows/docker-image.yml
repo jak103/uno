@@ -18,4 +18,4 @@ jobs:
     - name: do NPM install
       run: npm install
     - name: Build the Docker image
-      run: docker build . --file https://github.com/jtknutti/uno/Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
