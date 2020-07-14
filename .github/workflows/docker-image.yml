@@ -20,8 +20,6 @@ jobs:
     - name: Install Dependencies
       run: npm install
       working-directory: client
-    - name: Start Docker containers
-      run: docker-compose up
     - name: Run client
       run: npm run serve
       working-directory: client
