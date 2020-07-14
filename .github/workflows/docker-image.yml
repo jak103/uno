@@ -16,8 +16,7 @@ jobs:
     
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build 
-      working-directory: server
+      run: docker-compose build 
     - name: Install Dependencies
       run: npm install
       working-directory: client
