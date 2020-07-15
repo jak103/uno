@@ -1,4 +1,4 @@
-name: Testing Build and Unit Testing CI
+name: Build and Unit Testing CI
 
 on:
   push:
