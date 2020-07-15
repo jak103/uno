@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,9 +19,7 @@ func TestNewGame(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, newGame(c)) {
+	if assert.NoError(t, newGame(c)){
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
-
-
