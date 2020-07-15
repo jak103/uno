@@ -22,9 +22,17 @@ jobs:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
-      working-directory: client
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+
+    - name: Run ci
+      working-directory: client
+      run: npm ci
+
+    - name: Build
+      working-directory: client
+      run: npm run build --if-present
+
+    - name: Test
+      working-directory: client
+      run: npm test
