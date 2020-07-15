@@ -21,8 +21,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
-      working-directory: client
       uses: actions/setup-node@v1
+      working-directory: client
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
