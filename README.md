@@ -1,4 +1,4 @@
-Building and running Unit tests:  ![Test Build and Run Unit Tests](https://github.com/Jaredcscott/uno/workflows/Docker%20Image%20CI/badge.svg)
+Building and running Unit tests:  ![Build and Unit Testing CI](https://github.com/Jaredcscott/uno/workflows/Build%20and%20Unit%20Testing%20CI/badge.svg)
 
 Read me
 
