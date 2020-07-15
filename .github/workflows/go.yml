@@ -40,6 +40,7 @@ jobs:
       run: go test -v .
     
     - name: Coverage
+      working-directory: server
       run: |
         export PATH=$PATH:$(go env GOPATH)/bin   
         go test -v -covermode=count -coverprofile=coverage.out
