@@ -3,7 +3,7 @@
 Read me
 
 ## To run 
-
+:(
 `cd server/ && go run .`
 
 In seperate terminal
