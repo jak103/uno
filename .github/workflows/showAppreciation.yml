@@ -1,0 +1,21 @@
+name: ShowAppreciation
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+  
+ jobs:
+
+  appreciate:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Show Appreciation
+      run: |
+        echo Your contribution to the project is greatly appreciated.
+        echo If you didn't break anything, your code may be added to the final project.
+        echo Thank You!
