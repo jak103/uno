@@ -41,4 +41,4 @@ jobs:
     
     - name: TestCoverage
       working-directory: server
-      run: go test cover .
+      run: go test cover
