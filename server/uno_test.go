@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestrandColor(t *testing.T) {
+func TestRandColor(t *testing.T) {
 	assert.Equal(t, randColor(0), "red")
 	assert.Equal(t, randColor(1), "blue")
 	assert.Equal(t, randColor(2), "green")
