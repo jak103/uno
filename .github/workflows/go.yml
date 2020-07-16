@@ -38,3 +38,7 @@ jobs:
     - name: Test
       working-directory: server
       run: go test -v .
+    
+    - name: TestCoverage
+      working-directory: server
+      run: go test cover .
