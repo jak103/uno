@@ -1,0 +1,11 @@
+name: Greet
+
+on:
+  pull_request:
+  
+ jobs:
+  - uses: actions/checkout@v2
+  - name: greet user
+    run: 
+      echo Thank you for committing some code!
+      echo We appreciate your contribution.
