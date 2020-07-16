@@ -15,7 +15,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
     - run: npm ci
@@ -24,5 +23,5 @@ jobs:
       working-directory: client
     - run: npm run build --if-present
       working-directory: client
-    - run: npm run test:coverage
+    - run: npm run test
       working-directory: client
