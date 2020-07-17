@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import unoService from "../services/unoService";
 import Card from "../components/Card";
 export default {
   props: {
@@ -100,7 +100,7 @@ export default {
   },
   methods: {
     updateData() {
-      axios.get("http://localhost:8080/update/" + this.game_id + "/" + this.username).then(res => {
+      unoService.update(this.game_id, this.username).then(res => {
         if (res.data.valid) {
           this.valid = res.data.valid;
           this.cards = res.data.payload.deck;
@@ -114,35 +114,20 @@ export default {
       });
     },
     startGame() {
-      axios
-        .post("http://localhost:8080/startgame/" + this.game_id + "/" + this.username)
+        unoService.startGame(this.game_id, this.username)
         .then(() => {
           this.updateData();
         });
     },
     playCard(card) {
-      axios
-        .post(
-          "http://localhost:8080/play/" +
-            this.game_id +
-            "/" +
-            this.username +
-            "/" +
-            card.number +
-            "/" +
-            card.color
-        )
+        unoService.playCard(this.game_id, this.username, card.number, card.color)
         .then(() => {
           this.updateData();
         });
     },
     drawCard() {
-      var f = "http://localhost:8080/draw/" + this.game_id + "/" + this.username;
-      console.log(f);
-      axios.post(f).then(res => {
-        console.log(res.data);
-        this.updateData();
-      });
+      unoService.drawCard(this.game_id, this.username)
+        .then(this.updateData());
     }
   },
   created() {

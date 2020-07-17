@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import unoService from "../services/unoService";
 export default {
   name: "LoginPage",
   data: () => {
@@ -44,7 +44,7 @@ export default {
   methods: {
     async login() {
       if (this.user_name != "") {
-        let res = await axios.post("http://localhost:8080/login/" + this.game_id + "/" + this.user_name);
+        let res = await unoService.login(this.game_id, this.user_name);
         if (res.data.valid) {
           this.to = {
             name: "About",
@@ -56,8 +56,7 @@ export default {
       }
     },
     async newGame() {
-      console.log("New game!");
-      let res = await axios.get("http://localhost:8080/newgame");
+      let res = await unoService.newGame();
       this.game_id = res.data.payload.game_id;
       this.status = "New game id is: " + this.game_id;
     }
