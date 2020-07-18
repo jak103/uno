@@ -1,7 +1,7 @@
-- name: jira_todo
+- name: Create TODO
   uses: ./
   with:
-    project: UNO
+    project: MC
     issuetype: Task
     description: Created automatically via GitHub Actions
   env:
