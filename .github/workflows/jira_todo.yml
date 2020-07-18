@@ -1,8 +1,12 @@
-- name: Create TODO
-  uses: ./
-  with:
-    project: MC
-    issuetype: Task
-    description: Created automatically via GitHub Actions
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://help.github.com/en/articles/virtual-environments-for-github-actions#github_token-secret
+name: Create TODO
+
+uses: ./
+
+on: [push]
+with:
+  project: MC
+  issuetype: Task
+  description: Created automatically via GitHub Actions
+  
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://help.github.com/en/articles/virtual-environments-for-github-actions#github_token-secret
