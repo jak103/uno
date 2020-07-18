@@ -1,4 +1,4 @@
-- name: uno
+- name: .github/workflows/jira_todo.yml
   uses: ./
   with:
     project: UNO
