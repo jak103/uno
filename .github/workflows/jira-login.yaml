@@ -15,7 +15,7 @@ jobs:
         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
     - name: Jira TODO
-      uses: atlassian/uno@master
+      uses: atlassian/gajira-login@master
       with:
         project: GA
         issuetype: Task
