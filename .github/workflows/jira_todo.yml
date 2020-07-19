@@ -1,5 +1,5 @@
   
-name: Jira
+name: Jira TODO
 
 on:
   push:
@@ -13,12 +13,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
-    - name: Create TODO
-      uses: ./
-      with:
-        project: MC
-        issuetype: Task
-        description: Created automatically via GitHub Actions
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://help.github.com/en/articles/virtual-environments-for-github-actions#github_token-secret
+      - name: Jira TODO
+        uses: atlassian/gajira-todo@master
+        with:
+          project: GA
+          issuetype: Task
+          description: Created automatically via GitHub Actions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
