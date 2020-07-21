@@ -14,7 +14,7 @@ func main() {
 	e := echo.New()
 
 	// Setup middleware
-	e.File("/", "/client/dist/index.html")
+	//e.File("/", "/client/dist/index.html")
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
