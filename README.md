@@ -1,5 +1,8 @@
 ![Go](https://github.com/jak103/uno/workflows/Go/badge.svg?branch=master)
+
 ![Docker Image CI](https://github.com/jtknutti/uno/workflows/Docker%20Image%20CI/badge.svg)
+
+[![Coverage Status](https://coveralls.io/repos/github/brent-buffenbarger/uno/badge.svg?branch=development)](https://coveralls.io/github/brent-buffenbarger/uno)
 
 Read me
 
