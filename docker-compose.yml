@@ -28,21 +28,12 @@ services:
     environment:
       - FIRESTORE_EMULATOR_HOST=firestore-emulator:1982
       - FIRESTORE_PROJECT_ID=usu-devops
-    command: gin --appPort 8080 --all -i run .
+    command: gin --appPort 8080 -i run .
     #command: bash -c "sleep infinity"
 
-<<<<<<< HEAD
-  db:
-    container_name: firestore-emulator
-    image: mtlynch/firestore-emulator
-    environment:
-      - FIRESTORE_PROJECT_ID=usu-devops
-      - PORT=1982
-=======
-#   db:
+    #   db:
 #     container_name: firestore-emulator
 #     image: mtlynch/firestore-emulator
 #     environment:
 #       - FIRESTORE_PROJECT_ID=usu-devops
 #       - PORT=1982
->>>>>>> origin/dev
