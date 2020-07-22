@@ -14,6 +14,14 @@ type mockDB struct {
 	players       map[string]model.Player
 }
 
+//type mongoDB struct {
+//	client   *mongo.Client
+//	uri      string
+//	database *mongo.Database
+//	games    *mongo.Collection
+//	players  *mongo.Collection
+//}
+
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *mockDB) HasGameByPassword(password string) bool {
 	_, ok := db.gamePasswords[password]
