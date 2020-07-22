@@ -2,13 +2,14 @@ version: '3.6'
 
 services:
   client:
-    image: node:12-slim
+    image: vue-client:latest
     build: ./client
     container_name: vue-client
     working_dir: /client
     volumes:
+      - /client/node_modules/
       - ./client:/client      
-    command: npm run-script install-serve
+    command: npm run-script serve
     #command: bash -c "sleep infinity"
     ports:
       - 3000:3000
@@ -16,7 +17,7 @@ services:
       NODE_ENV: development
 
   server:
-    image: golang:1.14.2
+    image: go-server:latest
     build: ./server
     container_name: go-server
     working_dir: /server
@@ -27,12 +28,12 @@ services:
     environment:
       - FIRESTORE_EMULATOR_HOST=firestore-emulator:1982
       - FIRESTORE_PROJECT_ID=usu-devops
-    command: gin --appPort 8080 --all -i run .
+    command: gin --appPort 8080 -i run .
     #command: bash -c "sleep infinity"
 
-  db:
-    container_name: firestore-emulator
-    image: mtlynch/firestore-emulator
-    environment:
-      - FIRESTORE_PROJECT_ID=usu-devops
-      - PORT=1982
+    #   db:
+#     container_name: firestore-emulator
+#     image: mtlynch/firestore-emulator
+#     environment:
+#       - FIRESTORE_PROJECT_ID=usu-devops
+#       - PORT=1982

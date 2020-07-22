@@ -3,14 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "install-serve": "npm install && npm run serve",
     "serve": "vue-cli-service serve --port 3000",
-    "build": "vue-cli-service build",
+    "build": "npx vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build-watch": "vue-cli-service build-watch",
-    "test:e2e": "vue-cli-service test:unit -- tests/e2e/.*spec.[jt]s",
-    "test:unit": "vue-cli-service test:unit -- tests/unit/.*spec.[jt]s",
-    "test:coverage": "vue-cli-service test:unit --coverage"
+    "cypress:open": "cypress open",
+    "test-integration": "cypress run --browser chrome"
   },
   "dependencies": {
     "@types/jest": "^26.0.3",
@@ -28,6 +26,7 @@
     "@vue/cli-plugin-unit-jest": "^4.4.6",
     "@vue/cli-service": "~4.3.0",
     "babel-eslint": "^10.1.0",
+    "cypress": "^4.9.0",
     "eslint": "^6.7.2",
     "eslint-plugin-jest": "^23.17.1",
     "eslint-plugin-vue": "^6.2.2",

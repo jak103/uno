@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	e := echo.New()
 
 	// Setup middleware
-	e.File("/", "/client/dist/index.html")
+	//e.File("/", "/client/dist/index.html")
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
