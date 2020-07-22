@@ -6,7 +6,9 @@ name: Coverage
 # events but only for the master branch
 on:
   push:
-    branches: [ development ]
+    branches:
+      - dev
+      - development
   pull_request:
     branches: [ master ]
 
@@ -24,7 +26,7 @@ jobs:
 
     # Create coverage file in the server directory
     - name: genearte-coverage-file
-      working-directory: https://github.com/brent-buffenbarger/uno/tree/development/server
+      working-directory: server
       run: |
         go test -race -covermode atomic -coverprofile=server-coverage.cov ./... 
   
@@ -33,4 +35,4 @@ jobs:
       uses: shogo82148/actions-goveralls@v1.4.0
       with:
         path-to-profile: server-coverage.cov
-        working-directory: https://github.com/brent-buffenbarger/uno/tree/development/server 
+        working-directory: server
