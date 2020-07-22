@@ -37,7 +37,7 @@ func (db *mongoDB) JoinGame(id uuid.UUID, username string) {
 
 func newMongoDB() *mongoDB {
 	db := new(mongoDB)
-	client, err := mongo.NewClient(os.Getenv("MONGO_URI"))
+	client, err := mongo.NewClient(mongo.options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err != nil {
 		return nil
 	}
