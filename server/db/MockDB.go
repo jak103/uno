@@ -15,13 +15,13 @@ func (db *mockDB) HasGame(game string) bool {
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
 func (db *mockDB) CreateGame(id uuid.UUID) model.Game {
-	myGame := Game{ID: uuid.Nil, Password: "12234"}
+	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
 	return myGame
 }
 
 // LookupGame looks up an existing game in the database.
 func (db *mockDB) LookupGame(id uuid.UUID) model.Game {
-	myGame := Game{ID: uuid.Nil, Password: "12234"}
+	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
 	return myGame
 }
 

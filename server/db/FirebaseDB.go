@@ -16,13 +16,13 @@ func (db *firebaseDB) HasGame(game string) bool {
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
 func (db *firebaseDB) CreateGame(id uuid.UUID) model.Game {
-	myGame := Game{ID: uuid.Nil, Password: "12234"}
+	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
 	return myGame
 }
 
 // LookupGame looks up an existing game in the database.
 func (db *firebaseDB) LookupGame(id uuid.UUID) model.Game {
-	myGame := Game{ID: uuid.Nil, Password: "12234"}
+	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
 	return myGame
 }
 
