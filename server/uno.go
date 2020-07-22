@@ -164,3 +164,12 @@ func checkForWinner() string {
 	}
 	return ""
 }
+
+func checkForCardInHand(card Card, player string) bool {
+	for _, c := range allCards[player] {
+		if c.Number == card.Number && c.Color == card.Color {
+			return true
+		}
+	}
+	return false
+}
