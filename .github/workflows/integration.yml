@@ -26,3 +26,8 @@ jobs:
 
       - name: start the integration tests
         run: docker-compose -f integration-tests.yml up
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Upload Images
+          path: ./client/cypress/videos/*
