@@ -1,15 +1,18 @@
 package db
 
 import (
+	"context"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jak103/uno/model"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type mongoDB struct {
-	client mongo.Client
+	client *mongo.Client
 	uri    string
 }
 
@@ -37,10 +40,13 @@ func (db *mongoDB) JoinGame(id uuid.UUID, username string) {
 
 func newMongoDB() *mongoDB {
 	db := new(mongoDB)
-	client, err := mongo.NewClient(mongo.options.Client().ApplyURI(os.Getenv("MONGO_URI")))
+	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err != nil {
 		return nil
 	}
 	db.client = client
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	db.client.Connect(ctx)
 	return db
 }
