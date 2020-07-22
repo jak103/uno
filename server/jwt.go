@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/google/uuid"
 )
 
 // we can have this signkey be whatever we want.
@@ -14,7 +15,7 @@ const signKey = "^s@m&R@n&om,St)("
 func exampleUsage() {
 	// example of originally creating a token
 	// a token like this should be set to their header. It is just a string, so it is easy enough to set to a cookie.
-    createdToken, err := newJWT("Thomas", 1234, []byte(signKey))
+    createdToken, err := newJWT("Thomas", uuid.New(), "1234", []byte(signKey))
     if err != nil {
         fmt.Println("Creating token failed")
     }
@@ -26,6 +27,7 @@ func exampleUsage() {
 	
 	if validClaims {
 		fmt.Println(claims["name"])
+		fmt.Println(claims["userid"])
 		fmt.Println(claims["gameid"])
 		fmt.Println(claims["iat"])
 		fmt.Println(claims["exp"])
@@ -43,7 +45,8 @@ func exampleUsage() {
 }
 
 // function to create a new jwt based on a name, gameid, and a signKey
-func newJWT(name string, gameid int, signKey []byte) (string, error) {
+// note, when this is merged with the db branch, we may want to combine "name" and "userid" into one "player" object
+func newJWT(name string, userid uuid.UUID, gameid string, signKey []byte) (string, error) {
     // Create the token
     token := jwt.New(jwt.SigningMethodHS256)
 	
@@ -53,9 +56,9 @@ func newJWT(name string, gameid int, signKey []byte) (string, error) {
         "exp": time.Now().Add(time.Hour * 72).Unix(),
 		// this iat is the "iniated at time"
         "iat": time.Now().Unix(),
-		// we store here the username and gameid; these params may be changed
-		// we probably want some sort of userid, so that players of the same name can be differentiated.
+		// we store here the username, userid, and gameid
 		"name": name,
+		"userid": userid,
 		"gameid": gameid,
     }
     // Sign and get the complete encoded token as a string
