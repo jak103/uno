@@ -147,7 +147,7 @@ func dealCards() {
 	for k := range players {
 		cards := []Card{}
 		for i := 0; i < 7; i++ {
-			cards = append(cards, newRandomCard()[0]})
+			cards = append(cards, newRandomCard()[0])
 		}
 		allCards[players[k]] = cards
 	}
