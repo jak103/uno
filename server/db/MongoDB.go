@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"time"
 
@@ -22,7 +21,8 @@ type mongoDB struct {
 }
 
 func (db *mongoDB) HasGameByID(id string) bool {
-	return true
+	game, err := db.LookupGameByID(id)
+	return err == nil && game != nil
 }
 
 // HasGame checks to see if a game with the given ID exists in the database.
@@ -42,6 +42,16 @@ func (db *mongoDB) CreateGame() (*model.Game, error) {
 	return &myGame, nil
 }
 
+func (db *mongoDB) CreatePlayer(name string) (*model.Player, error) {
+	player := model.Player{Name: name}
+	res, err := db.players.InsertOne(context.Background(), player)
+	if err != nil {
+		return nil, err
+	}
+	player.ID = res.InsertedID.(primitive.ObjectID).String()
+	return &player, nil
+}
+
 // LookupGame looks up an existing game in the database.
 func (db *mongoDB) LookupGameByPassword(password string) (*model.Game, error) {
 	var game model.Game
@@ -58,13 +68,38 @@ func (db *mongoDB) LookupGameByID(id string) (*model.Game, error) {
 	if err := db.games.FindOne(context.Background(), bson.M{"_id": id}).Decode(&res); err != nil {
 		return nil, err
 	}
-	fmt.Println(res)
+	return &res, nil
+}
+
+func (db *mongoDB) LookupPlayer(id string) (*model.Player, error) {
+	var res model.Player
+	if err := db.players.FindOne(context.Background(), bson.M{"_id": id}).Decode(&res); err != nil {
+		return nil, err
+	}
 	return &res, nil
 }
 
 // JoinGame mockDB a player to a game.
-func (db *mongoDB) JoinGame(id string, username string) {
-	return
+func (db *mongoDB) JoinGame(id string, username string) error {
+	return nil
+}
+
+func (db *mongoDB) SaveGame(game model.Game) error {
+	id, _ := primitive.ObjectIDFromHex(game.ID)
+	_, err := db.games.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id},
+		game)
+	return err
+}
+
+func (db *mongoDB) SavePlayer(player model.Player) error {
+	id, _ := primitive.ObjectIDFromHex(player.ID)
+	_, err := db.players.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id},
+		player)
+	return err
 }
 
 func newMongoDB() *mongoDB {
