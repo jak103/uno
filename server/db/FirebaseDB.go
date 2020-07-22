@@ -9,8 +9,12 @@ type firebaseDB struct {
 	uri string
 }
 
+func (db *firebaseDB) HasGameByID(id uuid.UUID) bool {
+	return true
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
-func (db *firebaseDB) HasGame(game string) bool {
+func (db *firebaseDB) HasGameByPassword(game string) bool {
 	return game == "12234"
 }
 
@@ -21,7 +25,13 @@ func (db *firebaseDB) CreateGame(id uuid.UUID) model.Game {
 }
 
 // LookupGame looks up an existing game in the database.
-func (db *firebaseDB) LookupGame(id uuid.UUID) model.Game {
+func (db *firebaseDB) LookupGameByID(id uuid.UUID) model.Game {
+	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
+	return myGame
+}
+
+// LookupGame looks up an existing game in the database.
+func (db *firebaseDB) LookupGameByPassword(game string) model.Game {
 	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
 	return myGame
 }

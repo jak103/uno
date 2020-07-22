@@ -16,9 +16,13 @@ type mongoDB struct {
 	uri    string
 }
 
+func (db *mongoDB) HasGameByID(id uuid.UUID) bool {
+	return true
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
-func (db *mongoDB) HasGame(game string) bool {
-	return game == "12234"
+func (db *mongoDB) HasGameByPassword(password string) bool {
+	return password == "12234"
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
@@ -28,7 +32,13 @@ func (db *mongoDB) CreateGame(id uuid.UUID) model.Game {
 }
 
 // LookupGame looks up an existing game in the database.
-func (db *mongoDB) LookupGame(id uuid.UUID) model.Game {
+func (db *mongoDB) LookupGameByPassword(password string) model.Game {
+	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
+	return myGame
+}
+
+// LookupGame looks up an existing game in the database.
+func (db *mongoDB) LookupGameByID(id uuid.UUID) model.Game {
 	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
 	return myGame
 }
@@ -44,9 +54,15 @@ func newMongoDB() *mongoDB {
 	if err != nil {
 		return nil
 	}
-	db.client = client
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	db.client.Connect(ctx)
+	defer cancel()
+	err = client.Connect(ctx)
+	db.client = client
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
 	return db
 }

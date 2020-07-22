@@ -6,13 +6,14 @@ import (
 )
 
 // GetDb factory method to get the Database connection
-func GetDb() *UnoDB {
+func GetDb() UnoDB {
 	switch environment := strings.ToUpper(os.Getenv("DB_TYPE")); environment {
 	case "MOCK":
-		return newMockDb()
+		return newMockDB()
 	case "MONGO":
-		return newMongoDb()
+		return newMongoDB()
 	case "FIREBASE":
 		return newFirebaseDB()
 	}
+	return newMockDB()
 }
