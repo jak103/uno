@@ -107,7 +107,7 @@ func joinGame(game string, username string) bool {
 func playCard(game string, username string, card Card) bool {
 	if checkID(game) && currPlayer == username {
 		cards := allCards[username]
-		if card.Color == currCard[0].Color || card.Number == currCard[0].Number {
+		if checkForCardInHand(card, username) && ( card.Color == currCard[0].Color || card.Number == currCard[0].Number ) {
 			// Valid card can be played
 			playerIndex = (playerIndex + 1) % len(players)
 			currPlayer = players[playerIndex]
