@@ -6,7 +6,7 @@ name: Coverage
 # events but only for the master branch
 on:
   push:
-    branches: [ dev ]
+    branches: [ development ]
   pull_request:
     branches: [ master ]
 
