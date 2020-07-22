@@ -1,0 +1,33 @@
+name: Integration
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+
+  build:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build the Docker image
+        run: docker-compose build
+
+      - uses: actions/setup-node@v1
+      - name: Run NPM install
+        run: cd client ; npm install
+
+      - name: Start the application
+        run: docker-compose up -d
+
+      - name: start the integration tests
+        run: docker-compose -f integration-tests.yml up
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Upload Images
+          path: ./client/cypress/videos/*
