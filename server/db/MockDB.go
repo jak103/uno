@@ -13,30 +13,30 @@ func (db *mockDB) HasGameByPassword(password string) bool {
 	return password == "12234"
 }
 
-func (db *mockDB) HasGameByID(id uuid.UUID) bool {
+func (db *mockDB) HasGameByID(id string) bool {
 	return true
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *mockDB) CreateGame(id uuid.UUID) model.Game {
-	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
-	return myGame
+func (db *mockDB) CreateGame() (*model.Game, error) {
+	myGame := model.Game{ID: uuid.Nil.String(), Password: "12234"}
+	return &myGame, nil
 }
 
 // LookupGame looks up an existing game in the database.
-func (db *mockDB) LookupGameByID(id uuid.UUID) model.Game {
-	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
-	return myGame
+func (db *mockDB) LookupGameByID(id string) (*model.Game, error) {
+	myGame := model.Game{ID: uuid.Nil.String(), Password: "12234"}
+	return &myGame, nil
 }
 
 // LookupGame looks up an existing game in the database.
-func (db *mockDB) LookupGameByPassword(password string) model.Game {
-	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
-	return myGame
+func (db *mockDB) LookupGameByPassword(password string) (*model.Game, error) {
+	myGame := model.Game{ID: uuid.Nil.String(), Password: "12234"}
+	return &myGame, nil
 }
 
 // JoinGame mockDB a player to a game.
-func (db *mockDB) JoinGame(id uuid.UUID, username string) {
+func (db *mockDB) JoinGame(id string, username string) {
 	return
 }
 

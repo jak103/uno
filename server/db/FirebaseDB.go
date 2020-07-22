@@ -5,43 +5,40 @@ import (
 	"github.com/jak103/uno/model"
 )
 
-type firebaseDB struct {
-	uri string
+type firebaseDB struct{}
+
+// HasGame checks to see if a game with the given ID exists in the database.
+func (db *firebaseDB) HasGameByPassword(password string) bool {
+	return password == "12234"
 }
 
-func (db *firebaseDB) HasGameByID(id uuid.UUID) bool {
+func (db *firebaseDB) HasGameByID(id string) bool {
 	return true
 }
 
-// HasGame checks to see if a game with the given ID exists in the database.
-func (db *firebaseDB) HasGameByPassword(game string) bool {
-	return game == "12234"
-}
-
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *firebaseDB) CreateGame(id uuid.UUID) model.Game {
-	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
-	return myGame
+func (db *firebaseDB) CreateGame() (*model.Game, error) {
+	myGame := model.Game{ID: uuid.Nil.String(), Password: "12234"}
+	return &myGame, nil
 }
 
 // LookupGame looks up an existing game in the database.
-func (db *firebaseDB) LookupGameByID(id uuid.UUID) model.Game {
-	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
-	return myGame
+func (db *firebaseDB) LookupGameByID(id string) (*model.Game, error) {
+	myGame := model.Game{ID: uuid.Nil.String(), Password: "12234"}
+	return &myGame, nil
 }
 
 // LookupGame looks up an existing game in the database.
-func (db *firebaseDB) LookupGameByPassword(game string) model.Game {
-	myGame := model.Game{ID: uuid.Nil, Password: "12234"}
-	return myGame
+func (db *firebaseDB) LookupGameByPassword(password string) (*model.Game, error) {
+	myGame := model.Game{ID: uuid.Nil.String(), Password: "12234"}
+	return &myGame, nil
 }
 
-// JoinGame mockDB a player to a game.
-func (db *firebaseDB) JoinGame(id uuid.UUID, username string) {
+// JoinGame firebaseDB a player to a game.
+func (db *firebaseDB) JoinGame(id string, username string) {
 	return
 }
 
 func newFirebaseDB() *firebaseDB {
-	db := new(firebaseDB)
-	return db
+	return new(firebaseDB)
 }
