@@ -2,29 +2,36 @@ package db
 
 import (
 	"github.com/google/uuid"
+	"github.com/jak103/uno/model"
 )
 
-type FirebaseDB struct {
+type firebaseDB struct {
 	uri string
 }
 
-func (db *FirebaseDB) HasGame(game string) {
+// HasGame checks to see if a game with the given ID exists in the database.
+func (db *firebaseDB) HasGame(game string) bool {
 	return game == "12234"
 }
 
-func (db *FirebaseDB) CreateGame(id uuid.UUID) Game {
-	myGame := g
+// CreateGame a game with the given ID. Perhaps this should instead just return an id?
+func (db *firebaseDB) CreateGame(id uuid.UUID) model.Game {
+	myGame := Game{ID: uuid.Nil, Password: "12234"}
+	return myGame
 }
 
-func (db *FirebaseDB) LookupGame(id uuid.UUID) Game {
-
+// LookupGame looks up an existing game in the database.
+func (db *firebaseDB) LookupGame(id uuid.UUID) model.Game {
+	myGame := Game{ID: uuid.Nil, Password: "12234"}
+	return myGame
 }
 
-func (db *FirebaseDB) JoinGame(id uuid.UUID, username string) {
-
+// JoinGame mockDB a player to a game.
+func (db *firebaseDB) JoinGame(id uuid.UUID, username string) {
+	return
 }
 
-func newFirebaseDB() *MongoDB {
-	db := new(FirebaseDB)
+func newFirebaseDB() *firebaseDB {
+	db := new(firebaseDB)
 	return db
 }
