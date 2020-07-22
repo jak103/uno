@@ -22,7 +22,7 @@ func (db *mockDB) HasGameByID(id string) bool {
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
 func (db *mockDB) CreateGame() (*model.Game, error) {
 	myGame := model.Game{ID: uuid.Nil.String(), Password: "12234"}
-	append(db.games, myGame)
+	db.games = append(db.games, myGame)
 	return &myGame, nil
 }
 
