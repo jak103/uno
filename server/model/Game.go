@@ -1,8 +1,6 @@
 package model
 
-import "github.com/google/uuid"
-
 type Game struct {
-	ID       uuid.UUID // UUID of the game.
-	Password string    // Join code or password for lobby.
+	ID       string `bson:"_id,omitempty" json:"id"`
+	Password string `bson:"password,omitempty" json:"password"`
 }
