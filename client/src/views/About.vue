@@ -24,7 +24,10 @@
               :class="'ma-3 pa-6'"
               outlined
               tile
-            >{{ player }}</v-card>
+            >
+				{{ player }}	
+				<v-btn @click.native="callUno">Call Uno!</v-btn>
+			</v-card>
           </v-row>
 
           <!-- Current Card and actions -->

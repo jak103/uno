@@ -23,5 +23,9 @@ export default {
 
     drawCard(gameId, userName) {
         return BaseService.post(`/draw/${gameId}/${userName}`);
-    }
+    },
+
+	callUno(gameId, userName) {
+		return BaseService.post(`/call/${gameId}/${userName}`);
+	}
 }
