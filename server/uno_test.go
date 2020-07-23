@@ -32,10 +32,6 @@ func TestContains(t *testing.T) {
 	assert.Equal(t, found, false)
 }
 
-func TestCheckID(t *testing.T) {
-	assert.Equal(t, checkID("12234"), bool(false))
-}
-
 func TestCheckForWinner(t *testing.T) {
 	players = []string{"player1", "player2"}
 	allCards = make(map[string][]Card)
