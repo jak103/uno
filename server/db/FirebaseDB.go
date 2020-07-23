@@ -80,3 +80,7 @@ func (db *firebaseDB) SavePlayer(player model.Player) error {
 func newFirebaseDB() *firebaseDB {
 	return new(firebaseDB)
 }
+
+func (db *firebaseDB) Disconnect() {
+	return
+}

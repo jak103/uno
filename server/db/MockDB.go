@@ -89,3 +89,7 @@ func (db *mockDB) SavePlayer(player model.Player) error {
 func newMockDB() *mockDB {
 	return new(mockDB)
 }
+
+func (db *mockDB) Disconnect() {
+	return
+}

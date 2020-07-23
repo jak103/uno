@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -65,7 +66,8 @@ func (db *mongoDB) LookupGameByPassword(password string) (*model.Game, error) {
 // LookupGame looks up an existing game in the database.
 func (db *mongoDB) LookupGameByID(id string) (*model.Game, error) {
 	var res model.Game
-	if err := db.games.FindOne(context.Background(), bson.M{"_id": id}).Decode(&res); err != nil {
+	oid, _ := primitive.ObjectIDFromHex(id)
+	if err := db.games.FindOne(context.Background(), bson.M{"_id": oid}).Decode(&res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -73,7 +75,8 @@ func (db *mongoDB) LookupGameByID(id string) (*model.Game, error) {
 
 func (db *mongoDB) LookupPlayer(id string) (*model.Player, error) {
 	var res model.Player
-	if err := db.players.FindOne(context.Background(), bson.M{"_id": id}).Decode(&res); err != nil {
+	oid, _ := primitive.ObjectIDFromHex(id)
+	if err := db.players.FindOne(context.Background(), bson.M{"_id": oid}).Decode(&res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -85,8 +88,11 @@ func (db *mongoDB) JoinGame(id string, username string) error {
 }
 
 func (db *mongoDB) SaveGame(game model.Game) error {
+	savedID := game.ID
+	defer func() { game.ID = savedID }()
 	id, _ := primitive.ObjectIDFromHex(game.ID)
-	_, err := db.games.UpdateOne(
+	game.ID = "" // Prevent Mongo from trying to change the ID.
+	_, err := db.games.ReplaceOne(
 		context.Background(),
 		bson.M{"_id": id},
 		game)
@@ -94,12 +100,24 @@ func (db *mongoDB) SaveGame(game model.Game) error {
 }
 
 func (db *mongoDB) SavePlayer(player model.Player) error {
+	savedID := player.ID
+	defer func() { player.ID = savedID }()
 	id, _ := primitive.ObjectIDFromHex(player.ID)
-	_, err := db.players.UpdateOne(
+	player.ID = "" // Prevent mongo from trying to change the ID.
+	_, err := db.players.ReplaceOne(
 		context.Background(),
 		bson.M{"_id": id},
 		player)
 	return err
+}
+
+func (db *mongoDB) Disconnect() {
+	fmt.Println("Disconnecting from the database.")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	if err := db.client.Disconnect(ctx); err != nil {
+		panic(err)
+	}
+	defer cancel()
 }
 
 func newMongoDB() *mongoDB {
@@ -113,11 +131,6 @@ func newMongoDB() *mongoDB {
 	defer cancel()
 	err = client.Connect(ctx)
 	db.client = client
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-	}()
 	database := client.Database("uno")
 	db.database = database
 	db.games = database.Collection("games")
