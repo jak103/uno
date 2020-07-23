@@ -6,11 +6,15 @@ name: Coverage
 # events but only for the master branch
 on:
   push:
-    branches: [ development ]
+    branches:
+      - dev
+      - development
   pull_request:
-    branches: [ master ]
+    branches:
+      - dev
+      - master
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel 
 jobs:
   # This workflow contains a single job called "build"
   build:
@@ -33,4 +37,4 @@ jobs:
       uses: shogo82148/actions-goveralls@v1.4.0
       with:
         path-to-profile: server-coverage.cov
-        working-directory: server 
+        working-directory: server
