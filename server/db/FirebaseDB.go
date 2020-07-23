@@ -33,11 +33,6 @@ func (db *firebaseDB) CreateGame() (*model.Game, error) {
 	return &myGame, nil
 }
 
-// DeleteGame deletes a game
-func (db *firebaseDB) DeleteGame(id string) error {
-	return nil
-}
-
 // CreatePlayer creates the player in the database
 func (db *firebaseDB) CreatePlayer(name string) (*model.Player, error) {
 	player := model.Player{ID: uuid.New().String(), Name: name}
@@ -45,8 +40,19 @@ func (db *firebaseDB) CreatePlayer(name string) (*model.Player, error) {
 	return &player, nil
 }
 
+// DeleteGame deletes a game
+func (db *firebaseDB) DeleteGame(id string) error {
+	if _, ok := db.games[id]; ok {
+		delete(db.games, id)
+	}
+	return nil
+}
+
 // DeletePlayer deletes a player from the database
 func (db *firebaseDB) DeletePlayer(id string) error {
+	if _, ok := db.players[id]; ok {
+		delete(db.players, id)
+	}
 	return nil
 }
 
