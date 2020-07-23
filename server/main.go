@@ -38,17 +38,6 @@ func main() {
 	// Setup routes
 	setupRoutes(e)
 
-	game, err := Database.LookupGameByPassword("hunter2")
-	if err != nil {
-		panic(err)
-	}
-	game.Password = "hunter3"
-	fmt.Println(game.ID)
-	err = Database.SaveGame(*game)
-	if err != nil {
-		panic(err)
-	}
-
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
 
