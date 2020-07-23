@@ -44,6 +44,21 @@ func (db *mongoDB) CreateGame() (*model.Game, error) {
 	return &myGame, nil
 }
 
+// DeleteGame deletes a game
+func (db *mongoDB) DeleteGame(id string) error {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.games.DeleteOne(context.Background(), bson.M{"_id": oid})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // CreatePlayer creates the player in the database
 func (db *mongoDB) CreatePlayer(name string) (*model.Player, error) {
 	player := model.Player{Name: name}
@@ -53,6 +68,21 @@ func (db *mongoDB) CreatePlayer(name string) (*model.Player, error) {
 	}
 	player.ID = res.InsertedID.(primitive.ObjectID).String()
 	return &player, nil
+}
+
+// DeletePlayer deletes a player from the database
+func (db *mongoDB) DeletePlayer(id string) error {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.players.DeleteOne(context.Background(), bson.M{"_id": oid})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // LookupGameByID looks up an existing game in the database.
