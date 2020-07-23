@@ -6,19 +6,44 @@ import (
 	"strings"
 )
 
+// Registry of initialized DB COnnections
+var dbRegistry = make(map[string]*DB)
+
+var connectedDB *DB
+
+// registerDB is designed to make a singleton registry for consistent access to the database
+func registerDB(d *DB) {
+	dbRegistry[d.name] = d
+}
+
+// DB is a struct wrapper for UnoDB that allows it to be registered. It also provides a consistent return type for the user
+type DB struct {
+	name        string
+	description string
+	UnoDB       // By not declaring a local variable, DB automatically assumes the functions of this instantiated member
+}
+
 // GetDb factory method to get the Database connection
-func GetDb() UnoDB {
+func GetDb() (*DB, error) {
 	fmt.Println("Connecting to the database...")
-	switch environment := strings.ToUpper(os.Getenv("DB_TYPE")); environment {
-	case "MOCK":
-		fmt.Println("Using Mock database.")
-		return newMockDB()
-	case "MONGO":
-		fmt.Println("Using Mongo database.")
-		return newMongoDB()
-	case "FIREBASE":
-		fmt.Println("Using Firebase database.")
-		return newFirebaseDB()
+
+	if connectedDB == nil {
+		environment := strings.ToUpper(os.Getenv("DB_TYPE"))
+
+		if db, ok := dbRegistry[environment]; ok {
+			db.connect()
+			connectedDB = db
+		}
+
+		return nil, fmt.Errorf("%s is not a registered DB_TYPE", environment)
 	}
-	return newMockDB()
+
+	return connectedDB, nil
+}
+
+// Disconnect disconnects the database
+func Disconnect() {
+	if connectedDB != nil {
+		connectedDB.disconnect()
+	}
 }

@@ -28,6 +28,7 @@ func (db *mockDB) HasGameByPassword(password string) bool {
 	return ok
 }
 
+// HasGameByID checks to see if a game with the given ID exists in the database.
 func (db *mockDB) HasGameByID(id string) bool {
 	_, ok := db.games[id]
 	return ok
@@ -41,13 +42,14 @@ func (db *mockDB) CreateGame() (*model.Game, error) {
 	return &myGame, nil
 }
 
+// CreatePlayer creates the player in the database
 func (db *mockDB) CreatePlayer(name string) (*model.Player, error) {
 	player := model.Player{ID: uuid.New().String(), Name: name}
 	db.players[player.ID] = player
 	return &player, nil
 }
 
-// LookupGame looks up an existing game in the database.
+// LookupGameByID looks up an existing game in the database.
 func (db *mockDB) LookupGameByID(id string) (*model.Game, error) {
 	if game, ok := db.games[id]; ok {
 		return &game, nil
@@ -55,7 +57,7 @@ func (db *mockDB) LookupGameByID(id string) (*model.Game, error) {
 	return nil, errors.New("mockdb: game not found")
 }
 
-// LookupGame looks up an existing game in the database.
+// LookupGameByPassword looks up an existing game in the database.
 func (db *mockDB) LookupGameByPassword(password string) (*model.Game, error) {
 	if game, ok := db.gamePasswords[password]; ok {
 		return &game, nil
@@ -63,6 +65,7 @@ func (db *mockDB) LookupGameByPassword(password string) (*model.Game, error) {
 	return nil, errors.New("mockdb: game not found")
 }
 
+// LookupPlayer checks to see if a player is in the database
 func (db *mockDB) LookupPlayer(id string) (*model.Player, error) {
 	if player, ok := db.players[id]; ok {
 		return &player, nil
@@ -70,26 +73,38 @@ func (db *mockDB) LookupPlayer(id string) (*model.Player, error) {
 	return nil, errors.New("mockdb: player not found")
 }
 
-// JoinGame mockDB a player to a game.
+// JoinGame join a player to a game.
 func (db *mockDB) JoinGame(id string, username string) error {
 	return nil
 }
 
+// SaveGame saves the game
 func (db *mockDB) SaveGame(game model.Game) error {
 	db.games[game.ID] = game
 	db.gamePasswords[game.Password] = game
 	return nil
 }
 
+// SavePlayer saves the player data
 func (db *mockDB) SavePlayer(player model.Player) error {
 	db.players[player.ID] = player
 	return nil
 }
 
-func newMockDB() *mockDB {
-	return new(mockDB)
+// Disconnect disconnects from the remote database
+func (db *mockDB) disconnect() {
+	return
 }
 
-func (db *mockDB) Disconnect() {
+// connect allows the user to connect to the database
+func (db *mockDB) connect() {
 	return
+}
+
+func init() {
+	registerDB(&DB{
+		name:        "MOCK",
+		description: "Mock database connection for Unit Tests",
+		UnoDB:       new(mockDB),
+	})
 }

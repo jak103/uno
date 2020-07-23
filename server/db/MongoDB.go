@@ -21,14 +21,15 @@ type mongoDB struct {
 	players  *mongo.Collection
 }
 
-func (db *mongoDB) HasGameByID(id string) bool {
-	game, err := db.LookupGameByID(id)
-	return err == nil && game != nil
-}
-
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *mongoDB) HasGameByPassword(password string) bool {
 	game, err := db.LookupGameByPassword(password)
+	return err == nil && game != nil
+}
+
+// HasGameByID checks to see if a game with the given ID exists in the database.
+func (db *mongoDB) HasGameByID(id string) bool {
+	game, err := db.LookupGameByID(id)
 	return err == nil && game != nil
 }
 
@@ -43,6 +44,7 @@ func (db *mongoDB) CreateGame() (*model.Game, error) {
 	return &myGame, nil
 }
 
+// CreatePlayer creates the player in the database
 func (db *mongoDB) CreatePlayer(name string) (*model.Player, error) {
 	player := model.Player{Name: name}
 	res, err := db.players.InsertOne(context.Background(), player)
@@ -53,17 +55,7 @@ func (db *mongoDB) CreatePlayer(name string) (*model.Player, error) {
 	return &player, nil
 }
 
-// LookupGame looks up an existing game in the database.
-func (db *mongoDB) LookupGameByPassword(password string) (*model.Game, error) {
-	var game model.Game
-	err := db.games.FindOne(context.Background(), bson.M{"password": password}).Decode(&game)
-	if err != nil {
-		return nil, err
-	}
-	return &game, nil
-}
-
-// LookupGame looks up an existing game in the database.
+// LookupGameByID looks up an existing game in the database.
 func (db *mongoDB) LookupGameByID(id string) (*model.Game, error) {
 	var res model.Game
 	oid, _ := primitive.ObjectIDFromHex(id)
@@ -73,6 +65,17 @@ func (db *mongoDB) LookupGameByID(id string) (*model.Game, error) {
 	return &res, nil
 }
 
+// LookupGameByPassword looks up an existing game in the database.
+func (db *mongoDB) LookupGameByPassword(password string) (*model.Game, error) {
+	var game model.Game
+	err := db.games.FindOne(context.Background(), bson.M{"password": password}).Decode(&game)
+	if err != nil {
+		return nil, err
+	}
+	return &game, nil
+}
+
+// LookupPlayer checks to see if a player is in the database
 func (db *mongoDB) LookupPlayer(id string) (*model.Player, error) {
 	var res model.Player
 	oid, _ := primitive.ObjectIDFromHex(id)
@@ -82,11 +85,12 @@ func (db *mongoDB) LookupPlayer(id string) (*model.Player, error) {
 	return &res, nil
 }
 
-// JoinGame mockDB a player to a game.
+// JoinGame join a player to a game.
 func (db *mongoDB) JoinGame(id string, username string) error {
 	return nil
 }
 
+// SaveGame saves the game
 func (db *mongoDB) SaveGame(game model.Game) error {
 	savedID := game.ID
 	defer func() { game.ID = savedID }()
@@ -99,6 +103,7 @@ func (db *mongoDB) SaveGame(game model.Game) error {
 	return err
 }
 
+// SavePlayer saves the player data
 func (db *mongoDB) SavePlayer(player model.Player) error {
 	savedID := player.ID
 	defer func() { player.ID = savedID }()
@@ -111,7 +116,8 @@ func (db *mongoDB) SavePlayer(player model.Player) error {
 	return err
 }
 
-func (db *mongoDB) Disconnect() {
+// disconnect disconnects from the remote database
+func (db *mongoDB) disconnect() {
 	fmt.Println("Disconnecting from the database.")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	if err := db.client.Disconnect(ctx); err != nil {
@@ -120,8 +126,8 @@ func (db *mongoDB) Disconnect() {
 	defer cancel()
 }
 
-func newMongoDB() *mongoDB {
-	db := new(mongoDB)
+// connect allows the user to connect to the database
+func (db *mongoDB) connect() {
 	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err != nil {
 		panic(err)
@@ -135,5 +141,12 @@ func newMongoDB() *mongoDB {
 	db.database = database
 	db.games = database.Collection("games")
 	db.players = database.Collection("players")
-	return db
+}
+
+func init() {
+	registerDB(&DB{
+		name:        "MONGO",
+		description: "Mongo database for dev connections",
+		UnoDB:       new(mongoDB),
+	})
 }

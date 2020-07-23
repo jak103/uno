@@ -12,12 +12,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-var Database db.UnoDB
-
 func main() {
 	fmt.Println("USU - UNO v0.0.0")
-
-	Database = db.GetDb()
 
 	// New Echo server
 	e := echo.New()
@@ -46,7 +42,7 @@ func main() {
 	<-quit
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	defer Database.Disconnect()
+	defer db.Disconnect()
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
 	}

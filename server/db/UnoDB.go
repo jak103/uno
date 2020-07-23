@@ -21,11 +21,13 @@ type UnoDB interface {
 	// Looks up an existing player in the database.
 	LookupPlayer(id string) (*model.Player, error)
 	// Joins a player to a game.
-	JoinGame(gameId string, playerId string) error
+	JoinGame(gameID string, playerID string) error
 	// Saves a game to the database.
 	SaveGame(model.Game) error
 	// Saves a player to the database.
 	SavePlayer(model.Player) error
-	// Disconnects from the database.
-	Disconnect()
+	// disconnects from the database.
+	disconnect()
+	// connect to the database
+	connect()
 }
