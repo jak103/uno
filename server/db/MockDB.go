@@ -105,6 +105,10 @@ func init() {
 	registerDB(&DB{
 		name:        "MOCK",
 		description: "Mock database connection for Unit Tests",
-		UnoDB:       new(mockDB),
+		UnoDB: &mockDB{
+			games:         make(map[string]model.Game),
+			gamePasswords: make(map[string]model.Game),
+			players:       make(map[string]model.Player),
+		},
 	})
 }
