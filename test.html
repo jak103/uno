@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .card {
+      width: 116px;
+      height: 178px;
+      float: left;
+      background: #fff;
+      border-radius: 5px;
+      display: table;
+      box-sizing: border-box;
+      padding: 5px;
+      margin: 10px;
+      font-family: "Source Sans Pro", sans-serif;
+      font-size: 100px;
+      text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, -1px 1px 0 #000000,
+        1px -1px 0 #000000, 1px 0 0 #000000, -1px 0 0 #000000, 0 -1px 0 #000000,
+        0 1px 0 #000000, 4px 4px 0 #000000;
+      box-shadow: 0 0 10px #aaaaaa;
+      text-align: center;
+      position: relative;
+    }
+    .card .inner {
+      display: table-cell;
+      vertical-align: middle;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .card .mark {
+      display: inline-block;
+      vertical-align: middle;
+      background: #ffffff;
+      margin: auto;
+      padding: 0 26px;
+      border-radius: 100px 60px / 120px 60px;
+      line-height: 1.4;
+    }
+
+    .card:before,
+    .card:after {
+      display: inline-block;
+      position: absolute;
+      line-height: 0;
+      font-size: 20px;
+      color: #ffffff;
+      text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, -1px 1px 0 #000000,
+        1px -1px 0 #000000, 1px 0 0 #000000, -1px 0 0 #000000, 0 -1px 0 #000000,
+        0 1px 0 #000000, 2px 2px 0 #000000;
+    }
+
+    .card:before {
+      top: 15px;
+      left: 10px;
+    }
+    .card:after {
+      bottom: 15px;
+      right: 10px;
+      -webkit-transform: rotate(180deg);
+    }
+    .card.blue {
+      color: #0063b3;
+    }
+
+    .card.blue .inner {
+      background: #0063b3;
+    }
+    .card.num-0:before,
+    .card.num-0:after {
+      content: "0";
+    }
+    .reverse{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 140px;
+      width: 60px;
+    }
+    .reverse-symbol {
+      width: 100px;
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      transform: rotate(-45deg);
+    }
+    .arrow-right {
+      margin-left: 30px;
+      display: flex;
+      align-items: center;
+      width: 70px;
+      height: 30px;
+    }
+    .arrow-right-tail{
+      width: 60px;
+      height: 15px;
+      background: #0063b3;
+      border-radius: 15px 0 0 0
+    }
+    .arrow-right-head{
+      width: 0;
+      height: 0;
+      border-top: 20px solid transparent;
+      border-left-width: 25px;
+      border-left-style: solid;
+      border-bottom: 20px solid transparent;
+    }
+    .arrow-left {
+      margin-top: -13px;
+      display: flex;
+      align-items: center;
+      width: 70px;
+      height: 30px;
+    }
+    .arrow-left-tail{
+      width: 60px;
+      height: 15px;
+      border-radius: 0 0 15px 0
+    }
+    .arrow-left-head{
+      width: 0;
+      height: 0;
+      border-top: 20px solid transparent;
+      border-right-width: 25px;
+      border-right-style: solid;
+      border-bottom: 20px solid transparent;
+    }   
+
+    .reverse-symbol.shadow {
+      margin-right: -100px;
+    }
+    .shadow-container {
+      padding: 5px 0 5px 0;
+    }
+    .arrow-right-tail.shadow{
+      background: black;
+    }
+    .arrow-right-head.shadow{
+      border-left-color: black;
+    }
+    .arrow-left-tail.shadow{
+      background: black;
+    }
+    .arrow-left-head.shadow{
+      border-right-color: black;
+    }   
+
+    .arrow-right-tail.blue{
+      background: #0063b3;
+    }
+    .arrow-right-head.blue{
+      border-left-color: #0063b3;
+    }
+    .arrow-left-tail.blue{
+      background: #0063b3;
+    }
+    .arrow-left-head.blue{
+      border-right-color: #0063b3;
+    }   
+  </style>
+</head>
+<body>
+  <div class="card num-0 blue">
+    <span class="inner">
+      <span class="mark">
+        8
+      </span>
+    </span>
+  </div>
+  <div class="card num-0 blue">
+    <span class="inner">
+      <span class="mark">
+
+        <div class="reverse">
+          <div class="reverse-symbol shadow">
+            <div class="shadow-container">
+              <div class="arrow-right">
+                <div class="arrow-right-tail shadow"></div>
+                <div class="arrow-right-head shadow"></div>
+              </div>
+              <div class="arrow-left">
+                <div class="arrow-left-head shadow"></div>
+                <div class="arrow-left-tail shadow"></div>
+              </div>
+            </div>
+          </div>
+          <div class="reverse-symbol">
+            <div class="arrow-right">
+              <div class="arrow-right-tail blue"></div>
+              <div class="arrow-right-head blue"></div>
+            </div>
+            <div class="arrow-left">
+              <div class="arrow-left-head blue"></div>
+              <div class="arrow-left-tail blue"></div>
+            </div>
+          </div>
+        </div>
+        
+      </span>
+    </span>
+  </div>
+  <!-- <div class="reverse-symbol">
+    <div class="arrow-right">
+      <div class="arrow-right-tail"></div>
+      <div class="arrow-right-head"></div>
+    </div>
+    <div class="arrow-left">
+      <div class="arrow-left-head"></div>
+      <div class="arrow-left-tail"></div>
+    </div>
+  </div> -->
+  
+</body>
+</html>
