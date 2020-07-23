@@ -111,3 +111,19 @@ func TestPlay(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
+
+func TestStartGame(t *testing.T) {
+	// Setup
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodGet, "/startgame", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	players = []string{"player1", "player2"}
+	// Assertions
+	if assert.NoError(t, startGame(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
