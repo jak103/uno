@@ -33,7 +33,7 @@ func TestContains(t *testing.T) {
 }
 
 func TestCheckID(t *testing.T) {
-	assert.Equal(t, checkID("12234"), bool(true))
+	assert.Equal(t, checkID("12234"), bool(false))
 }
 
 func TestCheckForWinner(t *testing.T) {
