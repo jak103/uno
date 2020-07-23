@@ -74,6 +74,7 @@
       content: "0";
     }
 
+    /* Start Reverse Arrow CSS */
     .reverse{
       display: flex;
       align-items: center;
@@ -192,9 +193,88 @@
     .arrow-left-head.blue{
       border-right-color: #0063b3;
     }   
+
+    .arrow-right-tail.green{
+      background: #18a849;
+    }
+    .arrow-right-head.green{
+      border-left-color: #18a849;
+    }
+    .arrow-left-tail.green{
+      background: #18a849;
+    }
+    .arrow-left-head.green{
+      border-right-color: #18a849;
+    }   
+
+    .arrow-right-tail.red{
+      background: #c72a18;
+    }
+    .arrow-right-head.red{
+      border-left-color: #c72a18;
+    }
+    .arrow-left-tail.red{
+      background: #c72a18;
+    }
+    .arrow-left-head.red{
+      border-right-color: #c72a18;
+    }   
+
+    .arrow-right-tail.yellow{
+      background: #e6ca1e;
+    }
+    .arrow-right-head.yellow{
+      border-left-color: #e6ca1e;
+    }
+    .arrow-left-tail.yellow{
+      background: #e6ca1e;
+    }
+    .arrow-left-head.yellow{
+      border-right-color: #e6ca1e;
+    }   
+    /* End Reverse Arrow CSS */
+
+    /* Start Skip CSS */
+    .skip:before,
+    .skip:after {
+      content: "skip";
+    }
+    /* End Skip CSS */
+
+    /* Start Draw 2 CSS */
+    .draw2:before,
+    .draw2:after {
+      content: "draw 2";
+    }
+    /* End Draw 2 CSS */
+
+    /* Start Wild CSS */
+    .wild:before,
+    .wild:after {
+      content: "wild";
+    }
+    .mark.wild-mark {
+      background-image: linear-gradient(to left, red, yellow, green, blue) !important;
+    }
+    /* End Wild CSS */
+
+    /* Start Draw 4 CSS */
+    .draw4:before,
+    .draw4:after {
+      content: "draw 4";
+    }
+    .mark.draw4-mark {
+      background-image: linear-gradient(to left, red, yellow, green, blue) !important;
+    }
+    /* End Draw 4 CSS */
+
+    .card.black .inner {
+      background: black;
+    }
   </style>
 </head>
 <body>
+  <!-- Generic Blue -->
   <div class="card num-0 blue">
     <span class="inner">
       <span class="mark">
@@ -203,6 +283,7 @@
     </span>
   </div>
 
+  <!-- Reverse Card -->
   <div class="card rev blue">
     <span class="inner">
 
@@ -282,6 +363,42 @@
           </div>
         </div>
         
+      </span>
+    </span>
+  </div>
+
+  <!-- Simple Skip -->
+  <div class="card skip blue">
+    <span class="inner">
+      <span class="mark">
+        S
+      </span>
+    </span>
+  </div>
+
+  <!-- Simple Draw 2 -->
+  <div class="card draw2 blue">
+    <span class="inner">
+      <span class="mark">
+         D
+      </span>
+    </span>
+  </div>
+
+  <!-- Simple Draw 4 -->
+  <div class="card draw4 black">
+    <span class="inner">
+      <span class="mark draw4-mark">
+        4
+      </span>
+    </span>
+  </div>
+
+  <!-- Simple Wild -->
+  <div class="card wild black">
+    <span class="inner">
+      <span class="mark wild-mark">
+         w
       </span>
     </span>
   </div>
