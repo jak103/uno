@@ -33,9 +33,9 @@ func GetDb() (*DB, error) {
 		if db, ok := dbRegistry[environment]; ok {
 			db.connect()
 			connectedDB = db
+		} else {
+			return nil, fmt.Errorf("%s is not a registered DB_TYPE", environment)
 		}
-
-		return nil, fmt.Errorf("%s is not a registered DB_TYPE", environment)
 	}
 
 	return connectedDB, nil
