@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-var Database db.UnoDb
+var Database db.UnoDB
 
 func main() {
 	fmt.Println("USU - UNO v0.0.0")
