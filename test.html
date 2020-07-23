@@ -73,12 +73,27 @@
     .card.num-0:after {
       content: "0";
     }
+
     .reverse{
       display: flex;
       align-items: center;
       justify-content: center;
       height: 140px;
       width: 60px;
+    }
+    .reverse-mini {
+      position: absolute;
+      transform: scale(0.2);
+    }
+    .reverse-mini-top{
+      top: -10px;
+      left: -33px;
+      
+    }
+    .reverse-mini-bottom{
+      bottom: 15px;
+      right: 10px;
+      transform: rotate(180deg);
     }
     .reverse-symbol {
       width: 100px;
@@ -135,6 +150,11 @@
     .shadow-container {
       padding: 5px 0 5px 0;
     }
+    .reverse-symbol.shadow-mini {
+      margin-right: -95px;
+      margin-bottom: -57px;
+    }
+
     .arrow-right-tail.shadow{
       background: black;
     }
@@ -146,6 +166,19 @@
     }
     .arrow-left-head.shadow{
       border-right-color: black;
+    }   
+
+    .arrow-right-tail.white{
+      background: white;
+    }
+    .arrow-right-head.white{
+      border-left-color: white;
+    }
+    .arrow-left-tail.white{
+      background: white;
+    }
+    .arrow-left-head.white{
+      border-right-color: white;
     }   
 
     .arrow-right-tail.blue{
@@ -166,14 +199,39 @@
   <div class="card num-0 blue">
     <span class="inner">
       <span class="mark">
-        8
+        0
       </span>
     </span>
   </div>
-  <div class="card num-0 blue">
-    <span class="inner">
-      <span class="mark">
 
+  <div class="card rev blue">
+    <span class="inner">
+      <div class="reverse-mini reverse-mini-top">
+        <div class="reverse-symbol shadow-mini">
+          <div class="shadow-container">
+            <div class="arrow-right">
+              <div class="arrow-right-tail shadow"></div>
+              <div class="arrow-right-head shadow"></div>
+            </div>
+            <div class="arrow-left">
+              <div class="arrow-left-head shadow"></div>
+              <div class="arrow-left-tail shadow"></div>
+            </div>
+          </div>
+        </div>
+        <div class="reverse-symbol">
+          <div class="arrow-right">
+            <div class="arrow-right-tail white"></div>
+            <div class="arrow-right-head white"></div>
+          </div>
+          <div class="arrow-left">
+            <div class="arrow-left-head white"></div>
+            <div class="arrow-left-tail white"></div>
+          </div>
+        </div>
+      </div>
+
+      <span class="mark">
         <div class="reverse">
           <div class="reverse-symbol shadow">
             <div class="shadow-container">
@@ -202,16 +260,5 @@
       </span>
     </span>
   </div>
-  <!-- <div class="reverse-symbol">
-    <div class="arrow-right">
-      <div class="arrow-right-tail"></div>
-      <div class="arrow-right-head"></div>
-    </div>
-    <div class="arrow-left">
-      <div class="arrow-left-head"></div>
-      <div class="arrow-left-tail"></div>
-    </div>
-  </div> -->
-  
 </body>
 </html>
