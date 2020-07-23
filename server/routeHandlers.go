@@ -24,7 +24,11 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func newGame(c echo.Context) error {
-	createNewGame()
+
+	if err := createNewGame(); err != nil {
+		return err
+	}
+
 	return c.JSONPretty(http.StatusOK, &Response{true, newPayload("")}, "  ")
 }
 

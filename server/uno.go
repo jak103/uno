@@ -2,6 +2,8 @@ package main
 
 import (
 	"math/rand"
+
+	"github.com/jak103/uno/db"
 )
 
 ////////////////////////////////////////////////////////////
@@ -86,9 +88,21 @@ func updateGame(game string, username string) bool {
 	return false
 }
 
-func createNewGame() string {
-	gameID = "12234"
-	return gameID
+func createNewGame() error {
+	database, err := db.GetDb()
+
+	if err != nil {
+		return err
+	}
+
+	game, err := database.CreateGame()
+
+	if err != nil {
+		return err
+	}
+
+	gameID = game.ID
+	return nil
 }
 
 func joinGame(game string, username string) bool {
