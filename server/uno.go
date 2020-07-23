@@ -39,9 +39,10 @@ var gameStarted bool = false
 ////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
-func newRandomCard() []model.Card {
-	return []model.Card{model.Card{rand.Intn(10), randColor(rand.Intn(4))}}
-}
+// func newRandomCard() []model.Card {
+// TODO use deck utils instead
+// 	return []model.Card{model.Card{rand.Intn(10), randColor(rand.Intn(4))}}
+// }
 
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
@@ -134,10 +135,12 @@ func playCard(game string, username string, card model.Card) bool {
 
 // TODO: Keep track of current card that is top of the deck
 func drawCard(game string, username string) bool {
+
 	if checkID(game) && username == currPlayer {
 		playerIndex = (playerIndex + 1) % len(players)
 		currPlayer = players[playerIndex]
-		allCards[username] = append(allCards[username], newRandomCard()[0])
+		// TODO: Use deck utils instead
+		//allCards[username] = append(allCards[username], newRandomCard()[0])
 		return true
 	}
 	return false
@@ -153,12 +156,15 @@ func dealCards() {
 	for k := range players {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
-			cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
+
+			// TODO Use deck utils instead
+			//cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
 		}
 		allCards[players[k]] = cards
 	}
 
-	currCard = newRandomCard()
+	// TODO Use deck utils instead
+	//currCard = newRandomCard()
 }
 
 // TODO: make sure this reflects on the front end
