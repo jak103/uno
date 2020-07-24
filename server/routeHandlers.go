@@ -14,9 +14,15 @@ type Response struct {
 	Payload   map[string]interface{} `json:"payload"`
 }
 
+type Status struct {
+	Message string `json:"message"`
+	Error   string `json:"error"`
+}
+
 func setupRoutes(e *echo.Echo) {
 	e.GET("/newgame", newGame)
 	e.GET("/update/:game/:username", update)
+	e.GET("/cardcount/:game", cardCount)
 	e.POST("/startgame/:game/:username", startGame)
 	e.POST("/login/:game/:username", login)
 	e.POST("/play/:game/:username/:number/:color", play)
@@ -45,6 +51,18 @@ func startGame(c echo.Context) error {
 func update(c echo.Context) error {
 	valid := updateGame(c.Param("game"), c.Param("username"))
 	return respondIfValid(c, valid)
+}
+
+func cardCount(c echo.Context) error {
+	var response *Status
+	val, err := getCardCount(c.Param("game"))
+	if err != nil {
+		response = &Status{"", err.Error()}
+	} else {
+		response = &Status{val, ""}
+	}
+
+	return c.JSONPretty(http.StatusOK, response, "  ")
 }
 
 func play(c echo.Context) error {
