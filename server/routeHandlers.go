@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -39,11 +40,39 @@ func startGame(c echo.Context) error {
 }
 
 func update(c echo.Context) error {
+	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
+
+	// testing only
+	if validUser {
+		fmt.Println(claims["name"])
+		fmt.Println(claims["userid"])
+		fmt.Println(claims["gameid"])
+		fmt.Println(claims["iat"])
+		fmt.Println(claims["exp"])
+	} else {
+		fmt.Println("Update user token not valid")
+		return respondIfValid(c, false)
+	}
+
 	valid := updateGame(c.Param("game"), c.Param("username"))
-	return respondIfValid(c, valid)
+	return respondIfValid(c, valid && validUser)
 }
 
 func play(c echo.Context) error {
+	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
+
+	// testing only
+	if validUser {
+		fmt.Println(claims["name"])
+		fmt.Println(claims["userid"])
+		fmt.Println(claims["gameid"])
+		fmt.Println(claims["iat"])
+		fmt.Println(claims["exp"])
+	} else {
+		fmt.Println("On Play user token not valid")
+		return respondIfValid(c, false)
+	}
+
 	num, _ := strconv.Atoi(c.Param("number"))
 	card := Card{num, c.Param("color")}
 	valid := playCard(c.Param("game"), c.Param("username"), card)
@@ -51,6 +80,19 @@ func play(c echo.Context) error {
 }
 
 func draw(c echo.Context) error {
+	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
+
+	// testing only
+	if validUser {
+		fmt.Println(claims["name"])
+		fmt.Println(claims["userid"])
+		fmt.Println(claims["gameid"])
+		fmt.Println(claims["iat"])
+		fmt.Println(claims["exp"])
+	} else {
+		fmt.Println("On Draw user token not valid")
+		return respondIfValid(c, false)
+	}
 	valid := drawCard(c.Param("game"), c.Param("username"))
 	return respondIfValid(c, valid)
 }
