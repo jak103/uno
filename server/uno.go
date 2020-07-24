@@ -48,7 +48,7 @@ func newRandomCard() []Card {
 	return []Card{Card{rand.Intn(10), randColor(rand.Intn(4))}}
 }
 
-func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
+func newPayload(user string, gameid string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 
 	// Update known variables
@@ -56,7 +56,7 @@ func newPayload(user string) map[string]interface{} { // User will default to ""
 	payload["current_player"] = currPlayer
 	payload["all_players"] = players
 	payload["deck"] = allCards[user] // returns nil if currPlayer = "" or user not in allCards
-	payload["game_id"] = gameID
+	payload["game_id"] = gameid
 	payload["game_over"] = checkForWinner()
 
 	return payload
