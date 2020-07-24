@@ -2,8 +2,8 @@ package main
 
 import (
 	"net/http"
-	"strconv"
 
+	"github.com/jak103/uno/model"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,7 +24,11 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func newGame(c echo.Context) error {
-	createNewGame()
+
+	if err := createNewGame(); err != nil {
+		return err
+	}
+
 	return c.JSONPretty(http.StatusOK, &Response{true, newPayload("")}, "  ")
 }
 
@@ -44,8 +48,8 @@ func update(c echo.Context) error {
 }
 
 func play(c echo.Context) error {
-	num, _ := strconv.Atoi(c.Param("number"))
-	card := Card{num, c.Param("color")}
+	// TODO Cards have a value, which can include skip, reverse, etc
+	card := model.Card{c.Param("number"), c.Param("color")}
 	valid := playCard(c.Param("game"), c.Param("username"), card)
 	return respondIfValid(c, valid)
 }
