@@ -1,6 +1,7 @@
 package model
 
 type Player struct {
-	ID   string
-	Name string
+	ID    string
+	Name  string
+	Cards []Card
 }
