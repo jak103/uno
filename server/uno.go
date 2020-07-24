@@ -193,3 +193,13 @@ func checkForWinner() string {
 	}
 	return ""
 }
+
+// A simple helper function to pull a card from a game and put it in the players hand.
+// THis is used in  a lot of places, so this should be  a nice help
+func DrawCardHelper(game *model.Game, player *model.Player) {
+	lastIndex := len(game.DrawPile) - 1
+	card := game.DrawPile[lastIndex]
+
+	append(player.Cards, card)
+	game.DrawPile = game.DrawPile[:lastIndex]
+}
