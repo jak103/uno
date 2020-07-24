@@ -31,3 +31,12 @@ func TestContains(t *testing.T) {
 	assert.Equal(t, index, -1)
 	assert.Equal(t, found, false)
 }
+
+func TestCheckForWinner(t *testing.T) {
+	players = []string{"player1", "player2"}
+	allCards = make(map[string][]Card)
+	dealCards()
+	assert.Equal(t, "", checkForWinner())
+	allCards[players[0]] = make([]Card, 0)
+	assert.Equal(t, "player1", checkForWinner())
+}
