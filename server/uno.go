@@ -8,35 +8,6 @@ import (
 )
 
 ////////////////////////////////////////////////////////////
-// Utility functions used in place of firebase
-////////////////////////////////////////////////////////////
-func randColor(i int) string {
-	switch i {
-	case 0:
-		return "red"
-	case 1:
-		return "blue"
-	case 2:
-		return "green"
-	case 3:
-		return "yellow"
-	}
-	return ""
-}
-
-////////////////////////////////////////////////////////////
-// All the data needed for a simulation of the game
-// eventually, this will be replaced with firebase
-////////////////////////////////////////////////////////////
-var gameID string = ""
-var currCard []model.Card = nil // The cards are much easier to render as a list
-var players []string = []string{}
-var playerIndex = 0 // Used to iterate through the players
-var currPlayer string = ""
-var allCards map[string][]model.Card = make(map[string][]model.Card) // k: username, v: list of cards
-var gameStarted bool = false
-
-////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
 // func newRandomCard() []model.Card {
