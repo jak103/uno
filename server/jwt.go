@@ -107,3 +107,9 @@ func getValidClaims(myToken string, signKey string) (jwt.MapClaims, bool){
 	return claims, valid
 	
 }
+
+func MakeJWTPayload(payload map[string]interface{}, EncodedJWT string) map[string]interface{} {
+	payload["JWT"] = EncodedJWT
+	
+	return payload
+}
