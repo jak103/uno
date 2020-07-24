@@ -15,8 +15,8 @@ type Game struct {
 	Password      string     `bson:"password,omitempty" json:"password"`
 	DrawPile      []Card     `bson:"draw_pile,omitempty" json:"draw_pile"`
 	DiscardPile   []Card     `bson:"discard_pile,omitempty" json:"discard_pile"`
-	CurrentCard   Card       `bson:"current_card,omitempty" json:"current_card"`
 	Players       []Player   `bson:"players,omitempty" json:"players"`
-	CurrentPlayer Player     `bson:"current_player,omitempty" json:"current_player"`
+	CurrentPlayer int        `bson:"current_player,omitempty" json:"current_player"`
 	Status        GameStatus `bson:"status,omitempty" json:"status"`
+	Direction     bool       `bson:"direction,omitempty" json:"direction"`
 }
