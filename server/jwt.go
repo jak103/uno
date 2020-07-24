@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"time"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
@@ -12,10 +12,11 @@ const signKey = "^s@m&R@n&om,St)("
 
 // example usage. Change the name of the function to main and type "go run jwt.go" in this directory to see it working.
 // DO NOT commit after renaming this fucntion to main, as this will break the build.
+/*
 func exampleUsage() {
 	// example of originally creating a token
 	// a token like this should be set to their header. It is just a string, so it is easy enough to set to a cookie.
-    createdToken, err := newJWT("Thomas", uuid.New(), "1234", []byte(signKey))
+    createdToken, err := newJWT("Thomas", uuid.New(), "1234", true, []byte(signKey))
     if err != nil {
         fmt.Println("Creating token failed")
     }
@@ -43,10 +44,11 @@ func exampleUsage() {
 	}
 	
 }
+*/
 
 // function to create a new jwt based on a name, gameid, and a signKey
 // note, when this is merged with the db branch, we may want to combine "name" and "userid" into one "player" object
-func newJWT(name string, userid uuid.UUID, gameid string, signKey []byte) (string, error) {
+func newJWT(name string, userid uuid.UUID, gameid string, isHost bool, signKey []byte) (string, error) {
     // Create the token
     token := jwt.New(jwt.SigningMethodHS256)
 	
@@ -60,6 +62,7 @@ func newJWT(name string, userid uuid.UUID, gameid string, signKey []byte) (strin
 		"name": name,
 		"userid": userid,
 		"gameid": gameid,
+		"isHost": isHost,
     }
     // Sign and get the complete encoded token as a string
     tokenString, err := token.SignedString(signKey)
@@ -81,8 +84,8 @@ func parseJWT(myToken string, signKey string) (*jwt.Token, bool) {
     } else {
 		// either there was an error (couldn't parse), or the token is invalid/expired.
 		// create an empty token, and return it with an "invalid" flag.
-		var i *jwt.Token
-		return i, false
+		var t *jwt.Token
+		return t, false
     }
 }
 
