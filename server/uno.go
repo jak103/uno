@@ -7,6 +7,37 @@ import (
 	"github.com/jak103/uno/model"
 )
 
+//Old Items wont need or use these anymore
+
+// ////////////////////////////////////////////////////////////
+// // Utility functions used in place of firebase
+// ////////////////////////////////////////////////////////////
+// func randColor(i int) string {
+// 	switch i {
+// 	case 0:
+// 		return "red"
+// 	case 1:
+// 		return "blue"
+// 	case 2:
+// 		return "green"
+// 	case 3:
+// 		return "yellow"
+// 	}
+// 	return ""
+// }
+
+// ////////////////////////////////////////////////////////////
+// // All the data needed for a simulation of the game
+// // eventually, this will be replaced with firebase
+// ////////////////////////////////////////////////////////////
+// var gameID string = ""
+// var currCard []model.Card = nil // The cards are much easier to render as a list
+// var players []string = []string{}
+// var playerIndex = 0 // Used to iterate through the players
+// var currPlayer string = ""
+// var allCards map[string][]model.Card = make(map[string][]model.Card) // k: username, v: list of cards
+// var gameStarted bool = false
+
 ////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
@@ -18,13 +49,15 @@ import (
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 
+	// Return the game model instead of these individually.
+
 	// Update known variables
-	payload["current_card"] = currCard
-	payload["current_player"] = currPlayer
-	payload["all_players"] = players
-	payload["deck"] = allCards[user] // returns nil if currPlayer = "" or user not in allCards
-	payload["game_id"] = gameID
-	payload["game_over"] = checkForWinner()
+	// payload["current_card"] = currCard
+	// payload["current_player"] = currPlayer
+	// payload["all_players"] = players
+	// payload["deck"] = allCards[user] // returns nil if currPlayer = "" or user not in allCards
+	// payload["game_id"] = gameID
+	// payload["game_over"] = checkForWinner()
 
 	return payload
 }
@@ -105,16 +138,29 @@ func playCard(game string, username string, card model.Card) bool {
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(game string, username string) bool {
+func drawCard(gameID string, playerID string) bool {
+	database, err := db.GetDb()
 
-	if checkID(game) && username == currPlayer {
-		playerIndex = (playerIndex + 1) % len(players)
-		currPlayer = players[playerIndex]
-		// TODO: Use deck utils instead
-		//allCards[username] = append(allCards[username], newRandomCard()[0])
-		return true
+	if err != nil {
+		return err
 	}
-	return false
+
+	game, err := database.LookupGameByID(gameID)
+	var player model.Player
+	for _, item := range game.Players {
+		if playerID == item.ID {
+			player = item
+		}
+	}
+	lastIndex := len(game.DrawPile) - 1
+	card := game.DrawPile[lastIndex]
+
+	append(player.Cards, card)
+	game.DrawPile = game.DrawPile[:lastIndex]
+
+	database.SaveGame(game)
+
+	return true
 }
 
 // TODO: need to deal the actual cards, not just random numbers
