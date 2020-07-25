@@ -1,4 +1,4 @@
-module github.com/jak103/uno
+module github.com/jak103/usu-uno
 
 go 1.14
 
