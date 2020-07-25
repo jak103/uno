@@ -9,19 +9,20 @@ export default {
         return BaseService.get("/newgame");
     },
 
-    update(gameId, userName) {
-        return BaseService.get(`/update/${gameId}/${userName}`);
+    // TODO authorize game routes with token
+    update() {
+        return BaseService.get(`/update`);
     },
 
-    startGame(gameId, userName) {
-        return BaseService.post(`/startgame/${gameId}/${userName}`);
+    startGame() {
+        return BaseService.post(`/startgame`);
     },
 
-    playCard(gameId, userName, cardNumber, cardColor) {
-        return BaseService.post(`/play/${gameId}/${userName}/${cardNumber}/${cardColor}`);
+    playCard(cardNumber, cardColor) {
+        return BaseService.post(`/play/${cardNumber}/${cardColor}`);
     },
 
-    drawCard(gameId, userName) {
-        return BaseService.post(`/draw/${gameId}/${userName}`);
+    drawCard() {
+        return BaseService.post(`/draw`);
     }
 }

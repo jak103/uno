@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -17,11 +16,11 @@ type Response struct {
 
 func setupRoutes(e *echo.Echo) {
 	e.GET("/newgame", newGame)
-	e.GET("/update/:game/:username", update)
-	e.POST("/startgame/:game/:username", startGame)
+	e.GET("/update", update)
+	e.POST("/startgame", startGame)
 	e.POST("/login/:game/:username", login)
-	e.POST("/play/:game/:username/:number/:color", play)
-	e.POST("/draw/:game/:username", draw)
+	e.POST("/play/:number/:color", play)
+	e.POST("/draw", draw)
 }
 
 func newGame(c echo.Context) error {
@@ -31,7 +30,7 @@ func newGame(c echo.Context) error {
 
 func login(c echo.Context) error {
 	validGame := joinGame(c.Param("game"), c.Param("username"))
-	return respondIfValid(c, validGame)
+	return respondIfValid(c, validGame, c.Param("username"))
 }
 
 func startGame(c echo.Context) error {
@@ -42,65 +41,42 @@ func startGame(c echo.Context) error {
 func update(c echo.Context) error {
 	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
 
-	// testing only
-	if validUser {
-		fmt.Println(claims["name"])
-		fmt.Println(claims["userid"])
-		fmt.Println(claims["gameid"])
-		fmt.Println(claims["iat"])
-		fmt.Println(claims["exp"])
-	} else {
-		fmt.Println("Update user token not valid")
-		return respondIfValid(c, false)
+	if !validUser {
+		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
 	}
 
-	valid := updateGame(c.Param("game"), c.Param("username"))
-	return respondIfValid(c, valid && validUser)
+	valid := updateGame(claims["gameid"].(string))
+	return respondIfValid(c, valid && validUser, claims["userid"].(string))
 }
 
 func play(c echo.Context) error {
 	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
 
-	// testing only
-	if validUser {
-		fmt.Println(claims["name"])
-		fmt.Println(claims["userid"])
-		fmt.Println(claims["gameid"])
-		fmt.Println(claims["iat"])
-		fmt.Println(claims["exp"])
-	} else {
-		fmt.Println("On Play user token not valid")
-		return respondIfValid(c, false)
+	if !validUser {
+		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
 	}
 
 	num, _ := strconv.Atoi(c.Param("number"))
 	card := Card{num, c.Param("color")}
-	valid := playCard(c.Param("game"), c.Param("username"), card)
-	return respondIfValid(c, valid)
+	valid := playCard(claims["gameid"].(string), claims["userid"].(string), card)
+	return respondIfValid(c, valid, claims["userid"].(string))
 }
 
 func draw(c echo.Context) error {
 	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
 
-	// testing only
-	if validUser {
-		fmt.Println(claims["name"])
-		fmt.Println(claims["userid"])
-		fmt.Println(claims["gameid"])
-		fmt.Println(claims["iat"])
-		fmt.Println(claims["exp"])
-	} else {
-		fmt.Println("On Draw user token not valid")
-		return respondIfValid(c, false)
+	if !validUser {
+		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
 	}
-	valid := drawCard(c.Param("game"), c.Param("username"))
-	return respondIfValid(c, valid)
+
+	valid := drawCard(claims["gameid"].(string), claims["userid"].(string))
+	return respondIfValid(c, valid, claims["userid"].(string))
 }
 
-func respondIfValid(c echo.Context, valid bool) error {
+func respondIfValid(c echo.Context, valid bool, userId string) error {
 	var payload *Response
 	if valid {
-		payload = &Response{true, newPayload(c.Param("username"))}
+		payload = &Response{true, newPayload(userId)}
 	} else {
 		payload = &Response{false, nil}
 	}
