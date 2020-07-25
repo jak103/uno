@@ -78,7 +78,7 @@ func contains(arr []string, val string) (int, bool) {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func updateGame(game string, username string) bool {
+func updateGame(game string) bool {
 	success := false
 	if success = checkID(game); success && gameStarted {
 		return true
