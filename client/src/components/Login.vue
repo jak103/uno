@@ -56,7 +56,7 @@ export default {
       }
     },
     async newGame() {
-      let res = await unoService.newGame();
+      let res = await unoService.newGame(this.user_name);
       this.game_id = res.data.payload.game_id;
       this.status = "New game id is: " + this.game_id;
     }

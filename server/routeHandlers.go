@@ -16,7 +16,7 @@ type Response struct {
 }
 
 func setupRoutes(e *echo.Echo) {
-	e.GET("/newgame", newGame)
+	e.GET("/newgame/:username", newGame)
 	e.GET("/update", update)
 	e.POST("/startgame", startGame)
 	e.POST("/login/:game/:username", login)
@@ -61,7 +61,7 @@ func update(c echo.Context) error {
 	}
 
 	valid := updateGame(claims["gameid"].(string))
-	return respondIfValid(c, valid && validUser, claims["userid"].(string))
+	return respondIfValid(c, valid && validUser, claims["userid"].(string), claims["gameid"].(string))
 }
 
 func play(c echo.Context) error {
@@ -74,7 +74,7 @@ func play(c echo.Context) error {
 	num, _ := strconv.Atoi(c.Param("number"))
 	card := Card{num, c.Param("color")}
 	valid := playCard(claims["gameid"].(string), claims["userid"].(string), card)
-	return respondIfValid(c, valid, claims["userid"].(string))
+	return respondIfValid(c, valid, claims["userid"].(string), claims["gameid"].(string))
 }
 
 func draw(c echo.Context) error {
@@ -85,13 +85,13 @@ func draw(c echo.Context) error {
 	}
 
 	valid := drawCard(claims["gameid"].(string), claims["userid"].(string))
-	return respondIfValid(c, valid, claims["userid"].(string))
+	return respondIfValid(c, valid, claims["userid"].(string), claims["gameid"].(string))
 }
 
-func respondIfValid(c echo.Context, valid bool) error {
+func respondIfValid(c echo.Context, valid bool, userId string, gameId string) error {
 	var response *Response
 	if valid {
-		response = &Response{true, newPayload(c.Param("username"), c.Param("game"))}
+		response = &Response{true, newPayload(userId, gameId)}
 	} else {
 		response = &Response{false, nil}
 	}

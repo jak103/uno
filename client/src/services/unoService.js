@@ -5,8 +5,8 @@ export default {
         return BaseService.post(`/login/${gameId}/${userName}`);
     },
 
-    async newGame() {
-        return BaseService.get("/newgame");
+    async newGame(userName) {
+        return BaseService.get(`/newgame/${userName}`);
     },
 
     // TODO authorize game routes with token
