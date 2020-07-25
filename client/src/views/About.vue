@@ -138,6 +138,7 @@ export default {
         }
       });
     },
+<<<<<<< HEAD
     hint(){
       var color = this.current_card[0].color
       var number = this.current_card[0].number
@@ -156,6 +157,26 @@ export default {
           }
         }
       }
+=======
+    helpMenu(){
+        
+          var color = this.current_card[0].color
+          var number = this.current_card[0].number
+          alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
+        // .post(
+        //   "http://localhost:8080/play/" +
+        //     this.game_id +
+        //     "/" +
+        //     this.username +
+        //     "/" +
+        //     100 +
+        //     "/" +
+        //     card.color
+        // )    
+        // .then(() => {
+        //     this.updateData();
+        //   });
+>>>>>>> Added help button
     },
 
     startGame() {
