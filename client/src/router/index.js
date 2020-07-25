@@ -26,15 +26,7 @@ const routes = [
     path: '/help',
     name: 'Help',
     component: () => import(/* webpackChunkName: "about" */ '../views/Help.vue'),
-<<<<<<< HEAD
-<<<<<<< HEAD
-    // props: true
-=======
     props: true
->>>>>>> Created rules page, and drop down menu -> need to fix the appearence of text on the help page.
-=======
-    // props: true
->>>>>>> fixed the text display issue
   }
 ]
 
