@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/jak103/usu-uno/model"
+	"github.com/jak103/uno/model"
 )
 
 // Prints a card's color and value

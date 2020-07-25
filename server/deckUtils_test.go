@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/jak103/usu-uno/server/model"
+	"github.com/jak103/uno/model"
 	
 	//Needed for captureOutput()
 	"bytes"
