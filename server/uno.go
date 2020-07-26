@@ -140,17 +140,19 @@ func createNewGame() error {
 	return nil
 }
 
-func joinGame(game string, username string) bool {
-	if checkID(game) {
-		user := username
-
-		if _, found := contains(players, user); !found {
-			players = append(players, user)
-			allCards[user] = nil // No cards yet
-		}
-		return true
+func joinGame(game string, username string) error {
+	database, err := db.GetDb();
+	if err != nil {
+		return err
 	}
-	return false // bad game_id
+
+	player, err := database.CreatePlayer(username)
+
+	if err != nil {
+		return err
+	}
+
+	return database.JoinGame(game, player.ID)
 }
 
 // The function for playing a card. Right now it grabs the game, checks that the
@@ -260,23 +262,26 @@ func drawCard(gameID string, playerID string) bool {
 
 // TODO: need to deal the actual cards, not just random numbers
 func dealCards() {
-	// The game has started, no more players are joining
-	// loop through players, set their cards
-	gameStarted = true
-	currPlayer = players[rand.Intn(len(players))]
+    // The game has started, no more players are joining
+    // loop through players, set their cards
+    gameStarted = true
+    currPlayer = players[rand.Intn(len(players))]
+    deck := generateShuffledDeck()
 
-	for k := range players {
-		cards := []model.Card{}
-		for i := 0; i < 7; i++ {
+    for k := range players {
+        cards := []model.Card{}
+        for i := 0; i < 7; i++ {
 
-			// TODO Use deck utils instead
-			//cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
-		}
-		allCards[players[k]] = cards
-	}
+            drawnCard := deck[len(deck)-1]
+            deck = deck[:len(deck)-1]
+            cards = append(cards, drawnCard)
+            //cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
+        }
+        allCards[players[k]] = cards
+    }
 
-	// TODO Use deck utils instead
-	//currCard = newRandomCard()
+    currCard = deck
+    //currCard = newRandomCard()
 }
 
 // TODO: make sure this reflects on the front end

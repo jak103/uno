@@ -80,3 +80,12 @@ func TestPlayCard(t *testing.T) {
 		assert.Fail(t, "Failed to play card.")
 	}
 }
+
+func TestCheckForWinner(t *testing.T) {
+	players = []string{"player1", "player2"}
+	allCards = make(map[string][]model.Card)
+	dealCards()
+	assert.Equal(t, "", checkForWinner())
+	allCards[players[0]] = make([]model.Card, 0)
+	assert.Equal(t, "player1", checkForWinner())
+}
