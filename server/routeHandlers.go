@@ -2,9 +2,9 @@ package main
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/jak103/uno/model"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,8 +25,12 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func newGame(c echo.Context) error {
-	gameid := createNewGame()
-
+	gameid, gameErr := createNewGame()
+    
+    if  gameErr != nil {
+		return gameErr
+	}
+    
 	// TODO: validate username
 	encodedJWT, err := newJWT(c.Param("username"), uuid.New(), gameid, true, []byte(signKey))
 
@@ -72,7 +76,8 @@ func play(c echo.Context) error {
 	}
 
 	num, _ := strconv.Atoi(c.Param("number"))
-	card := Card{num, c.Param("color")}
+    // TODO Cards have a value, which can include skip, reverse, etc
+    card := model.Card{num, c.Param("color")}
 	valid := playCard(claims["gameid"].(string), claims["userid"].(string), card)
 	return respondIfValid(c, valid, claims["userid"].(string), claims["gameid"].(string))
 }
