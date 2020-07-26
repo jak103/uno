@@ -13,6 +13,10 @@ export default {
         return BaseService.get(`/update/${gameId}/${userName}`);
     },
 
+    getHandCount(gameId) {
+        return BaseService.get(`/cardcount/${gameId}`);
+    },
+
     startGame(gameId, userName) {
         return BaseService.post(`/startgame/${gameId}/${userName}`);
     },
