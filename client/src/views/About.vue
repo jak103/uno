@@ -53,9 +53,12 @@
                 <v-div class="dropdown">
                   <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
                   <v-div class="dropdown_content">
-                    <a href="help">Rules</a>
-                    <a href='help'>Tutorials</a>
-                    <a hred='help'>Card Abilities</a>
+                    <router-link to="help#section-one" @click.native="help('#section-one')">Rules</router-link>
+                    <router-link to="help#section-two" @click.native="help('#section-two')">Tutorials</router-link>
+                    <router-link to="help#section-three" @click.native="help('#section-three')">Card Abilities</router-link>
+                    <!-- <a href="help" v-scroll-to="'#section-one'">Rules</a>
+                    <a href="help" v-scroll-to="'#section-two'">Tutorials</a>
+                    <a href="help" v-scroll-to="'#section-three'">Card Abilities</a> -->
                   </v-div>
                 </v-div>    
               </v-card>
@@ -93,6 +96,7 @@
 <script>
 import unoService from "../services/unoService";
 import Card from "../components/Card";
+
 export default {
   props: {
     game_id: {
