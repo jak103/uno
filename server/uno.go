@@ -53,8 +53,19 @@ func drawCardHelper(game *model.Game, player *model.Player) {
 	lastIndex := len(game.DrawPile) - 1
 	card := game.DrawPile[lastIndex]
 
-	append(player.Cards, card)
+	player.Cards = append(player.Cards, card)
 	game.DrawPile = game.DrawPile[:lastIndex]
+}
+
+// A simpler helper function for getting the player with a matching ID to playerID
+// from the list of players in the game.
+func getPlayer(game *model.Game, playerID string) *model.Player {
+	for _, item := range game.Players {
+		if playerID == item.ID {
+			return &item
+		}
+	}
+	return nil
 }
 
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
@@ -127,25 +138,56 @@ func joinGame(game string, username string) bool {
 	return false // bad game_id
 }
 
-func playCard(game string, username string, card model.Card) bool {
-	if checkID(game) && currPlayer == username {
-		cards := allCards[username]
-		if card.Color == currCard[0].Color || card.Value == currCard[0].Value {
-			// Valid card can be played
-			playerIndex = (playerIndex + 1) % len(players)
-			currPlayer = players[playerIndex]
-			currCard[0] = card
+// The function for playing a card. Right now it grabs the game, checks that the
+// Player id exists in this game, then checks that they hold the card provided,
+// If both are true it adds the card to the discard pile in the game and removes it
+// From the players hand and we return true, else at the end we return false.
+// We must do the checks because they are not done anywhere else.
+func playCard(gameID string, playerID string, card model.Card) bool {
+	database, dbErr := db.GetDb()
 
-			for index, item := range cards {
-				if item == currCard[0] {
-					allCards[username] = append(cards[:index], cards[index+1:]...)
-					break
+	if dbErr != nil {
+		return false
+	}
+
+	game, gameErr := database.LookupGameByID(gameID)
+
+	if gameErr != nil {
+		return false
+	}
+
+	for _, player := range game.Players {
+		if playerID == player.ID {
+			for index, item := range player.Cards {
+				if item.Color == card.Color && item.Value == card.Value {
+					player.Cards = append(player.Cards[:index], player.Cards[index+1:]...)
+					game.DiscardPile = append(game.DiscardPile, card)
+					return true
 				}
 			}
 		}
-		return true
 	}
+
 	return false
+
+	// There are a couple ways this could be done.
+	// We could use a helper function to get the player, instead of looking for it each time.
+	/*
+		player := getPlayer(game, playerId)
+
+		if player == null{
+			return false
+		}
+
+		for index, item := range player.Cards {
+			if item.Color == card.Color && item.Value == card.Value {
+				player.Cards = append(player.Cards[:index], player.Cards[index+1:]...)
+				game.DiscardPile = append(game.DiscardPile, card)
+				return true
+			}
+		}
+
+	*/
 }
 
 // TODO: Keep track of current card that is top of the deck
@@ -153,20 +195,22 @@ func drawCard(gameID string, playerID string) bool {
 	database, err := db.GetDb()
 
 	if err != nil {
-		return err
+		return false
 	}
 
 	game, err := database.LookupGameByID(gameID)
-	var player model.Player
+	var player *model.Player
 	for _, item := range game.Players {
 		if playerID == item.ID {
-			player = item
+			player = &item
 		}
 	}
-
+	if player == nil {
+		return false
+	}
 	drawCardHelper(game, player)
 
-	database.SaveGame(game)
+	database.SaveGame(*game)
 
 	return true
 }
