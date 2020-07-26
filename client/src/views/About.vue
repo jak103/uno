@@ -138,7 +138,6 @@ export default {
         }
       });
     },
-<<<<<<< HEAD
     hint(){
       var color = this.current_card[0].color
       var number = this.current_card[0].number
@@ -157,26 +156,6 @@ export default {
           }
         }
       }
-=======
-    helpMenu(){
-        
-          var color = this.current_card[0].color
-          var number = this.current_card[0].number
-          alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
-        // .post(
-        //   "http://localhost:8080/play/" +
-        //     this.game_id +
-        //     "/" +
-        //     this.username +
-        //     "/" +
-        //     100 +
-        //     "/" +
-        //     card.color
-        // )    
-        // .then(() => {
-        //     this.updateData();
-        //   });
->>>>>>> Added help button
     },
 
     startGame() {
@@ -239,11 +218,17 @@ export default {
   .hintbtn a, .dropdown_content a {
     color: black;
     padding: 6px 8px;
+  }
+
+  .dropdown_content a {
+    color: black;
+    padding: 12px 16px;
     text-decoration: none;
     display: block;
   }
 
   /* Change color of dropdown links on hover */
+
   .dropdown_content a:hover, .hintbtn a:hover {background-color: #ddd;}
 
   /* Show the dropdown menu on hover */
@@ -251,5 +236,4 @@ export default {
 
   /* Change the background color of the dropdown button when the dropdown content is shown */
   .dropdown:hover .helpDropBtn, .hintbtn a:hover  {background-color: #3e8e41;}
-
 </style>
