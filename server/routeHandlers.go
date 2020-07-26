@@ -2,9 +2,9 @@ package main
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/jak103/uno/model"
 	"github.com/labstack/echo/v4"
 )
 
@@ -40,6 +40,7 @@ func newGame(c echo.Context) error {
 	}
 
 	return c.JSONPretty(http.StatusOK, &Response{true, payload}, "  ")
+
 }
 
 func login(c echo.Context) error {
@@ -70,11 +71,12 @@ func play(c echo.Context) error {
 	if !validUser {
 		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
 	}
-
-	num, _ := strconv.Atoi(c.Param("number"))
-	card := Card{num, c.Param("color")}
-	valid := playCard(claims["gameid"].(string), claims["userid"].(string), card)
-	return respondIfValid(c, valid, claims["userid"].(string), claims["gameid"].(string))
+  
+	// TODO Cards have a value, which can include skip, reverse, etc
+  num, _ := strconv.Atoi(c.Param("number"))
+	card := model.Card{num, c.Param("color")}
+  valid := playCard(claims["gameid"].(string), claims["userid"].(string), card)
+  return respondIfValid(c, valid, claims["userid"].(string), claims["gameid"].(string))
 }
 
 func draw(c echo.Context) error {
