@@ -52,12 +52,7 @@
 
         <!-- Current cards in the deck -->
         <v-col :class="'mb-6'" v-if="current_card != ''">
-          <v-card
-            v-if="username == current_player"
-            :class="'ma-3 pa-6'"
-            outlined
-            tile
-          >
+          <v-card v-if="username == current_player" :class="'ma-3 pa-6'" outlined tile>
             Click to play a card from your hand or
             <v-btn v-if="username == current_player" @click.native="drawCard">Draw from deck</v-btn>
           </v-card>
@@ -83,16 +78,16 @@ import Card from "../components/Card";
 export default {
   props: {
     game_id: {
-      required: false
+      required: false,
     },
     valid: {
       type: Boolean,
-      required: false
+      required: false,
     },
     username: {
       type: String,
-      required: false
-    }
+      required: false,
+    },
   },
   data() {
     return {
@@ -101,15 +96,15 @@ export default {
       players: [],
       hand_count: [],
       current_card: [],
-      game_over: ""
+      game_over: "",
     };
   },
   components: {
-    Card
+    Card,
   },
   methods: {
     updateData() {
-      unoService.update(this.game_id, this.username).then(res => {
+      unoService.update(this.game_id, this.username).then((res) => {
         if (res.data.valid) {
           this.valid = res.data.valid;
           this.cards = res.data.payload.deck;
@@ -162,26 +157,25 @@ export default {
         });
     },
     startGame() {
-        unoService.startGame(this.game_id, this.username)
-        .then(() => {
-          this.updateData();
-        });
+      unoService.startGame(this.game_id, this.username).then(() => {
+        this.updateData();
+      });
     },
     playCard(card) {
-        unoService.playCard(this.game_id, this.username, card.number, card.color)
+      unoService
+        .playCard(this.game_id, this.username, card.number, card.color)
         .then(() => {
           this.updateData();
         });
     },
     drawCard() {
-      unoService.drawCard(this.game_id, this.username)
-        .then(this.updateData());
-    }
+      unoService.drawCard(this.game_id, this.username).then(this.updateData());
+    },
   },
   created() {
     setInterval(() => {
       this.updateData();
     }, 2000);
-  }
+  },
 };
 </script>
