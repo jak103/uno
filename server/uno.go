@@ -234,8 +234,19 @@ func drawCard(gameID string, playerID string) bool {
 	for _, player := range game.Players {
 		// We check that the current item has the same id as the one provided
 		if playerID == player.ID {
-			// Our player exists in this game we draw a card from the draw pile
-			// and place it in the players hand using this helper function.
+			// Our player exists and we will talk a card from the draw pile
+			// and place it in the players hand
+
+			// We must make sure the draw pile is not empty. If empty move over discard pile,
+			// if discard pile is also empty... i have set it to add a new deck, probably should do something else.
+			if len(game.DrawPile) == 0 {
+				if len(game.DiscardPile) == 0 {
+					game.DrawPile = generateShuffledDeck()
+				} else {
+					game.DrawPile = shuffleCards(game.DiscardPile)
+					game.DiscardPile = game.DiscardPile[:0]
+				}
+			}
 			drawCardHelper(game, &player)
 			//We must then save the game state.
 			database.SaveGame(*game)
