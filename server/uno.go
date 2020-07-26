@@ -99,17 +99,19 @@ func createNewGame() error {
 	return nil
 }
 
-func joinGame(game string, username string) bool {
-	if checkID(game) {
-		user := username
-
-		if _, found := contains(players, user); !found {
-			players = append(players, user)
-			allCards[user] = nil // No cards yet
-		}
-		return true
+func joinGame(game string, username string) error {
+	database, err := db.GetDb();
+	if err != nil {
+		return err
 	}
-	return false // bad game_id
+
+	player, err := database.CreatePlayer(username)
+
+	if err != nil {
+		return err
+	}
+
+	return database.JoinGame(game, player.ID)
 }
 
 func playCard(game string, username string, card model.Card) bool {
