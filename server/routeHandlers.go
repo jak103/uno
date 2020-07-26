@@ -9,11 +9,13 @@ import (
 
 var sim bool = true
 
+// Response is a JSON structure which tells the front end about the game state
 type Response struct {
 	ValidGame bool                   `json:"valid"` // Valid game id
 	Payload   map[string]interface{} `json:"payload"`
 }
 
+// Status is a JSON structure for sending general messages to the front end
 type Status struct {
 	Message string `json:"message"`
 	Error   string `json:"error"`

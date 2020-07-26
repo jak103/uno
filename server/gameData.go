@@ -7,6 +7,7 @@ import (
 	"github.com/jak103/uno/db"
 )
 
+// HandInfo is a JSON struct for holding summary information about each players hand for a given game.
 type HandInfo struct {
 	PlayerName string `json:"name"`
 	CardCount  int    `json:"numCards"`
