@@ -47,7 +47,7 @@
                 <v-div class="dropdown">
                   <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
                   <v-div class="dropdown_content">
-                    <a href="Help.vue">Rules</a>
+                    <a href="help">Rules</a>
                     <a href='#videoTutorials'>Tutorials</a>
                     <a hred='#cardAbilities'>Card Abilities</a>
                   </v-div>
