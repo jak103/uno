@@ -91,6 +91,7 @@ export default {
       cards: [],
       current_player: "",
       players: [],
+      hand_count: [],
       current_card: [],
       game_over: ""
     };
@@ -112,6 +113,45 @@ export default {
           }
         }
       });
+
+      unoService
+        .getHandCount(this.game_id)
+        .then((response) => {
+          if (!response.error || !response.message) {
+            console.error(
+              "Unexpected response from server for cardount endpoint. Recieved:",
+              response
+            );
+            return;
+          }
+
+          if (!response.error !== "") {
+            console.error(
+              "Cardcount endpoint returned an error:",
+              response.error
+            );
+            return;
+          }
+
+          if (response.message === "") {
+            console.error("Cardcount endpoint returned an empty response.");
+            return;
+          }
+
+          if (!response.message.name || !response.message.numCards) {
+            console.error(
+              "Hand count information from server not in expected format. Recieved:",
+              response.message
+            );
+            return;
+          }
+
+          this.hand_count = response.message;
+        })
+        .catch((error) => {
+          console.error("Could not correctly get hand count data:", error);
+          return;
+        });
     },
     startGame() {
         unoService.startGame(this.game_id, this.username)
