@@ -40,10 +40,18 @@
               </v-card>
             </v-row>
           </v-col>
+          <!-- Help menu button -->
           <v-col cols= "6">
             <v-row>
               <v-card> 
-                <v-btn @click.native="helpMenu">Need Help?</v-btn>
+                <v-div class="dropdown">
+                  <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
+                  <v-div class="dropdown_content">
+                    <a href="Help.vue">Rules</a>
+                    <a href='#videoTutorials'>Tutorials</a>
+                    <a hred='#cardAbilities'>Card Abilities</a>
+                  </v-div>
+                </v-div>    
               </v-card>
             </v-row>
           </v-col>
@@ -57,7 +65,7 @@
             outlined
             tile
           >
-            Click to play a card from your hand or
+            <!-- Click to play a card from your hand or -->
             <v-btn v-if="username == current_player" @click.native="drawCard">Draw from deck</v-btn>
           </v-card>
           <v-card v-else-if="game_over != ''">{{game_over}} has won the game!</v-card>
@@ -121,23 +129,21 @@ export default {
       });
     },
     helpMenu(){
-        
-          var color = this.current_card[0].color
-          var number = this.current_card[0].number
-          alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
-        // .post(
-        //   "http://localhost:8080/play/" +
-        //     this.game_id +
-        //     "/" +
-        //     this.username +
-        //     "/" +
-        //     100 +
-        //     "/" +
-        //     card.color
-        // )    
-        // .then(() => {
-        //     this.updateData();
-        //   });
+      // var color = this.current_card[0].color
+      // var number = this.current_card[0].number
+      // alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
+      window.onclick = function(event) {
+        if (!event.target.matches('.helpDropBtn')) {
+          var dropdowns = document.getElementsByClassName("dropdown_content");
+          var i;
+          for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+              openDropdown.classList.remove('show');
+            }
+          }
+        }
+      }
     },
 
     startGame() {
@@ -164,3 +170,49 @@ export default {
   }
 };
 </script>
+
+
+<style scoped>
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
+  .helpDropBtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+  }
+
+/* The container <div> - needed to position the dropdown content */
+  .helpDropBtn {
+    position: relative;
+    display: inline-block;
+  }
+
+/* Dropdown Content (Hidden by Default) */
+  .dropdown_content {
+    display: none;
+    position: absolute;
+    background-color:white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  /* Links inside the dropdown */
+  .dropdown_content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  /* Change color of dropdown links on hover */
+  .dropdown_content a:hover {background-color: #ddd;}
+
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown_content {display: block;}
+
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .helpDropBtn {background-color: #3e8e41;}
+
+</style>
