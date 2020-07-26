@@ -52,7 +52,8 @@
               <v-card :class="'ma-3 pa-6'" outlined tile> 
                 <v-div class="dropdown">
                   <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
-                  <v-div class="dropdown_content">                  <router-link to="help#section-one" @click.native="help('#section-one')">Rules</router-link>
+                  <v-div class="dropdown_content">                  
+                    <router-link to="help#section-one" @click.native="help('#section-one')">Rules</router-link>
                     <router-link to="help#section-two" @click.native="help('#section-two')">Tutorials</router-link>
                     <router-link to="help#section-three" @click.native="help('#section-three')">Card Abilities</router-link>
                     <!-- <a href="help" v-scroll-to="'#section-one'">Rules</a>
