@@ -101,7 +101,7 @@ export default {
   methods: {
     redir() {
       alert(this.game_over, " has won the game!")
-      window.location.replace("https://localhost:3000");
+      window.location.replace("http://localhost:3000");
     },
     updateData() {
       unoService.update(this.game_id, this.username).then(res => {
