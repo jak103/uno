@@ -18,13 +18,21 @@
           <!-- Game Players -->
           <v-row>
             <v-card
-              v-for="player in players"
-              :key="player"
-              color="current_player == player ? '#1F7087' : ''"
+              v-for="hand in hand_count"
+              :key="hand"
+              color="current_player == hand.name ? '#1F7087' : ''"
               :class="'ma-3 pa-6'"
               outlined
               tile
-            >{{ player }}</v-card>
+            >
+              <h2>Name</h2>
+              <p>{{ hand.name }}</p>
+              <h2>Cards in Hand</h2>
+              <p>
+                <span>{{ hand.numCards }} :</span>
+                <span v-for="n in hand.numCards" :key="n">🃠</span>
+              </p>
+            </v-card>
           </v-row>
 
           <!-- Current Card and actions -->
