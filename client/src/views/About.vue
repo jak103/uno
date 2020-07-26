@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-row :class="'mb-6'">
+      <v-row :class="'mb-9'">
         <v-col :cols="6">
           <!-- Game stats -->
           <v-row>
@@ -12,11 +12,16 @@
             <v-card :class="'ma-3 pa-6'" outlined tile>
               <v-btn v-if="valid" @click.native="startGame">Start Game</v-btn>
               <v-btn v-else to="/">Create a new game</v-btn>
-            </v-card>
+            </v-card> 
+            <v-card :class="'ma-3 pa-6'" outlined tile> 
+                <!-- <v-div class="hintbtn"> -->
+              <v-btn @click.native="hint">Hint</v-btn>
+                <!-- </v-div>     -->
+            </v-card>           
           </v-row>
 
           <!-- Game Players -->
-          <v-row>
+          <v-row>           
             <v-card
               v-for="player in players"
               :key="player"
@@ -41,15 +46,16 @@
             </v-row>
           </v-col>
           <!-- Help menu button -->
+
           <v-col cols= "6">
-            <v-row>
-              <v-card> 
+            <v-row :class="'mb-6'">
+              <v-card :class="'ma-3 pa-6'" outlined tile> 
                 <v-div class="dropdown">
                   <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
                   <v-div class="dropdown_content">
                     <a href="help">Rules</a>
-                    <a href='#videoTutorials'>Tutorials</a>
-                    <a hred='#cardAbilities'>Card Abilities</a>
+                    <a href='help'>Tutorials</a>
+                    <a hred='help'>Card Abilities</a>
                   </v-div>
                 </v-div>    
               </v-card>
@@ -128,10 +134,12 @@ export default {
         }
       });
     },
+    hint(){
+      var color = this.current_card[0].color
+      var number = this.current_card[0].number
+      alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
+    },
     helpMenu(){
-      // var color = this.current_card[0].color
-      // var number = this.current_card[0].number
-      // alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
       window.onclick = function(event) {
         if (!event.target.matches('.helpDropBtn')) {
           var dropdowns = document.getElementsByClassName("dropdown_content");
@@ -174,6 +182,10 @@ export default {
 
 <style scoped>
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
+  
+  .hintbtn{
+    background-color: white;
+  }
   .helpDropBtn {
     background-color: #4CAF50;
     color: white;
@@ -199,20 +211,20 @@ export default {
   }
 
   /* Links inside the dropdown */
-  .dropdown_content a {
+  .hintbtn a, .dropdown_content a {
     color: black;
-    padding: 12px 16px;
+    padding: 6px 8px;
     text-decoration: none;
     display: block;
   }
 
   /* Change color of dropdown links on hover */
-  .dropdown_content a:hover {background-color: #ddd;}
+  .dropdown_content a:hover, .hintbtn a:hover {background-color: #ddd;}
 
   /* Show the dropdown menu on hover */
-  .dropdown:hover .dropdown_content {display: block;}
+  .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
 
   /* Change the background color of the dropdown button when the dropdown content is shown */
-  .dropdown:hover .helpDropBtn {background-color: #3e8e41;}
+  .dropdown:hover .helpDropBtn, .hintbtn a:hover  {background-color: #3e8e41;}
 
 </style>
