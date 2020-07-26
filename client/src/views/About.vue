@@ -99,6 +99,10 @@ export default {
     Card
   },
   methods: {
+    redir() {
+      alert(this.game_over, " has won the game!")
+      window.location.replace("https://localhost:3000");
+    },
     updateData() {
       unoService.update(this.game_id, this.username).then(res => {
         if (res.data.valid) {
