@@ -40,7 +40,7 @@ func (db *mongoDB) CreateGame() (*model.Game, error) {
 	if err != nil {
 		return nil, err
 	}
-	myGame.ID = res.InsertedID.(primitive.ObjectID).String()
+	myGame.ID = res.InsertedID.(primitive.ObjectID).Hex()
 	return &myGame, nil
 }
 
@@ -51,7 +51,7 @@ func (db *mongoDB) CreatePlayer(name string) (*model.Player, error) {
 	if err != nil {
 		return nil, err
 	}
-	player.ID = res.InsertedID.(primitive.ObjectID).String()
+	player.ID = res.InsertedID.(primitive.ObjectID).Hex()
 	return &player, nil
 }
 
