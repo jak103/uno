@@ -52,19 +52,12 @@
               <v-card :class="'ma-3 pa-6'" outlined tile> 
                 <v-div class="dropdown">
                   <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
-                  <v-div class="dropdown_content">
-<<<<<<< HEAD
-                    <router-link to="help#section-one" @click.native="help('#section-one')">Rules</router-link>
+                  <v-div class="dropdown_content">                  <router-link to="help#section-one" @click.native="help('#section-one')">Rules</router-link>
                     <router-link to="help#section-two" @click.native="help('#section-two')">Tutorials</router-link>
                     <router-link to="help#section-three" @click.native="help('#section-three')">Card Abilities</router-link>
                     <!-- <a href="help" v-scroll-to="'#section-one'">Rules</a>
                     <a href="help" v-scroll-to="'#section-two'">Tutorials</a>
                     <a href="help" v-scroll-to="'#section-three'">Card Abilities</a> -->
-=======
-                    <a href="help">Rules</a>
-                    <a href='help'>Tutorials</a>
-                    <a hred='help'>Card Abilities</a>
->>>>>>> small cosmetic changes
                   </v-div>
                 </v-div>    
               </v-card>
@@ -222,14 +215,11 @@ export default {
 
   /* Links inside the dropdown */
   .hintbtn a, .dropdown_content a {
-<<<<<<< HEAD
     color: black;
     padding: 6px 8px;
   }
 
   .dropdown_content a {
-=======
->>>>>>> small cosmetic changes
     color: black;
     padding: 6px 8px;
     text-decoration: none;
@@ -237,10 +227,6 @@ export default {
   }
 
   /* Change color of dropdown links on hover */
-<<<<<<< HEAD
-
-=======
->>>>>>> small cosmetic changes
   .dropdown_content a:hover, .hintbtn a:hover {background-color: #ddd;}
 
   /* Show the dropdown menu on hover */
@@ -248,8 +234,4 @@ export default {
 
   /* Change the background color of the dropdown button when the dropdown content is shown */
   .dropdown:hover .helpDropBtn, .hintbtn a:hover  {background-color: #3e8e41;}
-<<<<<<< HEAD
-=======
-
->>>>>>> small cosmetic changes
 </style>
