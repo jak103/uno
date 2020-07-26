@@ -86,13 +86,13 @@ func createNewGame() (string, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	game, err := database.CreateGame()
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	gameID = game.ID

@@ -32,7 +32,7 @@ func TestRespondIfValid(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, respondIfValid(c, true)) {
+	if assert.NoError(t, respondIfValid(c, true, "", "")) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }

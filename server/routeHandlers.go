@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/google/uuid"
 	"github.com/jak103/uno/model"
 	"github.com/labstack/echo/v4"
@@ -74,10 +73,9 @@ func play(c echo.Context) error {
 	if !validUser {
 		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
 	}
-
-	num, _ := strconv.Atoi(c.Param("number"))
+    
     // TODO Cards have a value, which can include skip, reverse, etc
-    card := model.Card{num, c.Param("color")}
+    card := model.Card{c.Param("number"), c.Param("color")}
 	valid := playCard(claims["gameid"].(string), claims["userid"].(string), card)
 	return respondIfValid(c, valid, claims["userid"].(string), claims["gameid"].(string))
 }

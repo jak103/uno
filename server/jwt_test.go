@@ -39,7 +39,7 @@ func TestJWT (t *testing.T) {
 	assert.Equal(t, userid.String(), validToken.Claims.(jwt.MapClaims)["userid"])
 	
 	// test the claims function!
-	validClaims, claimsAreValid := getValidClaims(encodedToken, signKey)
+	validClaims, claimsAreValid := getValidClaims(encodedToken)
 	
 	// the claims should be valid, as they weren't changed by the user.
 	assert.Equal(t, true, claimsAreValid)
@@ -66,7 +66,7 @@ func TestJWT (t *testing.T) {
 	assert.Equal(t, emptyToken, invalidToken)
 	
 	// try getting claims from bad token
-	invalidClaims, claimsAreInvalid := getValidClaims(badEncodedToken, signKey)
+	invalidClaims, claimsAreInvalid := getValidClaims(badEncodedToken)
 	
 	// false means invalid
 	assert.Equal(t, false, claimsAreInvalid)
