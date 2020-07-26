@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,4 +31,13 @@ func TestContains(t *testing.T) {
 	index, found = contains(data, "Invalid entry")
 	assert.Equal(t, index, -1)
 	assert.Equal(t, found, false)
+}
+
+func TestCheckForWinner(t *testing.T) {
+	players = []string{"player1", "player2"}
+	allCards = make(map[string][]model.Card)
+	dealCards()
+	assert.Equal(t, "", checkForWinner())
+	allCards[players[0]] = make([]model.Card, 0)
+	assert.Equal(t, "player1", checkForWinner())
 }
