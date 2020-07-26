@@ -44,7 +44,7 @@ var gameStarted bool = false
 // 	return []model.Card{model.Card{rand.Intn(10), randColor(rand.Intn(4))}}
 // }
 
-func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
+func newPayload(user string, gameid string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 
 	// Update known variables
@@ -52,7 +52,7 @@ func newPayload(user string) map[string]interface{} { // User will default to ""
 	payload["current_player"] = currPlayer
 	payload["all_players"] = players
 	payload["deck"] = allCards[user] // returns nil if currPlayer = "" or user not in allCards
-	payload["game_id"] = gameID
+	payload["game_id"] = gameid
 	payload["game_over"] = checkForWinner()
 
 	return payload
@@ -74,7 +74,7 @@ func contains(arr []string, val string) (int, bool) {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func updateGame(game string, username string) bool {
+func updateGame(game string) bool {
 	success := false
 	if success = checkID(game); success && gameStarted {
 		return true
@@ -82,21 +82,21 @@ func updateGame(game string, username string) bool {
 	return false
 }
 
-func createNewGame() error {
+func createNewGame() (string, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	game, err := database.CreateGame()
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	gameID = game.ID
-	return nil
+	return game.ID, nil
 }
 
 func joinGame(game string, username string) bool {
