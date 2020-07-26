@@ -30,6 +30,10 @@ func GetDb() (*DB, error) {
 	if connectedDB == nil {
 		environment := strings.ToUpper(os.Getenv("DB_TYPE"))
 
+		if environment == "" {
+			environment = "MOCK"
+		}
+
 		if db, ok := dbRegistry[environment]; ok {
 			db.connect()
 			connectedDB = db
