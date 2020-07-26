@@ -107,8 +107,8 @@ export default {
           this.current_player = res.data.payload.current_player;
           this.players = res.data.payload.all_players;
           this.current_card = res.data.payload.current_card;
-          if (res.data.game_over != "") {
-            this.game_over = res.data.game_over;
+          if (res.data.payload.game_over != "") {
+            this.game_over = res.data.payload.game_over;
           }
         }
       });
