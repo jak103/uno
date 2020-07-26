@@ -68,6 +68,21 @@ func getPlayer(game *model.Game, playerID string) *model.Player {
 	return nil
 }
 
+// given a player and a card look for the card in players hand and return the index
+// If it doesn't exists return -1
+func cardFromPlayer(player *model.Player, card *model.Card) int {
+	// Loop through all cards the player holds
+	for index, item := range player.Cards {
+		// check if current loop item matches card provided
+		if item.Color == card.Color && item.Value == card.Value {
+			// If the card matches return the current index
+			return index
+		}
+	}
+	// If we get to this point the player does not hold the card so we return nil
+	return -1
+}
+
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 
@@ -144,6 +159,8 @@ func joinGame(game string, username string) bool {
 // From the players hand and we return true, else at the end we return false.
 // We must do the checks because they are not done anywhere else.
 func playCard(gameID string, playerID string, card model.Card) bool {
+
+	// These lines are simply getting the database and game and handling any error that could occur
 	database, dbErr := db.GetDb()
 
 	if dbErr != nil {
@@ -156,18 +173,27 @@ func playCard(gameID string, playerID string, card model.Card) bool {
 		return false
 	}
 
+	//For loop that loops through all players in the game
 	for _, player := range game.Players {
+		// Check that currnt loop player has the matching id provided to function
 		if playerID == player.ID {
+			// Loop through all cards the player holds
 			for index, item := range player.Cards {
+				// check that they hold the card provided
 				if item.Color == card.Color && item.Value == card.Value {
+					//Remove the card from the players hand
 					player.Cards = append(player.Cards[:index], player.Cards[index+1:]...)
+					//add card to the discard pile
 					game.DiscardPile = append(game.DiscardPile, card)
+					// Save the game state
+					database.SaveGame(*game)
 					return true
 				}
 			}
 		}
 	}
-
+	// If you get here either the player did not exist in this game or
+	// the player did not hold that card so we return false.
 	return false
 
 	// There are a couple ways this could be done.
@@ -190,29 +216,35 @@ func playCard(gameID string, playerID string, card model.Card) bool {
 	*/
 }
 
-// TODO: Keep track of current card that is top of the deck
 func drawCard(gameID string, playerID string) bool {
-	database, err := db.GetDb()
+	// These lines are simply getting the database and game and handling any error that could occur
+	database, dbErr := db.GetDb()
 
-	if err != nil {
+	if dbErr != nil {
 		return false
 	}
 
-	game, err := database.LookupGameByID(gameID)
-	var player *model.Player
-	for _, item := range game.Players {
-		if playerID == item.ID {
-			player = &item
+	game, gameErr := database.LookupGameByID(gameID)
+
+	if gameErr != nil {
+		return false
+	}
+
+	// We loop through the players in the game
+	for _, player := range game.Players {
+		// We check that the current item has the same id as the one provided
+		if playerID == player.ID {
+			// Our player exists in this game we draw a card from the draw pile
+			// and place it in the players hand using this helper function.
+			drawCardHelper(game, &player)
+			//We must then save the game state.
+			database.SaveGame(*game)
+			return true
 		}
 	}
-	if player == nil {
-		return false
-	}
-	drawCardHelper(game, player)
-
-	database.SaveGame(*game)
-
-	return true
+	// If we reached this point the player does not exist in this game
+	// we return false
+	return false
 }
 
 // TODO: need to deal the actual cards, not just random numbers
