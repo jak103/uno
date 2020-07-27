@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
 )
@@ -43,9 +44,19 @@ func TestCheckForWinner(t *testing.T) {
 }
 
 func TestGetCardCount(t *testing.T) {
-	//TODO: Setup mock database
+	database, err := db.GetDb()
+	assert.NoError(t, err)
 
-	//TODO: Add actual tests
+	game, err := database.CreateGame()
+	assert.NoError(t, err)
+
+	player, err := database.CreatePlayer("Player 1")
+	assert.NoError(t, err)
+
+	err = database.JoinGame(game.ID, player.ID)
+	assert.NoError(t, err)
+
+	gameLookup, e := database.LookupGameByID(game.ID)
 
 	val, err := getCardCount("")
 	assert.Equal(t, "", val)

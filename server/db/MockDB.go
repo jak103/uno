@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jak103/uno/model"
@@ -28,6 +29,7 @@ func (db *mockDB) HasGameByID(id string) bool {
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
 func (db *mockDB) CreateGame() (*model.Game, error) {
+	fmt.Print("Creating Game")
 	myGame := model.Game{ID: uuid.New().String(), Password: "12234"}
 	db.games[myGame.ID] = myGame
 	db.gamePasswords[myGame.Password] = myGame
@@ -60,6 +62,7 @@ func (db *mockDB) DeletePlayer(id string) error {
 // LookupGameByID looks up an existing game in the database.
 func (db *mockDB) LookupGameByID(id string) (*model.Game, error) {
 	if game, ok := db.games[id]; ok {
+		fmt.Print(game)
 		return &game, nil
 	}
 	return nil, errors.New("mockdb: game not found")
@@ -83,6 +86,16 @@ func (db *mockDB) LookupPlayer(id string) (*model.Player, error) {
 
 // JoinGame join a player to a game.
 func (db *mockDB) JoinGame(id string, username string) error {
+	if game, ok := db.games[id]; ok {
+		if player, err := db.LookupPlayer(username); err != nil {
+			return err
+		} else {
+			game.Players = append(game.Players, *player)
+		}
+	} else {
+		return errors.New("mockdb: game not found")
+	}
+
 	return nil
 }
 
