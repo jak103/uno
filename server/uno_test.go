@@ -41,3 +41,13 @@ func TestCheckForWinner(t *testing.T) {
 	allCards[players[0]] = make([]model.Card, 0)
 	assert.Equal(t, "player1", checkForWinner())
 }
+
+func TestGetCardCount(t *testing.T) {
+	//TODO: Setup mock database
+
+	//TODO: Add actual tests
+
+	val, err := getCardCount("")
+	assert.Equal(t, "", val)
+	assert.Error(t, err)
+}
