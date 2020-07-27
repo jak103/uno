@@ -22,6 +22,42 @@ func printCards(cards []model.Card) {
 	}
 }
 
+// Get's the number of decks to use based on the number of players
+func numDecksToUse(numPlayers int) int {
+	return numPlayers / 5 + 1
+}
+
+// Returns the card colors, card counts, and wild card counts based
+// on the number of players in the game
+func getDeckConfigByPlayerSize(numPlayers int) ([4]string, map[string]int, map[string]int) {
+	colors := [4]string{"red", "blue", "green", "yellow"}
+
+	numDecks := numDecksToUse(numPlayers)
+
+	standardCardCounts := map[string]int{
+		"zero":     1*numDecks,
+		"one":      2*numDecks,
+		"two":      2*numDecks,
+		"three":    2*numDecks,
+		"four":     2*numDecks,
+		"five":     2*numDecks,
+		"six":      2*numDecks,
+		"seven":    2*numDecks,
+		"eight":    2*numDecks,
+		"nine":     2*numDecks,
+		"skip":     2*numDecks,
+		"draw_two": 2*numDecks,
+		"reverse":  2*numDecks,
+	}
+
+	wildCardCounts := map[string]int{
+		"wild":           4*numDecks,
+		"wild_draw_four": 4*numDecks,
+	}
+
+	return colors, standardCardCounts, wildCardCounts
+}
+
 // Returns the standard card colors, standard card counts, and wild card counts
 // It would be awesome to have this be customizable from the front-end
 // so you can play with 15 reverse cards if you want
@@ -66,6 +102,7 @@ func shuffleCards(a []model.Card) []model.Card {
 // Shuffles the deck before returning it.
 // This function is not necessarily efficient - feel free to optimize.
 func generateShuffledDeck() []model.Card {
+	// TODO - use getDeckConfigByPlayerSize() instead of getDeckConfig()
 	colors, standardCardCounts, wildCardCounts := getDeckConfig()
 	deck := []model.Card{}
 	for cardValue, count := range standardCardCounts {

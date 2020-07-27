@@ -39,6 +39,17 @@ func TestGenerateShuffledDeck(t *testing.T) {
 	assert.Equal(t, 108, len(deck))
 }
 
+func TestNumDecksToUse(t *testing.T){
+	assert.Equal(t, 1, numDecksToUse(3))
+	assert.Equal(t, 2, numDecksToUse(6))
+	assert.Equal(t, 3, numDecksToUse(12))
+	assert.Equal(t, 4, numDecksToUse(16))
+	assert.Equal(t, 5, numDecksToUse(21))
+	assert.Equal(t, 6, numDecksToUse(26))
+	assert.Equal(t, 7, numDecksToUse(32))
+	assert.Equal(t, 8, numDecksToUse(47))
+}
+
 func TestShuffleCards(t *testing.T) { 
 	deck := shuffleCards([]model.Card{model.Card{"red", "1"},model.Card{"blue", "2"},model.Card{"green", "3"}}) //Shuffling test deck
 	assert.NotEqual(t, deck[:0], model.Card{"red", "1"}) 
