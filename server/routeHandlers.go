@@ -46,9 +46,9 @@ func newGame(c echo.Context) error {
 }
 
 func login(c echo.Context) error {
-	validGame := joinGame(c.Param("game"), c.Param("username"))
-
-	return respondWithJWTIfValid(c, validGame)
+    err := joinGame(c.Param("game"), c.Param("username"))
+    
+    return respondWithJWTIfValid(c, err == nil)
 }
 
 func startGame(c echo.Context) error {
@@ -57,7 +57,16 @@ func startGame(c echo.Context) error {
 }
 
 func update(c echo.Context) error {
-	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
+    
+    authHeader := c.Get(echo.HeaderAuthorization)
+    
+    if authHeader == nil {
+        return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    }
+    
+    authHeaderString := authHeader.(string)
+    
+	claims, validUser := getValidClaims(authHeaderString)
 
 	if !validUser {
 		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
@@ -68,7 +77,16 @@ func update(c echo.Context) error {
 }
 
 func play(c echo.Context) error {
-	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
+    
+    authHeader := c.Get(echo.HeaderAuthorization)
+    
+    if authHeader == nil {
+        return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    }
+    
+    authHeaderString := authHeader.(string)
+    
+	claims, validUser := getValidClaims(authHeaderString)
 
 	if !validUser {
 		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
@@ -81,7 +99,16 @@ func play(c echo.Context) error {
 }
 
 func draw(c echo.Context) error {
-	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
+    
+    authHeader := c.Get(echo.HeaderAuthorization)
+    
+    if authHeader == nil {
+        return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    }
+    
+    authHeaderString := authHeader.(string)
+    
+	claims, validUser := getValidClaims(authHeaderString)
 
 	if !validUser {
 		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
