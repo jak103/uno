@@ -34,7 +34,7 @@ func newGame(c echo.Context) error {
 
 func login(c echo.Context) error {
 	validGame := joinGame(c.Param("game"), c.Param("username"))
-	return respondIfValid(c, validGame)
+	return respondIfValid(c, (validGame == nil))
 }
 
 func startGame(c echo.Context) error {
