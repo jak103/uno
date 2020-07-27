@@ -69,7 +69,7 @@ func cardCount(c echo.Context) error {
 
 func play(c echo.Context) error {
 	// TODO Cards have a value, which can include skip, reverse, etc
-	card := model.Card{c.Param("number"), c.Param("color")}
+	card := model.Card{Color: c.Param("number"), Value: c.Param("color")}
 	valid := playCard(c.Param("game"), c.Param("username"), card)
 	return respondIfValid(c, valid)
 }

@@ -71,14 +71,14 @@ func generateShuffledDeck() []model.Card {
 	for cardValue, count := range standardCardCounts {
 		for i := 0; i < count; i++ {
 			for _, color := range colors {
-				deck = append(deck, model.Card{color, cardValue})
+				deck = append(deck, model.Card{Color: color, Value: cardValue})
 			}
 		}
 	}
 
 	for cardValue, count := range wildCardCounts {
 		for i := 0; i < count; i++ {
-			deck = append(deck, model.Card{"wild", cardValue})
+			deck = append(deck, model.Card{Color: "wild", Value: cardValue})
 		}
 	}
 

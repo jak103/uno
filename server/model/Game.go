@@ -20,3 +20,9 @@ type Game struct {
 	Status        GameStatus `bson:"status,omitempty" json:"status"`
 	Direction     bool       `bson:"direction,omitempty" json:"direction"`
 }
+
+// HandInfo is a JSON struct for holding summary information about each players hand for a given game.
+type HandInfo struct {
+	PlayerName string `json:"name"`
+	CardCount  int    `json:"numCards"`
+}
