@@ -37,4 +37,4 @@ jobs:
 
     - name: Test
       working-directory: server
-      run: go test -v .
+      run: export DB_TYPE="MOCK" ; go test -v .

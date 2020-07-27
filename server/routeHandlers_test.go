@@ -21,6 +21,22 @@ func createMockServerAndRequest() (echo.Context, *httptest.ResponseRecorder) {
 	return c, rec
 }
 
+//TestRespondIfValid this wont bring the code coverage up but its worth it to test this if it breaks on this level.
+func TestRespondIfValid(t *testing.T) {
+	// Setup
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodGet, "/respondIfValid", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// Assertions
+	if assert.NoError(t, respondIfValid(c, true)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
 func TestNewGame(t *testing.T) {
 	// Setup
 	c, rec := createMockServerAndRequest()
@@ -77,6 +93,37 @@ func TestUpdate(t *testing.T) {
 
 	// Assertions
 	if assert.NoError(t, update(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
+func TestPlay(t *testing.T) {
+	// Setup
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodGet, "/play", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// Assertions
+	if assert.NoError(t, play(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+}
+
+func TestStartGame(t *testing.T) {
+	// Setup
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodGet, "/startgame", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	players = []string{"player1", "player2"}
+	// Assertions
+	if assert.NoError(t, startGame(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }
