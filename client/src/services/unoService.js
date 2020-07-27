@@ -1,6 +1,10 @@
 import BaseService from "./baseService";
 
 export default {
+    setToken(token) {
+        BaseService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    },
+
     async login(gameId, userName) {
         return BaseService.post(`/login/${gameId}/${userName}`);
     },
@@ -9,7 +13,6 @@ export default {
         return BaseService.get(`/newgame/${userName}`);
     },
 
-    // TODO authorize game routes with token
     update() {
         return BaseService.get(`/update`);
     },

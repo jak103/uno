@@ -58,15 +58,11 @@ func startGame(c echo.Context) error {
 
 func update(c echo.Context) error {
     
-    authHeader := c.Get(echo.HeaderAuthorization)
-    
-    if authHeader == nil {
+    authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+    if authHeader == "" {
         return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
     }
-    
-    authHeaderString := authHeader.(string)
-    
-	claims, validUser := getValidClaims(authHeaderString)
+	claims, validUser := getValidClaims(authHeader)
 
 	if !validUser {
 		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
@@ -78,15 +74,11 @@ func update(c echo.Context) error {
 
 func play(c echo.Context) error {
     
-    authHeader := c.Get(echo.HeaderAuthorization)
-    
-    if authHeader == nil {
+    authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+    if authHeader == "" {
         return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
     }
-    
-    authHeaderString := authHeader.(string)
-    
-	claims, validUser := getValidClaims(authHeaderString)
+	claims, validUser := getValidClaims(authHeader)
 
 	if !validUser {
 		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
@@ -100,15 +92,11 @@ func play(c echo.Context) error {
 
 func draw(c echo.Context) error {
     
-    authHeader := c.Get(echo.HeaderAuthorization)
-    
-    if authHeader == nil {
+    authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+    if authHeader == "" {
         return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
     }
-    
-    authHeaderString := authHeader.(string)
-    
-	claims, validUser := getValidClaims(authHeaderString)
+	claims, validUser := getValidClaims(authHeader)
 
 	if !validUser {
 		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
