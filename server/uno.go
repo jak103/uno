@@ -141,7 +141,7 @@ func createNewGame() error {
 }
 
 func joinGame(game string, username string) error {
-	database, err := db.GetDb();
+	database, err := db.GetDb()
 	if err != nil {
 		return err
 	}
@@ -273,6 +273,10 @@ func dealCards(game *model.Game) {
 			card := game.DrawPile[lastIndex]
 			append(cards, card)
 			game.DrawPile = game.DrawPile[:lastIndex]
+
+		}
+		allCards[players[k]] = cards
+	}
 	//This will draw one more card, but instead of adding it to a players hand it will add it to the discard pile and set it as the current Card
 	lastIndex := len(game.DrawPile) - 1
 	startCard := game.DrawPile[lastIndex]
@@ -280,8 +284,6 @@ func dealCards(game *model.Game) {
 	game.DrawPile = game.DrawPile[:lastIndex]
 	currCard = startCard
 }
-
-
 
 // TODO: make sure this reflects on the front end
 func checkForWinner() string {
