@@ -1,7 +1,109 @@
 <template>
-  <div :class="card_specifics">
+  <div v-if="typeof number === 'number'" :class="card_classes">
     <span class="inner">
       <span class="mark">{{ number }}</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'skip'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">S</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'draw2'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">D</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'draw4'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">4</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'wild'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">w</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'reverse'" :class="card_classes">
+    <span class="inner">
+
+      <div class="reverse-mini reverse-mini-top">
+        <div class="reverse-symbol shadow-mini">
+          <div class="shadow-container">
+            <div class="arrow-right">
+              <div class="arrow-right-tail shadow"></div>
+              <div class="arrow-right-head shadow"></div>
+            </div>
+            <div class="arrow-left">
+              <div class="arrow-left-head shadow"></div>
+              <div class="arrow-left-tail shadow"></div>
+            </div>
+          </div>
+        </div>
+        <div class="reverse-symbol">
+          <div class="arrow-right">
+            <div class="arrow-right-tail white"></div>
+            <div class="arrow-right-head white"></div>
+          </div>
+          <div class="arrow-left">
+            <div class="arrow-left-head white"></div>
+            <div class="arrow-left-tail white"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reverse-mini reverse-mini-bottom">
+        <div class="reverse-symbol shadow-mini">
+          <div class="shadow-container">
+            <div class="arrow-right">
+              <div class="arrow-right-tail shadow"></div>
+              <div class="arrow-right-head shadow"></div>
+            </div>
+            <div class="arrow-left">
+              <div class="arrow-left-head shadow"></div>
+              <div class="arrow-left-tail shadow"></div>
+            </div>
+          </div>
+        </div>
+        <div class="reverse-symbol">
+          <div class="arrow-right">
+            <div class="arrow-right-tail white"></div>
+            <div class="arrow-right-head white"></div>
+          </div>
+          <div class="arrow-left">
+            <div class="arrow-left-head white"></div>
+            <div class="arrow-left-tail white"></div>
+          </div>
+        </div>
+      </div>
+
+      <span class="mark">
+        <div class="reverse">
+          <div class="reverse-symbol shadow">
+            <div class="shadow-container">
+              <div class="arrow-right">
+                <div class="arrow-right-tail shadow"></div>
+                <div class="arrow-right-head shadow"></div>
+              </div>
+              <div class="arrow-left">
+                <div class="arrow-left-head shadow"></div>
+                <div class="arrow-left-tail shadow"></div>
+              </div>
+            </div>
+          </div>
+          <div class="reverse-symbol">
+            <div class="arrow-right">
+              <div class="arrow-right-tail" :class="this.color.toLowerCase()"></div>
+              <div class="arrow-right-head" :class="this.color.toLowerCase()"></div>
+            </div>
+            <div class="arrow-left">
+              <div class="arrow-left-head" :class="this.color.toLowerCase()"></div>
+              <div class="arrow-left-tail" :class="this.color.toLowerCase()"></div>
+            </div>
+          </div>
+        </div>
+        
+      </span>
     </span>
   </div>
 </template>
@@ -19,8 +121,11 @@ export default {
     },
   },
   computed: {
-    card_specifics: function() {
-      return "card num-" + this.number + " " + this.color.toLowerCase();
+    card_classes: function() {
+      if(typeof this.number === 'number')
+        return `card num-${this.number} ${this.color.toLowerCase()}`;
+      else
+        return `card ${this.number.toLowerCase()} ${this.color.toLowerCase()}`;
     }
   }
 };
@@ -196,5 +301,202 @@ export default {
 .card.num-6.yellow .mark:after,
 .card.num-9.yellow .mark:after {
   background: #e6ca1e;
+}
+/* Start Reverse Arrow CSS */
+.reverse{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  width: 60px;
+}
+.reverse-mini {
+  position: absolute;
+  transform: scale(0.2);
+}
+.reverse-mini-top{
+  top: -10px;
+  left: -33px;
+}
+.reverse-mini-bottom{
+  bottom: -10px;
+  right: -33px;
+  /* transform: rotate(180deg); */
+}
+.reverse-symbol {
+  width: 100px;
+  height: 55px;
+  display: flex;
+  flex-direction: column;
+  transform: rotate(-45deg);
+}
+.arrow-right {
+  margin-left: 30px;
+  display: flex;
+  align-items: center;
+  width: 70px;
+  height: 30px;
+}
+.arrow-right-tail{
+  width: 60px;
+  height: 15px;
+  background: #0063b3;
+  border-radius: 15px 0 0 0
+}
+.arrow-right-head{
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-left-width: 25px;
+  border-left-style: solid;
+  border-bottom: 20px solid transparent;
+}
+.arrow-left {
+  margin-top: -13px;
+  display: flex;
+  align-items: center;
+  width: 70px;
+  height: 30px;
+}
+.arrow-left-tail{
+  width: 60px;
+  height: 15px;
+  border-radius: 0 0 15px 0
+}
+.arrow-left-head{
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-right-width: 25px;
+  border-right-style: solid;
+  border-bottom: 20px solid transparent;
+}   
+
+.reverse-symbol.shadow {
+  margin-right: -100px;
+}
+.shadow-container {
+  padding: 5px 0 5px 0;
+}
+.reverse-symbol.shadow-mini {
+  margin-right: -95px;
+  margin-bottom: -57px;
+}
+
+.arrow-right-tail.shadow{
+  background: black;
+}
+.arrow-right-head.shadow{
+  border-left-color: black;
+}
+.arrow-left-tail.shadow{
+  background: black;
+}
+.arrow-left-head.shadow{
+  border-right-color: black;
+}   
+
+.arrow-right-tail.white{
+  background: white;
+}
+.arrow-right-head.white{
+  border-left-color: white;
+}
+.arrow-left-tail.white{
+  background: white;
+}
+.arrow-left-head.white{
+  border-right-color: white;
+}   
+
+.arrow-right-tail.blue{
+  background: #0063b3;
+}
+.arrow-right-head.blue{
+  border-left-color: #0063b3;
+}
+.arrow-left-tail.blue{
+  background: #0063b3;
+}
+.arrow-left-head.blue{
+  border-right-color: #0063b3;
+}   
+
+.arrow-right-tail.green{
+  background: #18a849;
+}
+.arrow-right-head.green{
+  border-left-color: #18a849;
+}
+.arrow-left-tail.green{
+  background: #18a849;
+}
+.arrow-left-head.green{
+  border-right-color: #18a849;
+}   
+
+.arrow-right-tail.red{
+  background: #c72a18;
+}
+.arrow-right-head.red{
+  border-left-color: #c72a18;
+}
+.arrow-left-tail.red{
+  background: #c72a18;
+}
+.arrow-left-head.red{
+  border-right-color: #c72a18;
+}   
+
+.arrow-right-tail.yellow{
+  background: #e6ca1e;
+}
+.arrow-right-head.yellow{
+  border-left-color: #e6ca1e;
+}
+.arrow-left-tail.yellow{
+  background: #e6ca1e;
+}
+.arrow-left-head.yellow{
+  border-right-color: #e6ca1e;
+}   
+/* End Reverse Arrow CSS */
+
+/* Start Skip CSS */
+.skip:before,
+.skip:after {
+  content: "skip";
+}
+/* End Skip CSS */
+
+/* Start Draw 2 CSS */
+.draw2:before,
+.draw2:after {
+  content: "draw 2";
+}
+/* End Draw 2 CSS */
+
+/* Start Wild CSS */
+.wild:before,
+.wild:after {
+  content: "wild";
+}
+.mark.wild-mark {
+  background-image: linear-gradient(to left, red, yellow, green, blue) !important;
+}
+/* End Wild CSS */
+
+/* Start Draw 4 CSS */
+.draw4:before,
+.draw4:after {
+  content: "draw 4";
+}
+.mark.draw4-mark {
+  background-image: linear-gradient(to left, red, yellow, green, blue) !important;
+}
+/* End Draw 4 CSS */
+
+.card.black .inner {
+  background: black;
 }
 </style>
