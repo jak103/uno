@@ -7,6 +7,82 @@ import (
 	"github.com/jak103/uno/model"
 )
 
+//Old Items wont need or use these anymore
+
+// ////////////////////////////////////////////////////////////
+// // Utility functions used in place of firebase
+// ////////////////////////////////////////////////////////////
+// func randColor(i int) string {
+// 	switch i {
+// 	case 0:
+// 		return "red"
+// 	case 1:
+// 		return "blue"
+// 	case 2:
+// 		return "green"
+// 	case 3:
+// 		return "yellow"
+// 	}
+// 	return ""
+// }
+
+// ////////////////////////////////////////////////////////////
+// // All the data needed for a simulation of the game
+// // eventually, this will be replaced with firebase
+// ////////////////////////////////////////////////////////////
+// var gameID string = ""
+// var currCard []model.Card = nil // The cards are much easier to render as a list
+// var players []string = []string{}
+// var playerIndex = 0 // Used to iterate through the players
+// var currPlayer string = ""
+// var allCards map[string][]model.Card = make(map[string][]model.Card) // k: username, v: list of cards
+// var gameStarted bool = false
+
+// func newRandomCard() []model.Card {
+// TODO use deck utils instead
+// 	return []model.Card{model.Card{rand.Intn(10), randColor(rand.Intn(4))}}
+// }
+
+////////////////////////////////////////////////////////////
+// Utility functions
+////////////////////////////////////////////////////////////
+
+// A simple helper function to pull a card from a game and put it in the players hand.
+// THis is used in  a lot of places, so this should be  a nice help
+func drawCardHelper(game *model.Game, player *model.Player) {
+	lastIndex := len(game.DrawPile) - 1
+	card := game.DrawPile[lastIndex]
+
+	player.Cards = append(player.Cards, card)
+	game.DrawPile = game.DrawPile[:lastIndex]
+}
+
+// A simpler helper function for getting the player with a matching ID to playerID
+// from the list of players in the game.
+func getPlayer(game *model.Game, playerID string) *model.Player {
+	for _, item := range game.Players {
+		if playerID == item.ID {
+			return &item
+		}
+	}
+	return nil
+}
+
+// given a player and a card look for the card in players hand and return the index
+// If it doesn't exists return -1
+func cardFromPlayer(player *model.Player, card *model.Card) int {
+	// Loop through all cards the player holds
+	for index, item := range player.Cards {
+		// check if current loop item matches card provided
+		if item.Color == card.Color && item.Value == card.Value {
+			// If the card matches return the current index
+			return index
+		}
+	}
+	// If we get to this point the player does not hold the card so we return nil
+	return -1
+}
+
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 
@@ -64,60 +140,124 @@ func createNewGame() error {
 	return nil
 }
 
-func joinGame(game string, username string) bool {
-	if checkID(game) {
-		user := username
-
-		if _, found := contains(players, user); !found {
-			players = append(players, user)
-			allCards[user] = nil // No cards yet
-		}
-		return true
+func joinGame(game string, username string) error {
+	database, err := db.GetDb();
+	if err != nil {
+		return err
 	}
-	return false // bad game_id
-}
 
-func playCard(game string, username string, card model.Card) bool {
-	if checkID(game) && currPlayer == username {
-		cards := allCards[username]
-		if card.Color == currCard[0].Color || card.Value == currCard[0].Value {
-			// Valid card can be played
-			playerIndex = (playerIndex + 1) % len(players)
-			currPlayer = players[playerIndex]
-			currCard[0] = card
-
-			for index, item := range cards {
-				if item == currCard[0] {
-					allCards[username] = append(cards[:index], cards[index+1:]...)
-					break
-				}
-			}
-		}
-		return true
-	}
-	return false
-}
-
-// TODO: Keep track of current card that is top of the deck
-func drawCard(gameID string, playerID string) bool {
-	database, err := db.GetDb()
+	player, err := database.CreatePlayer(username)
 
 	if err != nil {
 		return err
 	}
 
-	game, err := database.LookupGameByID(gameID)
-	var player model.Player
-	for _, item := range game.Players {
-		if playerID == item.ID {
-			player = item
+	return database.JoinGame(game, player.ID)
+}
+
+// The function for playing a card. Right now it grabs the game, checks that the
+// Player id exists in this game, then checks that they hold the card provided,
+// If both are true it adds the card to the discard pile in the game and removes it
+// From the players hand and we return true, else at the end we return false.
+// We must do the checks because they are not done anywhere else.
+func playCard(gameID string, playerID string, card model.Card) bool {
+
+	// These lines are simply getting the database and game and handling any error that could occur
+	database, dbErr := db.GetDb()
+
+	if dbErr != nil {
+		return false
+	}
+
+	game, gameErr := database.LookupGameByID(gameID)
+
+	if gameErr != nil {
+		return false
+	}
+
+	//For loop that loops through all players in the game
+	for _, player := range game.Players {
+		// Check that currnt loop player has the matching id provided to function
+		if playerID == player.ID {
+			// Loop through all cards the player holds
+			for index, item := range player.Cards {
+				// check that they hold the card provided
+				if item.Color == card.Color && item.Value == card.Value {
+					//Remove the card from the players hand
+					player.Cards = append(player.Cards[:index], player.Cards[index+1:]...)
+					//add card to the discard pile
+					game.DiscardPile = append(game.DiscardPile, card)
+					// Save the game state
+					database.SaveGame(*game)
+					return true
+				}
+			}
 		}
 	}
-	drawCardHelper(game, player)
+	// If you get here either the player did not exist in this game or
+	// the player did not hold that card so we return false.
+	return false
 
-	database.SaveGame(game)
+	// There are a couple ways this could be done.
+	// We could use a helper function to get the player, instead of looking for it each time.
+	/*
+		player := getPlayer(game, playerId)
 
-	return true
+		if player == null{
+			return false
+		}
+
+		for index, item := range player.Cards {
+			if item.Color == card.Color && item.Value == card.Value {
+				player.Cards = append(player.Cards[:index], player.Cards[index+1:]...)
+				game.DiscardPile = append(game.DiscardPile, card)
+				return true
+			}
+		}
+
+	*/
+}
+
+func drawCard(gameID string, playerID string) bool {
+	// These lines are simply getting the database and game and handling any error that could occur
+	database, dbErr := db.GetDb()
+
+	if dbErr != nil {
+		return false
+	}
+
+	game, gameErr := database.LookupGameByID(gameID)
+
+	if gameErr != nil {
+		return false
+	}
+
+	// We loop through the players in the game
+	for _, player := range game.Players {
+		// We check that the current item has the same id as the one provided
+		if playerID == player.ID {
+			// Our player exists and we will talk a card from the draw pile
+			// and place it in the players hand
+
+			// We must make sure the draw pile is not empty. If empty move over discard pile,
+			// if discard pile is also empty... i have set it to add a new deck, probably should do something else.
+			if len(game.DrawPile) == 0 {
+				if len(game.DiscardPile) == 0 {
+					game.DrawPile = generateShuffledDeck()
+				} else {
+					game.DrawPile = shuffleCards(game.DiscardPile)
+					game.DiscardPile = game.DiscardPile[:0]
+				}
+			}
+			drawCardHelper(game, &player)
+			//We must then save the game state.
+			database.SaveGame(*game)
+			return true
+		}
+	}
+	// If we reached this point the player does not exist in this game
+	// we return false
+	return false
 }
 
 func dealCards(game *model.Game) {
@@ -133,10 +273,6 @@ func dealCards(game *model.Game) {
 			card := game.DrawPile[lastIndex]
 			append(cards, card)
 			game.DrawPile = game.DrawPile[:lastIndex]
-		}
-		allCards[players[k]] = cards
-	}
-
 	//This will draw one more card, but instead of adding it to a players hand it will add it to the discard pile and set it as the current Card
 	lastIndex := len(game.DrawPile) - 1
 	startCard := game.DrawPile[lastIndex]
