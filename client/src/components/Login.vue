@@ -14,9 +14,9 @@
                 <v-form>
                   <v-text-field test-id="login-game-id" label="GAME ID" type="text" v-model="game_id"></v-text-field>
                   <v-text-field test-id="login-user-name" label="USERNAME" type="text" v-model="user_name"></v-text-field>
-                  <v-btn test-id="login-join-game" @click.native="login" color="primary" :to="to">Join Game</v-btn>
+                  <v-btn test-id="login-join-game" @click.native="login" color="primary">Join Game</v-btn>
                   <v-btn test-id="login-new-game" color="primary" @click.native="newGame">Create new game</v-btn>
-                  <v-card test-id="login-status" v-if="status != ''">{{ status }}</v-card>
+                  <v-card test-id="login-status" color="secondary" v-if="status != ''">{{ status }}</v-card>
                 </v-form>
               </v-card-text>
             </v-card>
@@ -34,31 +34,46 @@ export default {
   data: () => {
     return {
       valid_game: false,
-      game_id: null,
+      game_id: "",
       user_name: "",
-      to: {},
       status: "",
       sim: true // Only true while debugging
     };
   },
   methods: {
     async login() {
-      if (this.user_name != "") {
-        let res = await unoService.login(this.game_id, this.user_name);
-        if (res.data.valid) {
-          this.to = {
-            name: "About",
-            params: { game_id: this.game_id, valid: res.data.valid, username: this.user_name}
-          };
-        }
-      } else {
-        alert("Please enter a username. This will be displayed to other players")
+      if (this.user_name == "") {
+        this.status = "Please enter a username. It will be displayed to other players";
+        return;
+      }
+      if (this.game_id == "") {
+        this.status = "Please enter a game id or create a new game.";
+        return;
+      }
+
+      let res = await unoService.login(this.game_id, this.user_name);
+      if (res.data.valid) {
+        unoService.setToken(res.data.payload.JWT);
+        this.$router.push({
+          name: "About",
+          params: { game_id: this.game_id, valid: res.data.valid, username: this.user_name}
+        });
       }
     },
     async newGame() {
+      if (this.user_name == "") {
+        this.status = "Please enter a username. It will be displayed to other players";
+        return;
+      }
+
       let res = await unoService.newGame(this.user_name);
-      this.game_id = res.data.payload.game_id;
-      this.status = "New game id is: " + this.game_id;
+      if (res.data.valid) {
+        unoService.setToken(res.data.payload.JWT);
+        this.$router.push({
+          name: "About",
+          params: { game_id: res.data.payload.game_id, valid: res.data.valid, username: this.user_name}
+        });
+      }
     }
   }
 };
