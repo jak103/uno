@@ -1,18 +1,37 @@
 package db
 
 import (
-	"github.com/google/uuid"
 	"github.com/jak103/uno/model"
 )
 
 // UnoDB declares the database types for the applicaiton
 type UnoDB interface {
+	// Check if a game with the given password exists in the database.
+	HasGameByPassword(password string) bool
 	// Check if a game with the given ID exists in the database.
-	HasGame(game uuid.UUID) bool
-	// Creates a game with the given ID. Perhaps this should instead just return an id?
-	CreateGame(id uuid.UUID) model.Game
+	HasGameByID(game string) bool
+	// Creates a game.
+	CreateGame() (*model.Game, error)
+	// Creates a player with the given name.
+	CreatePlayer(name string) (*model.Player, error)
+	// DeleteGame deletes a game
+	DeleteGame(id string) error
+	// DeletePlayer deletes a player from the database
+	DeletePlayer(id string) error
 	// Looks up an existing game in the database.
-	LookupGame(id uuid.UUID) model.Game
+	LookupGameByID(id string) (*model.Game, error)
+	// Looks up an existing game in the database.
+	LookupGameByPassword(password string) (*model.Game, error)
+	// Looks up an existing player in the database.
+	LookupPlayer(id string) (*model.Player, error)
 	// Joins a player to a game.
-	JoinGame(id uuid.UUID, username string)
+	JoinGame(gameID string, playerID string) error
+	// Saves a game to the database.
+	SaveGame(model.Game) error
+	// Saves a player to the database.
+	SavePlayer(model.Player) error
+	// disconnects from the database.
+	disconnect()
+	// connect to the database
+	connect()
 }

@@ -2,15 +2,10 @@ package main
 
 import (
 	"math/rand"
-)
 
-////////////////////////////////////////////////////////////
-// Structs used for the talking with frontend
-////////////////////////////////////////////////////////////
-type Card struct {
-	Number int    `json:"number"`
-	Color  string `json:"color"`
-}
+	"github.com/jak103/uno/db"
+	"github.com/jak103/uno/model"
+)
 
 ////////////////////////////////////////////////////////////
 // Utility functions used in place of firebase
@@ -34,19 +29,20 @@ func randColor(i int) string {
 // eventually, this will be replaced with firebase
 ////////////////////////////////////////////////////////////
 var gameID string = ""
-var currCard []Card = nil // The cards are much easier to render as a list
+var currCard []model.Card = nil // The cards are much easier to render as a list
 var players []string = []string{}
 var playerIndex = 0 // Used to iterate through the players
 var currPlayer string = ""
-var allCards map[string][]Card = make(map[string][]Card) // k: username, v: list of cards
+var allCards map[string][]model.Card = make(map[string][]model.Card) // k: username, v: list of cards
 var gameStarted bool = false
 
 ////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
-func newRandomCard() []Card {
-	return []Card{Card{rand.Intn(10), randColor(rand.Intn(4))}}
-}
+// func newRandomCard() []model.Card {
+// TODO use deck utils instead
+// 	return []model.Card{model.Card{rand.Intn(10), randColor(rand.Intn(4))}}
+// }
 
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
@@ -86,28 +82,42 @@ func updateGame(game string, username string) bool {
 	return false
 }
 
-func createNewGame() string {
-	gameID = "12234"
-	return gameID
-}
+func createNewGame() error {
+	database, err := db.GetDb()
 
-func joinGame(game string, username string) bool {
-	if checkID(game) {
-		user := username
-
-		if _, found := contains(players, user); !found {
-			players = append(players, user)
-			allCards[user] = nil // No cards yet
-		}
-		return true
+	if err != nil {
+		return err
 	}
-	return false // bad game_id
+
+	game, err := database.CreateGame()
+
+	if err != nil {
+		return err
+	}
+
+	gameID = game.ID
+	return nil
 }
 
-func playCard(game string, username string, card Card) bool {
+func joinGame(game string, username string) error {
+	database, err := db.GetDb()
+	if err != nil {
+		return err
+	}
+
+	player, err := database.CreatePlayer(username)
+
+	if err != nil {
+		return err
+	}
+
+	return database.JoinGame(game, player.ID)
+}
+
+func playCard(game string, username string, card model.Card) bool {
 	if checkID(game) && currPlayer == username {
 		cards := allCards[username]
-		if card.Color == currCard[0].Color || card.Number == currCard[0].Number {
+		if card.Color == currCard[0].Color || card.Value == currCard[0].Value {
 			// Valid card can be played
 			playerIndex = (playerIndex + 1) % len(players)
 			currPlayer = players[playerIndex]
@@ -127,8 +137,13 @@ func playCard(game string, username string, card Card) bool {
 
 // TODO: Keep track of current card that is top of the deck
 func drawCard(game string, username string) bool {
+
 	if checkID(game) && username == currPlayer {
-		allCards[username] = append(allCards[username], newRandomCard()[0])
+		// Below 2 lines make it so when you draw a card your turn is over, this is incorrect isn't it?
+		//playerIndex = (playerIndex + 1) % len(players)
+		//currPlayer = players[playerIndex]
+		// TODO: Use deck utils instead
+		//allCards[username] = append(allCards[username], newRandomCard()[0])
 		return true
 	}
 	return false
@@ -140,16 +155,22 @@ func dealCards() {
 	// loop through players, set their cards
 	gameStarted = true
 	currPlayer = players[rand.Intn(len(players))]
+	deck := generateShuffledDeck()
 
 	for k := range players {
-		cards := []Card{}
+		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
-			cards = append(cards, Card{rand.Intn(10), randColor(rand.Intn(4))})
+
+			drawnCard := deck[len(deck)-1]
+			deck = deck[:len(deck)-1]
+			cards = append(cards, drawnCard)
+			//cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
 		}
 		allCards[players[k]] = cards
 	}
 
-	currCard = newRandomCard()
+	currCard = deck
+	//currCard = newRandomCard()
 }
 
 // TODO: make sure this reflects on the front end
