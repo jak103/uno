@@ -9,12 +9,12 @@
       <span class="mark">S</span>
     </span>
   </div>
-  <div v-else-if="number === 'draw2'" :class="card_classes">
+  <div v-else-if="number === 'draw_two'" :class="card_classes">
     <span class="inner">
       <span class="mark">D</span>
     </span>
   </div>
-  <div v-else-if="number === 'draw4'" :class="card_classes">
+  <div v-else-if="number === 'wild_draw_four'" :class="card_classes">
     <span class="inner">
       <span class="mark">4</span>
     </span>
@@ -470,8 +470,8 @@ export default {
 /* End Skip CSS */
 
 /* Start Draw 2 CSS */
-.draw2:before,
-.draw2:after {
+.draw_two:before,
+.draw_two:after {
   content: "draw 2";
 }
 /* End Draw 2 CSS */
@@ -487,11 +487,11 @@ export default {
 /* End Wild CSS */
 
 /* Start Draw 4 CSS */
-.draw4:before,
-.draw4:after {
+.wild_draw_four:before,
+.wild_draw_four:after {
   content: "draw 4";
 }
-.mark.draw4-mark {
+.mark.wild_draw_four-mark {
   background-image: linear-gradient(to left, red, yellow, green, blue) !important;
 }
 /* End Draw 4 CSS */
