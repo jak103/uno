@@ -99,19 +99,21 @@ func createNewGame() (string, error) {
 	return game.ID, nil
 }
 
-func joinGame(game string, username string) error {
+func joinGame(game string, username string) (*model.Player, error) {
 	database, err := db.GetDb();
 	if err != nil {
-		return err
+		var p *model.Player
+		return p, err
 	}
 
 	player, err := database.CreatePlayer(username)
 
 	if err != nil {
-		return err
+        var p *model.Player
+		return p, err
 	}
 
-	return database.JoinGame(game, player.ID)
+	return player, database.JoinGame(game, player.ID)
 }
 
 func playCard(game string, username string, card model.Card) bool {

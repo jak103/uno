@@ -3,9 +3,9 @@ package main
 import (
 	//"fmt"
 	"time"
-
+    "strings"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/google/uuid"
+	//"github.com/google/uuid"
 )
 
 // we can have this signkey be whatever we want.
@@ -49,7 +49,7 @@ func exampleUsage() {
 
 // function to create a new jwt based on a name, gameid, and a signKey
 // note, when this is merged with the db branch, we may want to combine "name" and "userid" into one "player" object
-func newJWT(name string, userid uuid.UUID, gameid string, isHost bool, signKey []byte) (string, error) {
+func newJWT(name string, userid string, gameid string, isHost bool, signKey []byte) (string, error) {
 	// Create the token
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -109,6 +109,29 @@ func getValidClaims(myToken string) (jwt.MapClaims, bool) {
 
 }
 
+// function that gets JWT from auth header
+func getValidClaimsFromHeader(authHeader string) (jwt.MapClaims, bool) {
+    
+	if authHeader == "" {
+        // no authorization at all... obviously not authorized
+        var c jwt.MapClaims
+        return c, false
+    }
+    
+    bearerAndToken := strings.Fields(authHeader) // we should get ["bearer" "encodedToken"]
+    
+    //authType := bearerAndToken[0] // I don't think we actually need this...
+    
+    encodedToken := bearerAndToken[1]
+    
+	claims, valid := getValidClaims(encodedToken)
+    
+	// return the claims (empty if invalid), and a flag indicating if the claims (token) are valid
+	return claims, valid
+
+}
+
+// function that simply adds a JWT to a payload.
 func MakeJWTPayload(payload map[string]interface{}, EncodedJWT string) map[string]interface{} {
 	payload["JWT"] = EncodedJWT
 
