@@ -3,6 +3,7 @@
     <v-container>
       <v-row :class="'mb-9'">
         <v-col :cols="6">
+
           <!-- Game stats -->
           <v-row>
             <v-card :class="'ma-3 pa-6'" outlined tile>
@@ -56,6 +57,10 @@
                     <router-link to="help#rules" @click.native="help('#rules')">Rules</router-link>
                     <router-link to="help#tutorials" @click.native="help('#tutorials')">Tutorials</router-link>
                     <router-link to="help#cardAbilities" @click.native="help('#cardAbilities')">Card Abilities</router-link>
+                    
+                    <!-- <v-btn  @click.native="help('#rules')">Rules</v-btn>
+                    <v-btn  @click.native="help('#tutorials')">Tutorials</v-btn>
+                    <v-btn  @click.native="help('#cardAbilities')">Card Abilities</v-btn> -->
                   </v-div>
                 </v-div>    
               </v-card>
@@ -135,6 +140,9 @@ export default {
         }
       });
     },
+    help(){
+      window.open("http://localhost:3000/help#section-one", '_blank')
+    },
     hint(){
       var color = this.current_card[0].color
       var number = this.current_card[0].number
@@ -154,7 +162,6 @@ export default {
         }
       }
     },
-
     startGame() {
         unoService.startGame(this.game_id, this.username)
         .then(() => {
@@ -184,9 +191,6 @@ export default {
 <style scoped>
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
   
-  .hintbtn{
-    background-color: white;
-  }
   .helpDropBtn {
     background-color: #4CAF50;
     color: white;
@@ -205,31 +209,12 @@ export default {
   .dropdown_content {
     display: none;
     position: absolute;
-    background-color:white;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
 
-  /* Links inside the dropdown */
-  .hintbtn a, .dropdown_content a {
-    color: black;
-    padding: 6px 8px;
-  }
-
-  .dropdown_content a {
-    color: black;
-    padding: 6px 8px;
-    text-decoration: none;
-    display: block;
-  }
-
-  /* Change color of dropdown links on hover */
-  .dropdown_content a:hover, .hintbtn a:hover {background-color: #ddd;}
-
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
-
-  /* Change the background color of the dropdown button when the dropdown content is shown */
-  .dropdown:hover .helpDropBtn, .hintbtn a:hover  {background-color: #3e8e41;}
+  
 </style>
