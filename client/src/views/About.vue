@@ -20,7 +20,7 @@
             <v-card
               v-for="player in players"
               :key="player"
-              color="current_player == player ? '#1F7087' : ''"
+              :color="current_player == player ? '#1F7087' : ''"
               :class="'ma-3 pa-6'"
               outlined
               tile
@@ -53,7 +53,7 @@
             Click to play a card from your hand or
             <v-btn v-if="username == current_player" @click.native="drawCard">Draw from deck</v-btn>
           </v-card>
-          <v-card v-else-if="game_over != ''">{{game_over}} has won the game!</v-card>
+          <v-card v-else-if="!!game_over">{{game_over}} has won the game!</v-card>
 
           <v-card v-else :class="'ma-3 pa-6'" outlined tile>Waiting for {{ current_player }}</v-card>
           <Card
