@@ -26,12 +26,7 @@ const routes = [
     path: '/help',
     name: 'Help',
     component: () => import(/* webpackChunkName: "about" */ '../views/Help.vue'),
-<<<<<<< HEAD
     // props: true
-=======
-    props: true
-
->>>>>>> fa7ceb907288a25ef4df4807290e6449e49a52e2
   }
 ]
 
