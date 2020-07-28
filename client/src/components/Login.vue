@@ -12,11 +12,11 @@
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <v-text-field label="GAME ID" type="text" v-model="game_id"></v-text-field>
-                  <v-text-field label="USERNAME" type="text" v-model="user_name"></v-text-field>
-                  <v-btn @click.native="login" color="primary" :to="to">Join Game</v-btn>
-                  <v-btn color="primary" @click.native="newGame">Create new game</v-btn>
-                  <v-card v-if="status != ''">{{ status }}</v-card>
+                  <v-text-field test-id="login-game-id" label="GAME ID" type="text" v-model="game_id"></v-text-field>
+                  <v-text-field test-id="login-user-name" label="USERNAME" type="text" v-model="user_name"></v-text-field>
+                  <v-btn test-id="login-join-game" @click.native="login" color="primary" :to="to">Join Game</v-btn>
+                  <v-btn test-id="login-new-game" color="primary" @click.native="newGame">Create new game</v-btn>
+                  <v-card test-id="login-status" v-if="status != ''">{{ status }}</v-card>
                 </v-form>
               </v-card-text>
             </v-card>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import unoService from "../services/unoService";
 export default {
   name: "LoginPage",
   data: () => {
@@ -44,7 +44,7 @@ export default {
   methods: {
     async login() {
       if (this.user_name != "") {
-        let res = await axios.post("http://localhost:8080/login/" + this.game_id + "/" + this.user_name);
+        let res = await unoService.login(this.game_id, this.user_name);
         if (res.data.valid) {
           this.to = {
             name: "About",
@@ -56,8 +56,7 @@ export default {
       }
     },
     async newGame() {
-      console.log("New game!");
-      let res = await axios.get("http://localhost:8080/newgame");
+      let res = await unoService.newGame();
       this.game_id = res.data.payload.game_id;
       this.status = "New game id is: " + this.game_id;
     }

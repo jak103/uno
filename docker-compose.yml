@@ -2,13 +2,14 @@ version: '3.6'
 
 services:
   client:
-    image: node:12-slim
+    image: vue-client:latest
     build: ./client
     container_name: vue-client
     working_dir: /client
     volumes:
+      - /client/node_modules/
       - ./client:/client      
-    command: npm run-script install-serve
+    command: npm run-script serve
     #command: bash -c "sleep infinity"
     ports:
       - 3000:3000
@@ -16,7 +17,7 @@ services:
       NODE_ENV: development
 
   server:
-    image: golang:1.14.2
+    image: go-server:latest
     build: ./server
     container_name: go-server
     working_dir: /server
@@ -27,12 +28,30 @@ services:
     environment:
       - FIRESTORE_EMULATOR_HOST=firestore-emulator:1982
       - FIRESTORE_PROJECT_ID=usu-devops
-    command: gin --appPort 8080 --all -i run .
+      - DB_TYPE=mongo
+      - MONGO_URI=mongodb://uno:uno@db:27017
+    command: gin --appPort 8080 -i run .
     #command: bash -c "sleep infinity"
 
-  db:
-    container_name: firestore-emulator
-    image: mtlynch/firestore-emulator
+
+  db: 
+    image: 'mongo'
+    container_name: 'uno-db'
     environment:
-      - FIRESTORE_PROJECT_ID=usu-devops
-      - PORT=1982
+      - MONGO_INITDB_DATABASE=uno
+      - MONGO_INITDB_ROOT_USERNAME=uno
+      - MONGO_INITDB_ROOT_PASSWORD=uno
+    volumes:
+      - mongo-volume:/data/db
+      - ./db/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    ports:
+      - '27017-27019:27017-27019'
+    #   db:
+#     container_name: firestore-emulator
+#     image: mtlynch/firestore-emulator
+#     environment:
+#       - FIRESTORE_PROJECT_ID=usu-devops
+#       - PORT=1982
+
+volumes:
+  mongo-volume:

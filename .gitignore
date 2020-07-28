@@ -1,6 +1,12 @@
 .DS_Store
+<<<<<<< HEAD
 node_modules
 client/dist/*
+=======
+server/web/dist/*
+node_modules
+mongo_volume
+>>>>>>> 9ec1a6040f234e9cfc72d8d039c3d84795a1e401
 
 # local env files
 .env.local
@@ -20,3 +26,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Cypress Result files
+client/cypress/videos
+client/cypress/screenshots

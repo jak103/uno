@@ -2,12 +2,17 @@ package main
 
 import (
 	"net/http"
-	"strconv"
 
-	"github.com/labstack/echo"
+	"github.com/jak103/uno/model"
+	"github.com/labstack/echo/v4"
 )
 
 var sim bool = true
+
+type Response struct {
+	ValidGame bool                   `json:"valid"` // Valid game id
+	Payload   map[string]interface{} `json:"payload"`
+}
 
 func setupRoutes(e *echo.Echo) {
 	e.GET("/newgame", newGame)
@@ -19,28 +24,47 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func newGame(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, createNewGame(c), "  ")
+
+	if err := createNewGame(); err != nil {
+		return err
+	}
+
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload("")}, "  ")
 }
 
 func login(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, joinGame(c), "  ")
+	validGame := joinGame(c.Param("game"), c.Param("username"))
+	return respondIfValid(c, (validGame == nil))
 }
 
 func startGame(c echo.Context) error {
 	dealCards()
-	return c.JSONPretty(http.StatusOK, update(c), "  ")
+	return update(c)
 }
 
 func update(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, updateGame(c), "  ")
+	valid := updateGame(c.Param("game"), c.Param("username"))
+	return respondIfValid(c, valid)
 }
 
 func play(c echo.Context) error {
-	num, _ := strconv.Atoi(c.Param("number"))
-
-	return c.JSONPretty(http.StatusOK, playCard(c, Card{num, c.Param("color")}), "  ")
+	// TODO Cards have a value, which can include skip, reverse, etc
+	card := model.Card{c.Param("number"), c.Param("color")}
+	valid := playCard(c.Param("game"), c.Param("username"), card)
+	return respondIfValid(c, valid)
 }
 
 func draw(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, drawCard(c), "  ")
+	valid := drawCard(c.Param("game"), c.Param("username"))
+	return respondIfValid(c, valid)
+}
+
+func respondIfValid(c echo.Context, valid bool) error {
+	var payload *Response
+	if valid {
+		payload = &Response{true, newPayload(c.Param("username"))}
+	} else {
+		payload = &Response{false, nil}
+	}
+	return c.JSONPretty(http.StatusOK, payload, "  ")
 }
