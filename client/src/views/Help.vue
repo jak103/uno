@@ -45,9 +45,12 @@
                     <br><br><br><br><Card :number="1" :color="'red'"></Card>
                     <br><strong>Wild Swap Hands Card</strong> – This is a powerful card that enables you to swap the cards in your hand with anyone of your choice. Being a Wild card, it has the same attributes, namely, you can choose to either play it or not, at any of your turns, and also choose the color of play. Ideally, you would probably want to swap your cards with the player who has the least number of cards! Being a powerful Action card, only one is provided per deck. If turned up at the beginning of the game, the first player to start gets to choose the color and also swap his hands with another person. Note: Being a Wild card, the same rule applies to the Swap Hands card. Once you play this card and swapped your hands with another player, your turn is up, and you are not allowed to put down any card immediately after that until your turn arrives again.<br>
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <br><strong>Wild Customizable Card</strong> – There are 3 of them provided in any deck, and they are all blank. These are meant for you to write down your own “house rules”. Before the game starts, make sure everyone agrees to the rules and also on how many of the Wild Customizable cards will be used. You can use 1-3 of them per game. These are Wild Cards, so the same rules apply to them – The person who plays them gets to choose the color of play, and if turned up at the start, then the first player chooses the color of play. Note: Being a Wild card, the same rule applies to the Customizable card. Once you play this card, your turn is up, and you are not allowed to put down any card immediately after that until your turn arrives again.<br>
 =======
 >>>>>>> working on the redirecting users to sections within help page. It's currently not working.
+=======
+>>>>>>> fa7ceb907288a25ef4df4807290e6449e49a52e2
                     </p></a>
             </div>
         </v-container>
