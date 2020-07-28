@@ -14,8 +14,11 @@
                 <v-form>
                   <v-text-field test-id="login-game-id" label="GAME ID" type="text" v-model="game_id"></v-text-field>
                   <v-text-field test-id="login-user-name" label="USERNAME" type="text" v-model="user_name"></v-text-field>
-                  <v-btn test-id="login-join-game" @click.native="login" color="primary" :to="to">Join Game</v-btn>
-                  <v-btn test-id="login-new-game" color="primary" @click.native="newGame">Create new game</v-btn>
+                  <v-btn v-if="game_id == null" test-id="login-join-game" color="primary" @click.native="login" :to="to">Join Game</v-btn>
+                  <v-btn v-if="game_id == null" test-id="login-new-game" color="primary" @click.native="newGame">Create new game</v-btn>
+                  <v-btn v-if="game_id != null" test-id="login-goto-game" color="primary" @click.native="login" :to="to">Go to Game</v-btn>
+                  <v-btn v-if="game_id != null" test-id="login-back" color="primary" @click.native="back">Back</v-btn>
+
                   <v-card test-id="login-status" v-if="status != ''">{{ status }}</v-card>
                 </v-form>
               </v-card-text>
@@ -59,7 +62,19 @@ export default {
       let res = await unoService.newGame();
       this.game_id = res.data.payload.game_id;
       this.status = "New game id is: " + this.game_id;
-    }
+    },
+    async back() {
+      this.game_id = null;
+      this.status = "";
+    },
   }
 };
 </script>
+
+<style scoped>
+
+.v-btn {
+  margin: 5px 10px 20px 10px;
+}
+
+</style>
