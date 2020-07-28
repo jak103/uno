@@ -3,6 +3,7 @@
     <v-container>
       <v-row :class="'mb-9'">
         <v-col :cols="6">
+
           <!-- Game stats -->
           <v-row>
             <v-card :class="'ma-3 pa-6'" outlined tile>
@@ -13,11 +14,6 @@
               <v-btn v-if="valid" @click.native="startGame">Start Game</v-btn>
               <v-btn v-else to="/">Create a new game</v-btn>
             </v-card> 
-            <v-card :class="'ma-3 pa-6'" outlined tile> 
-                <!-- <v-div class="hintbtn"> -->
-              <v-btn @click.native="hint">Hint</v-btn>
-                <!-- </v-div>     -->
-            </v-card>           
           </v-row>
 
           <!-- Game Players -->
@@ -45,20 +41,18 @@
               </v-card>
             </v-row>
           </v-col>
-          <!-- Help menu button -->
 
+          <!-- Help menu button -->
           <v-col cols= "6">
             <v-row :class="'mb-6'">
               <v-card :class="'ma-3 pa-6'" outlined tile> 
                 <v-div class="dropdown">
                   <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
                   <v-div class="dropdown_content">                  
+                    <v-btn  @click.native="hint">Hint</v-btn><br>
                     <v-btn  @click.native="help('#section-one')">Rules</v-btn>
                     <v-btn  @click.native="help('#section-two')">Tutorials</v-btn>
                     <v-btn  @click.native="help('#section-three')">Card Abilities</v-btn>
-                    <!-- <a href="help" v-scroll-to="'#section-one'">Rules</a>
-                    <a href="help" v-scroll-to="'#section-two'">Tutorials</a>
-                    <a href="help" v-scroll-to="'#section-three'">Card Abilities</a> -->
                   </v-div>
                 </v-div>    
               </v-card>
@@ -138,6 +132,9 @@ export default {
         }
       });
     },
+    help(){
+      window.open("http://localhost:3000/help#section-one", '_blank')
+    },
     hint(){
       var color = this.current_card[0].color
       var number = this.current_card[0].number
@@ -156,9 +153,6 @@ export default {
           }
         }
       }
-    },
-    help(){
-      window.open("http://localhost:3000/help#section-one", '_blank')
     },
     startGame() {
         unoService.startGame(this.game_id, this.username)
@@ -189,9 +183,6 @@ export default {
 <style scoped>
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
   
-  .hintbtn{
-    background-color: white;
-  }
   .helpDropBtn {
     background-color: #4CAF50;
     color: white;
@@ -215,25 +206,7 @@ export default {
     z-index: 1;
   }
 
-  /* Links inside the dropdown */
-  .hintbtn a, .dropdown_content a {
-    color: black;
-    padding: 6px 8px;
-  }
-
-  .dropdown_content a {
-    color: black;
-    padding: 6px 8px;
-    text-decoration: none;
-    display: block;
-  }
-
-  /* Change color of dropdown links on hover */
-  .dropdown_content a:hover, .hintbtn a:hover {background-color: #ddd;}
-
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
-
-  /* Change the background color of the dropdown button when the dropdown content is shown */
-  .dropdown:hover .helpDropBtn, .hintbtn a:hover  {background-color: #3e8e41;}
+  
 </style>
