@@ -128,8 +128,6 @@ func playCard(game string, username string, card Card) bool {
 // TODO: Keep track of current card that is top of the deck
 func drawCard(game string, username string) bool {
 	if checkID(game) && username == currPlayer {
-		playerIndex = (playerIndex + 1) % len(players)
-		currPlayer = players[playerIndex]
 		allCards[username] = append(allCards[username], newRandomCard()[0])
 		return true
 	}
