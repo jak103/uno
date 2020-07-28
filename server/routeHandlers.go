@@ -24,47 +24,72 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func newGame(c echo.Context) error {
+	game, err := createNewGame()
 
-	if err := createNewGame(); err != nil {
+	if err != nil {
 		return err
 	}
 
-	return c.JSONPretty(http.StatusOK, &Response{true, newPayload("")}, "  ")
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
 }
 
 func login(c echo.Context) error {
-	validGame := joinGame(c.Param("game"), c.Param("username"))
-	return respondIfValid(c, (validGame == nil))
+	game, err := joinGame(c.Param("game"), c.Param("username"))
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
 }
 
 func startGame(c echo.Context) error {
-	dealCards()
+	dealCards(c.Param("game"), c.Param("username"))
 	return update(c)
 }
 
 func update(c echo.Context) error {
-	valid := updateGame(c.Param("game"), c.Param("username"))
-	return respondIfValid(c, valid)
+	game, err := updateGame(c.Param("game"), c.Param("username"))
+	if err != nil {
+		return err
+	}
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
 }
 
 func play(c echo.Context) error {
 	// TODO Cards have a value, which can include skip, reverse, etc
 	card := model.Card{c.Param("number"), c.Param("color")}
-	valid := playCard(c.Param("game"), c.Param("username"), card)
-	return respondIfValid(c, valid)
+	game, err := playCard(c.Param("game"), c.Param("username"), card)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
 }
 
 func draw(c echo.Context) error {
-	valid := drawCard(c.Param("game"), c.Param("username"))
-	return respondIfValid(c, valid)
+	game, err := drawCard(c.Param("game"), c.Param("username"))
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
+
 }
 
-func respondIfValid(c echo.Context, valid bool) error {
-	var payload *Response
-	if valid {
-		payload = &Response{true, newPayload(c.Param("username"))}
-	} else {
-		payload = &Response{false, nil}
-	}
-	return c.JSONPretty(http.StatusOK, payload, "  ")
+func newPayload(game *model.Game) map[string]interface{} {
+	payload := make(map[string]interface{})
+
+	// Update known variables
+	payload["direction"] = game.Direction
+	payload["current_player"] = game.CurrentPlayer
+	payload["all_players"] = game.Players
+	payload["draw_pile"] = game.DrawPile
+	payload["discard_pile"] = game.DiscardPile
+	payload["game_id"] = game.ID
+	payload["game_over"] = game.Status == "Finished"
+
+	return payload
 }
