@@ -2,27 +2,21 @@ package main
 
 import (
 	"fmt"
-	"time"
 	"math/rand"
-)
+	"time"
 
-// Represents a card
-// Uses Value instead of Number
-// to more accurately represent non-numerical cards
-type UnoCard struct {
-	Color string `json:"color"`
-	Value string `json:"value"`
-}
+	"github.com/jak103/uno/model"
+)
 
 // Prints a card's color and value
 // Useful during development
-func printCard(card UnoCard) {
+func printCard(card model.Card) {
 	fmt.Println(card.Color, card.Value)
 }
 
 // Prints a slice of cards
 // Useful during development
-func printCards(cards []UnoCard) {
+func printCards(cards []model.Card) {
 	for _, card := range cards {
 		printCard(card)
 	}
@@ -35,24 +29,24 @@ func printCards(cards []UnoCard) {
 func getDeckConfig() ([4]string, map[string]int, map[string]int) {
 	colors := [4]string{"red", "blue", "green", "yellow"}
 
-	standardCardCounts := map[string]int {
-		"zero": 1,
-		"one": 2,
-		"two": 2,
-		"three": 2,
-		"four": 2,
-		"five": 2,
-		"six": 2,
-		"seven": 2,
-		"eight": 2,
-		"nine": 2,
-		"skip": 2,
+	standardCardCounts := map[string]int{
+		"zero":     1,
+		"one":      2,
+		"two":      2,
+		"three":    2,
+		"four":     2,
+		"five":     2,
+		"six":      2,
+		"seven":    2,
+		"eight":    2,
+		"nine":     2,
+		"skip":     2,
 		"draw_two": 2,
-		"reverse": 2,
+		"reverse":  2,
 	}
 
-	wildCardCounts := map[string]int {
-		"wild": 4,
+	wildCardCounts := map[string]int{
+		"wild":           4,
 		"wild_draw_four": 4,
 	}
 
@@ -61,7 +55,7 @@ func getDeckConfig() ([4]string, map[string]int, map[string]int) {
 
 // Returns the cards provided, but in a random order
 // Credit to https://yourbasic.org/golang/shuffle-slice-array/
-func shuffleCards(a []UnoCard) []UnoCard {
+func shuffleCards(a []model.Card) []model.Card {
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
 	return a
@@ -71,20 +65,20 @@ func shuffleCards(a []UnoCard) []UnoCard {
 // and with wild card values and counts as well.
 // Shuffles the deck before returning it.
 // This function is not necessarily efficient - feel free to optimize.
-func generateShuffledDeck() []UnoCard {
+func generateShuffledDeck() []model.Card {
 	colors, standardCardCounts, wildCardCounts := getDeckConfig()
-	deck := []UnoCard{}
+	deck := []model.Card{}
 	for cardValue, count := range standardCardCounts {
 		for i := 0; i < count; i++ {
 			for _, color := range colors {
-				deck = append(deck, UnoCard{color, cardValue})
+				deck = append(deck, model.Card{color, cardValue})
 			}
 		}
 	}
 
 	for cardValue, count := range wildCardCounts {
 		for i := 0; i < count; i++ {
-			deck = append(deck, UnoCard{"wild", cardValue})
+			deck = append(deck, model.Card{"wild", cardValue})
 		}
 	}
 
