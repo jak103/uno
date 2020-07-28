@@ -46,6 +46,18 @@ import (
 // 	return []model.Card{model.Card{rand.Intn(10), randColor(rand.Intn(4))}}
 // }
 
+
+// A simple helper function to pull a card from a game and put it in the players hand.
+// This is used in  a lot of places, so this should be  a nice help
+func drawCardHelper(game *model.Game, player *model.Player) {
+	lastIndex := len(game.DrawPile) - 1
+	card := game.DrawPile[lastIndex]
+
+	append(player.Cards, card)
+	game.DrawPile = game.DrawPile[:lastIndex]
+}
+
+
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 
@@ -152,11 +164,7 @@ func drawCard(gameID string, playerID string) bool {
 			player = item
 		}
 	}
-	lastIndex := len(game.DrawPile) - 1
-	card := game.DrawPile[lastIndex]
-
-	append(player.Cards, card)
-	game.DrawPile = game.DrawPile[:lastIndex]
+	drawCardHelper(game, player)
 
 	database.SaveGame(game)
 
@@ -164,7 +172,7 @@ func drawCard(gameID string, playerID string) bool {
 }
 
 // TODO: need to deal the actual cards, not just random numbers
-func dealCards() {
+func dealCards(game *model.Game) {
 	// The game has started, no more players are joining
 	// loop through players, set their cards
 	gameStarted = true
@@ -176,13 +184,29 @@ func dealCards() {
 
 			// TODO Use deck utils instead
 			//cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
+			//can set this up similar to the drawCardHelper, but not just call draw card because that makes it call the database too much.
+			lastIndex := len(game.DrawPile) - 1
+			card := game.DrawPile[lastIndex]
+			append(cards, card)
+			game.DrawPile = game.DrawPile[:lastIndex]
+
+
 		}
 		allCards[players[k]] = cards
 	}
 
 	// TODO Use deck utils instead
 	//currCard = newRandomCard()
+	//This will draw one more card, but instead of adding it to a players hand it will add it to the discard pile and set it as the current Card
+	lastIndex := len(game.DrawPile) - 1
+	startCard := game.DrawPile[lastIndex]
+	append(DiscardPile.Cards, card)
+	game.DrawPile = game.DrawPile[:lastIndex]
+	currCard = startCard
+
 }
+
+
 
 // TODO: make sure this reflects on the front end
 func checkForWinner() string {
