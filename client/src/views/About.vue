@@ -53,9 +53,9 @@
                 <v-div class="dropdown">
                   <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
                   <v-div class="dropdown_content">                  
-                    <router-link to="help#section-one" @click.native="help('#section-one')">Rules</router-link>
-                    <router-link to="help#section-two" @click.native="help('#section-two')">Tutorials</router-link>
-                    <router-link to="help#section-three" @click.native="help('#section-three')">Card Abilities</router-link>
+                    <v-btn  @click.native="help('#section-one')">Rules</v-btn>
+                    <v-btn  @click.native="help('#section-two')">Tutorials</v-btn>
+                    <v-btn  @click.native="help('#section-three')">Card Abilities</v-btn>
                     <!-- <a href="help" v-scroll-to="'#section-one'">Rules</a>
                     <a href="help" v-scroll-to="'#section-two'">Tutorials</a>
                     <a href="help" v-scroll-to="'#section-three'">Card Abilities</a> -->
@@ -157,7 +157,9 @@ export default {
         }
       }
     },
-
+    help(){
+      window.open("http://localhost:3000/help#section-one", '_blank')
+    },
     startGame() {
         unoService.startGame(this.game_id, this.username)
         .then(() => {
@@ -208,7 +210,6 @@ export default {
   .dropdown_content {
     display: none;
     position: absolute;
-    background-color:white;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
