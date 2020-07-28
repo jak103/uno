@@ -139,9 +139,8 @@ func playCard(game string, username string, card model.Card) bool {
 func drawCard(game string, username string) bool {
 
 	if checkID(game) && username == currPlayer {
-		// Below 2 lines make it so when you draw a card your turn is over, this is incorrect isn't it?
-		//playerIndex = (playerIndex + 1) % len(players)
-		//currPlayer = players[playerIndex]
+		playerIndex = (playerIndex + 1) % len(players)
+		currPlayer = players[playerIndex]
 		// TODO: Use deck utils instead
 		//allCards[username] = append(allCards[username], newRandomCard()[0])
 		return true
