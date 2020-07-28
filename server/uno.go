@@ -7,47 +7,6 @@ import (
 	"github.com/jak103/uno/model"
 )
 
-//Old Items wont need or use these anymore
-
-// ////////////////////////////////////////////////////////////
-// // Utility functions used in place of firebase
-// ////////////////////////////////////////////////////////////
-// func randColor(i int) string {
-// 	switch i {
-// 	case 0:
-// 		return "red"
-// 	case 1:
-// 		return "blue"
-// 	case 2:
-// 		return "green"
-// 	case 3:
-// 		return "yellow"
-// 	}
-// 	return ""
-// }
-
-// ////////////////////////////////////////////////////////////
-// // All the data needed for a simulation of the game
-// // eventually, this will be replaced with firebase
-// ////////////////////////////////////////////////////////////
-// var gameID string = ""
-// var currCard []model.Card = nil // The cards are much easier to render as a list
-// var players []string = []string{}
-// var playerIndex = 0 // Used to iterate through the players
-// var currPlayer string = ""
-// var allCards map[string][]model.Card = make(map[string][]model.Card) // k: username, v: list of cards
-// var gameStarted bool = false
-
-////////////////////////////////////////////////////////////
-// Utility functions
-////////////////////////////////////////////////////////////
-// func newRandomCard() []model.Card {
-// TODO use deck utils instead
-// 	return []model.Card{model.Card{rand.Intn(10), randColor(rand.Intn(4))}}
-// }
-
-
-
 func newPayload(user string) map[string]interface{} { // User will default to "" if not passed
 	payload := make(map[string]interface{})
 
@@ -161,7 +120,6 @@ func drawCard(gameID string, playerID string) bool {
 	return true
 }
 
-// TODO: need to deal the actual cards, not just random numbers
 func dealCards(game *model.Game) {
 	// The game has started, no more players are joining
 	// loop through players, set their cards
@@ -171,29 +129,20 @@ func dealCards(game *model.Game) {
 	for k := range players {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
-
-			// TODO Use deck utils instead
-			//cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
-			//can set this up similar to the drawCardHelper, but not just call draw card because that makes it call the database too much.
 			lastIndex := len(game.DrawPile) - 1
 			card := game.DrawPile[lastIndex]
 			append(cards, card)
 			game.DrawPile = game.DrawPile[:lastIndex]
-
-
 		}
 		allCards[players[k]] = cards
 	}
 
-	// TODO Use deck utils instead
-	//currCard = newRandomCard()
 	//This will draw one more card, but instead of adding it to a players hand it will add it to the discard pile and set it as the current Card
 	lastIndex := len(game.DrawPile) - 1
 	startCard := game.DrawPile[lastIndex]
 	append(DiscardPile.Cards, card)
 	game.DrawPile = game.DrawPile[:lastIndex]
 	currCard = startCard
-
 }
 
 
