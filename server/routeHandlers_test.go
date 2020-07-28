@@ -36,7 +36,7 @@ func TestNewGame(t *testing.T) {
 	}
 }
 
-func TestLogin(t *testing.T) {
+func TestLogin_error(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
@@ -49,7 +49,7 @@ func TestLogin(t *testing.T) {
 	assert.Error(t, login(c)) // This should error because no game was created
 }
 
-func TestDraw(t *testing.T) {
+func TestDraw_error(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
@@ -62,7 +62,7 @@ func TestDraw(t *testing.T) {
 	assert.Error(t, login(c)) // This should error because no game was created
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdate_error(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
@@ -75,7 +75,7 @@ func TestUpdate(t *testing.T) {
 	assert.Error(t, login(c)) // This should error because no game was created
 }
 
-func TestPlay(t *testing.T) {
+func TestPlay_error(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
@@ -88,7 +88,7 @@ func TestPlay(t *testing.T) {
 	assert.Error(t, login(c)) // This should error because no game was created
 }
 
-func TestStartGame(t *testing.T) {
+func TestStartGame_error(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
