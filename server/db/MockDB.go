@@ -59,9 +59,12 @@ func (db *mockDB) DeletePlayer(id string) error {
 
 // LookupGameByID looks up an existing game in the database.
 func (db *mockDB) LookupGameByID(id string) (*model.Game, error) {
-	if game, ok := db.games[id]; ok {
-		return &game, nil
+	if id != "" {
+		if game, ok := db.games[id]; ok {
+			return &game, nil
+		}
 	}
+
 	return nil, errors.New("mockdb: game not found")
 }
 
