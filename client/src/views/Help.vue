@@ -1,13 +1,8 @@
 <template class="Scroll">
 
     <div class="Scroll">
-        <!-- <v-content>
-            <SectionOne id="section-one"/>
-            <SectionTwo id="section-two"/>     
-            <SectionThree id="section-three"/>
-        </v-content> -->
         <v-container>
-            <div id="section-one">
+            <section id="rules">
                 
                 <h2> Rules: </h2>
                 <a id=section1><p class=text ><br>The first player is normally the player to the left of the dealer (you can also choose the youngest player) and gameplay usually follows a clockwise direction. Every player views his/her cards and tries to match the card in the Discard Pile.
@@ -19,13 +14,13 @@
                     <br>The game continues until a player has one card left. The moment a player has just one card they must yell “UNO!”. If they are caught not saying “Uno” by another player before the next player has taken their turn, that player must draw two new cards as a penalty. Assuming that the player is unable to play/discard their last card and needs to draw, but after drawing, is then able to play/discard that penultimate card, the player has to repeat the action of calling out “Uno”. The bottom line is – Announcing “Uno” needs to be repeated every time you are left with one card.
                     Once a player has no cards remaining, the game round is over, points are scored, and the game begins over again. Normally, everyone tries to be the first one to achieve 500 points, but you can also choose whatever points number to win the game, as long as everyone agrees to it.<br>
                 </p></a>
-            </div>    
-            <div id="section-two"> 
+            </section>    
+            <section id="tutorials"> 
                               
                 <h2> Tutorials: </h2>
                 <a id="section2"><p class=text > Tutorials here</p></a>
-            </div>    
-            <div id="section-three">
+            </section>    
+            <section id="cardAbilities">
                 
                 <h2> Card Abilities: </h2>
             
@@ -46,7 +41,7 @@
                     <br><strong>Wild Swap Hands Card</strong> – This is a powerful card that enables you to swap the cards in your hand with anyone of your choice. Being a Wild card, it has the same attributes, namely, you can choose to either play it or not, at any of your turns, and also choose the color of play. Ideally, you would probably want to swap your cards with the player who has the least number of cards! Being a powerful Action card, only one is provided per deck. If turned up at the beginning of the game, the first player to start gets to choose the color and also swap his hands with another person. Note: Being a Wild card, the same rule applies to the Swap Hands card. Once you play this card and swapped your hands with another player, your turn is up, and you are not allowed to put down any card immediately after that until your turn arrives again.<br>
                     <br><strong>Wild Customizable Card</strong> – There are 3 of them provided in any deck, and they are all blank. These are meant for you to write down your own “house rules”. Before the game starts, make sure everyone agrees to the rules and also on how many of the Wild Customizable cards will be used. You can use 1-3 of them per game. These are Wild Cards, so the same rules apply to them – The person who plays them gets to choose the color of play, and if turned up at the start, then the first player chooses the color of play. Note: Being a Wild card, the same rule applies to the Customizable card. Once you play this card, your turn is up, and you are not allowed to put down any card immediately after that until your turn arrives again.<br>
                     </p></a>
-            </div>
+            </section>
         </v-container>
     </div>        
 </template>

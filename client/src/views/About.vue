@@ -13,10 +13,10 @@
               <v-btn v-if="valid" @click.native="startGame">Start Game</v-btn>
               <v-btn v-else to="/">Create a new game</v-btn>
             </v-card> 
+            
+            <!-- Hint Button -->
             <v-card :class="'ma-3 pa-6'" outlined tile> 
-                <!-- <v-div class="hintbtn"> -->
               <v-btn @click.native="hint">Hint</v-btn>
-                <!-- </v-div>     -->
             </v-card>           
           </v-row>
 
@@ -45,20 +45,17 @@
               </v-card>
             </v-row>
           </v-col>
-          <!-- Help menu button -->
 
+          <!-- Help menu button -->
           <v-col cols= "6">
             <v-row :class="'mb-6'">
               <v-card :class="'ma-3 pa-6'" outlined tile> 
                 <v-div class="dropdown">
                   <v-btn @click.native="helpMenu" class="helpDropBtn">Need Help?</v-btn>
                   <v-div class="dropdown_content">                  
-                    <router-link to="help#section-one" @click.native="help('#section-one')">Rules</router-link>
-                    <router-link to="help#section-two" @click.native="help('#section-two')">Tutorials</router-link>
-                    <router-link to="help#section-three" @click.native="help('#section-three')">Card Abilities</router-link>
-                    <!-- <a href="help" v-scroll-to="'#section-one'">Rules</a>
-                    <a href="help" v-scroll-to="'#section-two'">Tutorials</a>
-                    <a href="help" v-scroll-to="'#section-three'">Card Abilities</a> -->
+                    <router-link to="help#rules" @click.native="help('#rules')">Rules</router-link>
+                    <router-link to="help#tutorials" @click.native="help('#tutorials')">Tutorials</router-link>
+                    <router-link to="help#cardAbilities" @click.native="help('#cardAbilities')">Card Abilities</router-link>
                   </v-div>
                 </v-div>    
               </v-card>
