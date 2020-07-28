@@ -141,7 +141,7 @@ func createNewGame() error {
 }
 
 func joinGame(game string, username string) error {
-	database, err := db.GetDb();
+	database, err := db.GetDb()
 	if err != nil {
 		return err
 	}
@@ -260,28 +260,29 @@ func drawCard(gameID string, playerID string) bool {
 	return false
 }
 
-// TODO: need to deal the actual cards, not just random numbers
-func dealCards() {
-    // The game has started, no more players are joining
-    // loop through players, set their cards
-    gameStarted = true
-    currPlayer = players[rand.Intn(len(players))]
-    deck := generateShuffledDeck()
+func dealCards(game *model.Game) {
+	// The game has started, no more players are joining
+	// loop through players, set their cards
+	gameStarted = true
+	currPlayer = players[rand.Intn(len(players))]
 
-    for k := range players {
-        cards := []model.Card{}
-        for i := 0; i < 7; i++ {
+	for k := range players {
+		cards := []model.Card{}
+		for i := 0; i < 7; i++ {
+			lastIndex := len(game.DrawPile) - 1
+			card := game.DrawPile[lastIndex]
+			append(cards, card)
+			game.DrawPile = game.DrawPile[:lastIndex]
 
-            drawnCard := deck[len(deck)-1]
-            deck = deck[:len(deck)-1]
-            cards = append(cards, drawnCard)
-            //cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
-        }
-        allCards[players[k]] = cards
-    }
-
-    currCard = deck
-    //currCard = newRandomCard()
+		}
+		allCards[players[k]] = cards
+	}
+	//This will draw one more card, but instead of adding it to a players hand it will add it to the discard pile and set it as the current Card
+	lastIndex := len(game.DrawPile) - 1
+	startCard := game.DrawPile[lastIndex]
+	append(DiscardPile.Cards, card)
+	game.DrawPile = game.DrawPile[:lastIndex]
+	currCard = startCard
 }
 
 // TODO: make sure this reflects on the front end
