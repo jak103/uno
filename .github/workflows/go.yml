@@ -2,9 +2,15 @@ name: Go
 
 on:
   push:
+<<<<<<< HEAD
     branches: [ master ]
   pull_request:
     branches: [ master ]
+=======
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master, dev ]
+>>>>>>> 9ec1a6040f234e9cfc72d8d039c3d84795a1e401
 
 jobs:
 
@@ -30,10 +36,18 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9ec1a6040f234e9cfc72d8d039c3d84795a1e401
     - name: Build
       working-directory: server
       run: go build -v .
 
     - name: Test
       working-directory: server
+<<<<<<< HEAD
       run: go test -v .
+=======
+      run: export DB_TYPE="MOCK" ; go test -v .
+>>>>>>> 9ec1a6040f234e9cfc72d8d039c3d84795a1e401
