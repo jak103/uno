@@ -1,7 +1,7 @@
 package main
 
 import (
-	"math/rand"
+	"errors"
 
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
@@ -9,6 +9,7 @@ import (
 
 //Old Items wont need or use these anymore
 
+<<<<<<< HEAD
 // ////////////////////////////////////////////////////////////
 // // Utility functions used in place of firebase
 // ////////////////////////////////////////////////////////////
@@ -95,64 +96,99 @@ func newPayload(user string) map[string]interface{} { // User will default to ""
 	// payload["deck"] = allCards[user] // returns nil if currPlayer = "" or user not in allCards
 	// payload["game_id"] = gameID
 	// payload["game_over"] = checkForWinner()
+=======
+////////////////////////////////////////////////////////////
+// Utility functions
+////////////////////////////////////////////////////////////
 
-	return payload
-}
-
-func checkID(id string) bool {
-	return id == gameID
-}
-
-func contains(arr []string, val string) (int, bool) {
-	for i, item := range arr {
-		if item == val {
-			return i, true
-		}
-	}
-	return -1, false
-}
+// TODO: make sure this reflects on the front end
+// func checkForWinner(game *model.Game) string {
+// 	for k := range game.Players {
+// 		if len(allCards[players[k]]) == 0 {
+// 			return players[k]
+// 		}
+// 	}
+// 	return ""
+// }
 
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func updateGame(game string, username string) bool {
-	success := false
-	if success = checkID(game); success && gameStarted {
-		return true
-	}
-	return false
-}
-
-func createNewGame() error {
+func updateGame(game string, username string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
-		return err
+		return nil, err
+	}
+>>>>>>> dev
+
+	gameData, gameErr := database.LookupGameByID(game)
+
+	if gameErr != nil {
+		return nil, err
+	}
+
+	found := false
+	for i := 0; i < len(gameData.Players); i++ {
+		player := gameData.Players[i]
+		if player.Name == username {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return nil, errors.New("Player not in game, cannot start")
+	}
+
+	if gameData.Status != "Playing" {
+		gameData.Status = "Playing"
+	}
+
+	err = database.SaveGame(*gameData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return gameData, nil
+}
+
+func createNewGame() (*model.Game, error) {
+	database, err := db.GetDb()
+
+	if err != nil {
+		return nil, err
 	}
 
 	game, err := database.CreateGame()
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	gameID = game.ID
-	return nil
+	return game, nil
 }
 
-func joinGame(game string, username string) error {
+func joinGame(game string, username string) (*model.Game, error) {
 	database, err := db.GetDb()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	player, err := database.CreatePlayer(username)
+	player, playerErr := database.CreatePlayer(username)
 
-	if err != nil {
-		return err
+	if playerErr != nil {
+		return nil, err
 	}
 
-	return database.JoinGame(game, player.ID)
+	gameData, gameErr := database.JoinGame(game, player.ID)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	return gameData, nil
 }
 
 // The function for playing a card. Right now it grabs the game, checks that the
@@ -160,7 +196,7 @@ func joinGame(game string, username string) error {
 // If both are true it adds the card to the discard pile in the game and removes it
 // From the players hand and we return true, else at the end we return false.
 // We must do the checks because they are not done anywhere else.
-func playCard(gameID string, playerID string, card model.Card) bool {
+func playCard(gameID string, playerID string, card model.Card)  (*model.Game, error) {
 
 	// These lines are simply getting the database and game and handling any error that could occur
 	database, dbErr := db.GetDb()
@@ -218,7 +254,7 @@ func playCard(gameID string, playerID string, card model.Card) bool {
 	*/
 }
 
-func drawCard(gameID string, playerID string) bool {
+func drawCard(gameID string, playerID string)  (*model.Game, error) {
 	// These lines are simply getting the database and game and handling any error that could occur
 	database, dbErr := db.GetDb()
 
@@ -285,12 +321,36 @@ func dealCards(game *model.Game) {
 	currCard = startCard
 }
 
-// TODO: make sure this reflects on the front end
-func checkForWinner() string {
-	for k := range players {
-		if len(allCards[players[k]]) == 0 {
-			return players[k]
-		}
+	if err != nil {
+		return nil, err
 	}
-	return ""
+
+	gameData, gameErr := database.LookupGameByID(game)
+
+	if gameErr != nil {
+		return nil, err
+	}
+
+	// The game has started, no more players are joining
+	// loop through players, set their cards
+	// gameStarted = true
+	// currPlayer = players[rand.Intn(len(players))]
+	// deck := generateShuffledDeck()
+
+	// for k := range players {
+	// 	cards := []model.Card{}
+	// 	for i := 0; i < 7; i++ {
+
+	// 		drawnCard := deck[len(deck)-1]
+	// 		deck = deck[:len(deck)-1]
+	// 		cards = append(cards, drawnCard)
+	// 		//cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
+	// 	}
+	// 	allCards[players[k]] = cards
+	// }
+
+	// currCard = deck
+	//currCard = newRandomCard()
+
+	return gameData, nil
 }
