@@ -131,7 +131,6 @@ export default {
     }
   },
   created() {
-    console.log("Created About");
     setInterval(() => {
       this.updateData();
     }, 2000);
