@@ -150,6 +150,7 @@ export default {
       this.sortByColor = false;
       // add the imediate conversion
     },
+    // It seems to work and organize good but on refresh for some reason it resorts it a slightly different way
     orgByNum() {
       this.sortByNum = true;
       this.sortByColor = false;
