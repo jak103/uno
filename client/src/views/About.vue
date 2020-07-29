@@ -18,19 +18,19 @@
           <!-- Game Players -->
           <v-row>
             <v-card
-              v-for="hand in hand_count"
-              :key="hand"
-              color="current_player == hand.name ? '#1F7087' : ''"
+              v-for="player in players"
+              :key="player"
+              :color="current_player == player ? '#1F7087' : ''"
               :class="'ma-3 pa-6'"
               outlined
               tile
             >
               <h2>Name</h2>
-              <p>{{ hand.name }}</p>
+              <p>{{ player.Name }}</p>
               <h2>Cards in Hand</h2>
               <p>
-                <span>{{ hand.numCards }} :</span>
-                <span v-for="n in hand.numCards" :key="n">🃠</span>
+                <span>{{ player.Cards.length }} :</span>
+                <span v-for="n in player.Cards.length" :key="n">🃠</span>
               </p>
             </v-card>
           </v-row>
@@ -56,7 +56,7 @@
             Click to play a card from your hand or
             <v-btn v-if="username == current_player" @click.native="drawCard">Draw from deck</v-btn>
           </v-card>
-          <v-card v-else-if="game_over != ''">{{game_over}} has won the game!</v-card>
+          <v-card v-else-if="!!game_over">{{game_over}} has won the game!</v-card>
 
           <v-card v-else :class="'ma-3 pa-6'" outlined tile>Waiting for {{ current_player }}</v-card>
           <Card
@@ -94,7 +94,7 @@ export default {
       cards: [],
       current_player: "",
       players: [],
-      hand_count: [],
+      // hand_count: [],
       current_card: [],
       game_over: "",
     };
@@ -117,44 +117,44 @@ export default {
         }
       });
 
-      unoService
-        .getHandCount(this.game_id)
-        .then((response) => {
-          if (!response.error || !response.message) {
-            console.error(
-              "Unexpected response from server for cardount endpoint. Recieved:",
-              response
-            );
-            return;
-          }
+      // unoService
+      //   .getHandCount(this.game_id)
+      //   .then((response) => {
+      //     if (!response.error || !response.message) {
+      //       console.error(
+      //         "Unexpected response from server for cardount endpoint. Recieved:",
+      //         response
+      //       );
+      //       return;
+      //     }
 
-          if (!response.error !== "") {
-            console.error(
-              "Cardcount endpoint returned an error:",
-              response.error
-            );
-            return;
-          }
+      //     if (!response.error !== "") {
+      //       console.error(
+      //         "Cardcount endpoint returned an error:",
+      //         response.error
+      //       );
+      //       return;
+      //     }
 
-          if (response.message === "") {
-            console.error("Cardcount endpoint returned an empty response.");
-            return;
-          }
+      //     if (response.message === "") {
+      //       console.error("Cardcount endpoint returned an empty response.");
+      //       return;
+      //     }
 
-          if (!response.message.name || !response.message.numCards) {
-            console.error(
-              "Hand count information from server not in expected format. Recieved:",
-              response.message
-            );
-            return;
-          }
+      //     if (!response.message.name || !response.message.numCards) {
+      //       console.error(
+      //         "Hand count information from server not in expected format. Recieved:",
+      //         response.message
+      //       );
+      //       return;
+      //     }
 
-          this.hand_count = response.message;
-        })
-        .catch((error) => {
-          console.error("Could not correctly get hand count data:", error);
-          return;
-        });
+      //     this.hand_count = response.message;
+      //   })
+      //   .catch((error) => {
+      //     console.error("Could not correctly get hand count data:", error);
+      //     return;
+      //   });
     },
     startGame() {
       unoService.startGame(this.game_id, this.username).then(() => {

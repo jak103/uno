@@ -56,7 +56,7 @@ func TestGetCardCount(t *testing.T) {
 	err = database.JoinGame(game.ID, player.ID)
 	assert.NoError(t, err)
 
-	gameLookup, e := database.LookupGameByID(game.ID)
+	// gameLookup, e := database.LookupGameByID(game.ID)
 
 	val, err := getCardCount("")
 	assert.Equal(t, "", val)
