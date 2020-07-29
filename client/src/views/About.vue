@@ -131,7 +131,11 @@ export default {
     drawCard() {
       unoService.drawCard(this.game_id, this.username)
         .then(this.updateData());
-    }
+    },
+	callUno() {
+		unoService.callUno(this.game_id, this.username)
+			.then(this.updateData());
+	}
   },
   created() {
     setInterval(() => {
