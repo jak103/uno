@@ -15,8 +15,6 @@ func TestJWT (t *testing.T) {
 	// the things we will store in our token for a player named "Chanel"
 	name := "Chanel"
 	userid := "someUniqueID"
-	gameid := "1234"
-	isHost := true
     
     // this should be the same as the invalid token: just an empty token!
 	var emptyToken *jwt.Token
@@ -24,7 +22,7 @@ func TestJWT (t *testing.T) {
 	var emptyClaims jwt.MapClaims
 	
 	// note: we are using the global constant from jwt.go here to encode the JWT token.
-	encodedToken, err := newJWT(name, userid, gameid, isHost, []byte(signKey))
+	encodedToken, err := newJWT(name, userid)
 	
 	// the encoding process shouldn't face any issues.
 	assert.Equal(t, nil, err)
@@ -37,10 +35,6 @@ func TestJWT (t *testing.T) {
 	
 	// the token should be decoded to the contents that we put into it; e.g. same name, userid, gameid, host.
 	assert.Equal(t, name, validToken.Claims.(jwt.MapClaims)["name"])
-	assert.Equal(t, gameid, validToken.Claims.(jwt.MapClaims)["gameid"])
-	assert.Equal(t, isHost, validToken.Claims.(jwt.MapClaims)["isHost"])
-	
-	// note: the process of putting the uuid into a JWT turns it into a string.
 	assert.Equal(t, userid, validToken.Claims.(jwt.MapClaims)["userid"])
 	
 	// test the claims function!
@@ -50,10 +44,6 @@ func TestJWT (t *testing.T) {
 	assert.Equal(t, true, claimsAreValid)
 	
 	assert.Equal(t, name, validClaims["name"])
-	assert.Equal(t, gameid, validClaims["gameid"])
-	assert.Equal(t, isHost, validClaims["isHost"])
-	
-	// note: the process of putting the uuid into a JWT turns it into a string.
 	assert.Equal(t, userid, validClaims["userid"])
 	
     // this should also work with an authHeader bearing the token
@@ -74,8 +64,6 @@ func TestJWT (t *testing.T) {
     assert.Equal(t, true, headerIsValid)
     
     assert.Equal(t, name, validHeaderClaims["name"])
-	assert.Equal(t, gameid, validHeaderClaims["gameid"])
-	assert.Equal(t, isHost, validHeaderClaims["isHost"])
     
 	// test the functions with a bad token!
 	badEncodedToken := "modify" + encodedToken
