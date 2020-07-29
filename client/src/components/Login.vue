@@ -50,7 +50,23 @@ export default {
       }
 
       // Set JWT token
-      unoService.setToken(res.data.payload.JWT);
+      let token = res.data.payload.JWT;
+      window.localStorage.setItem("token", token);
+      unoService.setToken(token);
+
+      // Send client to the "Lobby" object
+      this.$router.push({
+        name: "Lobby",
+        params: {username: this.user_name}
+      });
+    },
+    created() {
+      // Check again if the user is logged in.
+      // Other check is on the app start
+      let token = window.localStorage.getItem("token");
+      if (token != null) {
+        unoService.setToken(token);
+      }
 
       // Send client to the "Lobby" object
       this.$router.push({
