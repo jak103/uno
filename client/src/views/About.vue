@@ -56,6 +56,15 @@
           <v-card v-else-if="!!game_over">{{game_over}} has won the game!</v-card>
 
           <v-card v-else :class="'ma-3 pa-6'" outlined tile>Waiting for {{ current_player }}</v-card>
+
+          <!-- Organize Cards -->
+          <v-card v-if="username == current_player" :class="'ma-3 pl-6 pa-4'" outlined tile>
+            Organize Cards
+            <v-btn @click.native="orgByColor">by Color</v-btn>
+            <v-btn @click.native="orgByNum">by Number</v-btn>
+            <v-btn @click.native="orgOff">Off</v-btn>
+          </v-card>
+
           <Card
             v-for="(card, i) in cards"
             :key="i"
@@ -92,7 +101,9 @@ export default {
       current_player: "",
       players: [],
       current_card: [],
-      game_over: ""
+      game_over: "",
+      sortByNum: false,
+      sortByColor: false,
     };
   },
   components: {
@@ -109,6 +120,11 @@ export default {
           this.current_card = res.data.payload.current_card;
           if (res.data.game_over != "") {
             this.game_over = res.data.game_over;
+          }
+          if (this.sortByColor) {
+            this.orgByColor()
+          }else if (this.sortByNum) {
+            this.orgByNum()
           }
         }
       });
@@ -128,7 +144,23 @@ export default {
     drawCard() {
       unoService.drawCard(this.game_id, this.username)
         .then(this.updateData());
-    }
+    },
+    orgOff() {
+      this.sortByNum = false;
+      this.sortByColor = false;
+      // add the imediate conversion
+    },
+    orgByNum() {
+      this.sortByNum = true;
+      this.sortByColor = false;
+      return this.cards.sort((a, b) => { return a.number - b.number;});
+    },
+    orgByColor() {
+      var colors = { 'red': 0, 'blue': 1 , 'green': 2, 'yellow': 3 }
+      this.sortByNum = false;
+      this.sortByColor = true;
+      return this.cards.sort((a, b) => { return colors[a.color] - colors[b.color];});
+    },
   },
   created() {
     setInterval(() => {
@@ -137,3 +169,12 @@ export default {
   }
 };
 </script>
+
+
+<style scoped>
+
+.v-btn {
+  margin: 0px 10px 0px 10px;
+}
+
+</style>
