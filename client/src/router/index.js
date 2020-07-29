@@ -25,7 +25,7 @@ const routes = [
   {
     path: '/gameOver',
     name: 'GameOver',
-    component: () => import(/* webpackChunkName: "about" */ '../components/gameOver.vue')
+    component: () => import('../components/gameOver.vue')
   }
 ]
 
