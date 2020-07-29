@@ -101,7 +101,7 @@ export default {
   methods: {
     redir() {
       alert(this.game_over, " has won the game!")
-      window.location.replace("http://localhost:3000/gameOver");
+      this.$router.push({ name: 'gameOver'});
     },
     updateData() {
       unoService.update(this.game_id, this.username).then(res => {

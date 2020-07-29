@@ -21,19 +21,18 @@ const routes = [
     // This is what you should always do except for '/' => 'Home'
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
     props: true
+  },
+  {
+    path: '/gameOver',
+    name: 'GameOver',
+    component: () => import(/* webpackChunkName: "about" */ '../components/gameOver.vue')
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: [
-    {
-      path: '/gameOver',
-      name: 'gameOver',
-      component: GameOver,
-    }
-  ]
+  routes
 })
 
 export default router
