@@ -1,7 +1,8 @@
 package model
 
+// Player Model that represents a Player and their hand
 type Player struct {
-	ID    string
-	Name  string
-	Cards []Card
+	ID    string `bson:"id,omitempty" json:"id"`
+	Name  string `bson:"name,omitempty" json:"name"`
+	Cards []Card `bson:"cards,omitempty" json:"cards"`
 }
