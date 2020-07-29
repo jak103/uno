@@ -77,3 +77,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.v-btn {
+  margin: 5px 10px 20px 10px;
+}
+</style>
