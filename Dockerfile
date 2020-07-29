@@ -14,5 +14,5 @@ FROM scratch
 WORKDIR /uno
 COPY --from=server /server/uno /uno/uno
 COPY --from=client /client/dist /client/dist
-#ENV PATH=$PATH:/uno
+RUN apk add --no-cache ca-certificates
 CMD ["/uno/uno"]
