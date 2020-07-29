@@ -153,8 +153,8 @@ func (db *firestoreDB) LookupPlayer(id string) (*model.Player, error) {
 }
 
 // JoinGame join a player to a game.
-func (db *firestoreDB) JoinGame(id string, username string) error {
-	return nil
+func (db *firestoreDB) JoinGame(id string, username string) (*model.Game, error) {
+	return nil, nil
 }
 
 // SaveGame saves the game
