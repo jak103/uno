@@ -25,7 +25,7 @@
               outlined
               tile
             >
-				{{ player }}	
+				{{ player.Name }}	
 				<v-btn @click.native="callUno">Call Uno!</v-btn>
 			</v-card>
           </v-row>
