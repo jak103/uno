@@ -213,7 +213,7 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 	}
 
 	// We get the current player from the game
-	player := game.Players[game.CurrentPlayer]
+	player := &game.Players[game.CurrentPlayer]
 	//We then check if the player attempting to play a card is the current player
 	if player.ID == playerID {
 		// We check if the draw pile has available cards
@@ -239,9 +239,6 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 
 		// Remove the card from the draw pile
 		game.DrawPile = game.DrawPile[:lastIndex]
-
-		// assign the modified player back into the game
-		game.Players[game.CurrentPlayer] = player
 
 		// Save the game into the database
 		database.SaveGame(*game)
