@@ -96,3 +96,10 @@ func TestJWT (t *testing.T) {
 	assert.Equal(t, emptyClaims, badHeaderClaims)
 	
 }
+
+func TestMakeJWTPayload(t *testing.T){
+    token := "test"
+    payload := makeJWTPayload(token)
+    
+    assert.Equal(t, token, payload["JWT"])
+}

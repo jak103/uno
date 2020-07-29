@@ -5,12 +5,12 @@ export default {
         BaseService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     },
 
-    async login(gameId, userName) {
-        return BaseService.post(`/login/${gameId}/${userName}`);
+    async login(userName) {
+        return BaseService.post(`/login/${userName}`);
     },
 
-    async newGame(userName) {
-        return BaseService.get(`/newgame/${userName}`);
+    async newGame() {
+        return BaseService.get(`/newgame/`);
     },
 
     update() {

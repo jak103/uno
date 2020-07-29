@@ -41,7 +41,7 @@ func randColor(i int) string {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func updateGame(game string, username string) (*model.Game, error) {
+func updateGame(game string, reqPlayer *model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -56,8 +56,8 @@ func updateGame(game string, username string) (*model.Game, error) {
 
 	found := false
 	for i := 0; i < len(gameData.Players); i++ {
-		player := gameData.Players[i]
-		if player.Name == username {
+		loopPlayer := gameData.Players[i]
+		if loopPlayer.ID == reqPlayer.ID {
 			found = true
 			break
 		}
@@ -96,16 +96,10 @@ func createNewGame() (*model.Game, error) {
 	return game, nil
 }
 
-func joinGame(game string, username string) (*model.Game, error) {
+func joinGame(game string, player *model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 	if err != nil {
 		return nil, err
-	}
-
-	player, playerErr := database.CreatePlayer(username)
-
-	if playerErr != nil {
-		return nil, playerErr
 	}
 
 	gameData, gameErr := database.JoinGame(game, player.ID)
@@ -117,7 +111,7 @@ func joinGame(game string, username string) (*model.Game, error) {
 	return gameData, nil
 }
 
-func playCard(game string, username string, card model.Card) (*model.Game, error) {
+func playCard(game string, player *model.Player, card model.Card) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -151,7 +145,7 @@ func playCard(game string, username string, card model.Card) (*model.Game, error
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(game string, username string) (*model.Game, error) {
+func drawCard(game string, player *model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -175,7 +169,7 @@ func drawCard(game string, username string) (*model.Game, error) {
 }
 
 // TODO: need to deal the actual cards, not just random numbers
-func dealCards(game string, username string) (*model.Game, error) {
+func dealCards(game string, player *model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {

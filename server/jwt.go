@@ -5,6 +5,8 @@ import (
 	"time"
     "strings"
 	"github.com/dgrijalva/jwt-go"
+    "github.com/jak103/uno/db"
+    "github.com/jak103/uno/model"
 	//"github.com/google/uuid"
 )
 
@@ -128,9 +130,32 @@ func getValidClaimsFromHeader(authHeader string) (jwt.MapClaims, bool) {
 
 }
 
-// function that simply adds a JWT to a payload.
-func MakeJWTPayload(payload map[string]interface{}, EncodedJWT string) map[string]interface{} {
-	payload["JWT"] = EncodedJWT
+// function that simply creates a JWT payload.
+func makeJWTPayload(EncodedJWT string) map[string]interface{} {
+	payload := make(map[string]interface{})
+    payload["JWT"] = EncodedJWT
 
 	return payload
+}
+
+func getPlayerFromHeader(authHeader string) (*model.Player, bool, error){
+    database, err := db.GetDb()
+	if err != nil {
+		return nil, false, err
+	}
+    
+    claims, validUser := getValidClaimsFromHeader(authHeader)
+    
+    if !validUser {
+        return nil, false, err
+    }
+    
+    player, err := database.LookupPlayer(claims["userid"].(string))
+
+	if err != nil {
+		return nil, false, err
+	}
+    
+    return player, validUser, err
+    
 }
