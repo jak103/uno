@@ -252,14 +252,14 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 	return nil, fmt.Errorf("SOmething bad happend")
 }
 
-func dealCards(game string, username string) (*model.Game, error) {
+func dealCards(gameID string, username string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
 		return nil, err
 	}
 
-	gameData, gameErr := database.LookupGameByID(game)
+	game, gameErr := database.LookupGameByID(gameID)
 
 	if gameErr != nil {
 		return nil, err
@@ -267,21 +267,21 @@ func dealCards(game string, username string) (*model.Game, error) {
 
 	//TODO Match this up with the database.
 
-	for k := range players {
+	for k := range game.Players {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
 			lastIndex := len(game.DrawPile) - 1
 			card := game.DrawPile[lastIndex]
-			append(cards, card)
+			cards = append(cards, card)
 			game.DrawPile = game.DrawPile[:lastIndex]
 
 		}
-		allCards[players[k]] = cards
+		game.Players[k].Cards = cards
 	}
 	//This will draw one more card, but instead of adding it to a players hand it will add it to the discard pile and set it as the current Card
 	lastIndex := len(game.DrawPile) - 1
 	startCard := game.DrawPile[lastIndex]
-	append(DiscardPile.Cards, card)
+	game.DiscardPile = append(game.DiscardPile, startCard)
 	game.DrawPile = game.DrawPile[:lastIndex]
-	currCard = startCard
+	return game, nil
 }
