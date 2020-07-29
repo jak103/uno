@@ -40,7 +40,7 @@ func (db *mongoDB) CreateGame() (*model.Game, error) {
 	if err != nil {
 		return nil, err
 	}
-	myGame.ID = res.InsertedID.(primitive.ObjectID).String()
+	myGame.ID = res.InsertedID.(primitive.ObjectID).Hex()
 	return &myGame, nil
 }
 
@@ -51,7 +51,7 @@ func (db *mongoDB) CreatePlayer(name string) (*model.Player, error) {
 	if err != nil {
 		return nil, err
 	}
-	player.ID = res.InsertedID.(primitive.ObjectID).String()
+	player.ID = res.InsertedID.(primitive.ObjectID).Hex()
 	return &player, nil
 }
 
@@ -116,8 +116,28 @@ func (db *mongoDB) LookupPlayer(id string) (*model.Player, error) {
 }
 
 // JoinGame join a player to a game.
-func (db *mongoDB) JoinGame(id string, username string) error {
-	return nil
+func (db *mongoDB) JoinGame(id string, username string) (*model.Game, error) {
+	game, gameErr := db.LookupGameByID(id)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	player, playerErr := db.LookupPlayer(username)
+
+	if playerErr != nil {
+		return nil, playerErr
+	}
+
+	game.Players = append(game.Players, *player)
+
+	err := db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
 }
 
 // SaveGame saves the game
