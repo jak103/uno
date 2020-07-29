@@ -3,9 +3,11 @@ package main
 import (
 	//"fmt"
 	"time"
-
+    "strings"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/google/uuid"
+    "github.com/jak103/uno/db"
+    "github.com/jak103/uno/model"
+	//"github.com/google/uuid"
 )
 
 // we can have this signkey be whatever we want.
@@ -17,7 +19,7 @@ const signKey = "^s@m&R@n&om,St)("
 func exampleUsage() {
 	// example of originally creating a token
 	// a token like this should be set to their header. It is just a string, so it is easy enough to set to a cookie.
-    createdToken, err := newJWT("Thomas", uuid.New(), "1234", true, []byte(signKey))
+    createdToken, err := newJWT("Thomas", uuid.New())
     if err != nil {
         fmt.Println("Creating token failed")
     }
@@ -30,7 +32,6 @@ func exampleUsage() {
 	if validClaims {
 		fmt.Println(claims["name"])
 		fmt.Println(claims["userid"])
-		fmt.Println(claims["gameid"])
 		fmt.Println(claims["iat"])
 		fmt.Println(claims["exp"])
 	}
@@ -49,12 +50,12 @@ func exampleUsage() {
 
 // function to create a new jwt based on a name, gameid, and a signKey
 // note, when this is merged with the db branch, we may want to combine "name" and "userid" into one "player" object
-func newJWT(name string, userid uuid.UUID, gameid string, isHost bool, signKey []byte) (string, error) {
+func newJWT(name string, userid string) (string, error) {
 	// Create the token
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	// Set some claims
-	token.Claims = jwt.MapClaims{
+	token.Claims = jwt.MapClaims {
 		// this 72 should make it expire in 72 hours, which is reasonable (a game of uno shouldn't take longer than 3 days)
 		"exp": time.Now().Add(time.Hour * 72).Unix(),
 		// this iat is the "iniated at time"
@@ -62,11 +63,9 @@ func newJWT(name string, userid uuid.UUID, gameid string, isHost bool, signKey [
 		// we store here the username, userid, and gameid
 		"name":   name,
 		"userid": userid,
-		"gameid": gameid,
-		"isHost": isHost,
 	}
 	// Sign and get the complete encoded token as a string
-	tokenString, err := token.SignedString(signKey)
+	tokenString, err := token.SignedString( []byte(signKey) )
 	return tokenString, err
 }
 
@@ -109,8 +108,54 @@ func getValidClaims(myToken string) (jwt.MapClaims, bool) {
 
 }
 
-func MakeJWTPayload(payload map[string]interface{}, EncodedJWT string) map[string]interface{} {
-	payload["JWT"] = EncodedJWT
+// function that gets JWT from auth header
+func getValidClaimsFromHeader(authHeader string) (jwt.MapClaims, bool) {
+    
+	if authHeader == "" {
+        // no authorization at all... obviously not authorized
+        var c jwt.MapClaims
+        return c, false
+    }
+    
+    bearerAndToken := strings.Fields(authHeader) // we should get ["bearer" "encodedToken"]
+    
+    //authType := bearerAndToken[0] // I don't think we actually need this...
+    
+    encodedToken := bearerAndToken[1]
+    
+	claims, valid := getValidClaims(encodedToken)
+    
+	// return the claims (empty if invalid), and a flag indicating if the claims (token) are valid
+	return claims, valid
+
+}
+
+// function that simply creates a JWT payload.
+func makeJWTPayload(EncodedJWT string) map[string]interface{} {
+	payload := make(map[string]interface{})
+    payload["JWT"] = EncodedJWT
 
 	return payload
+}
+
+func getPlayerFromHeader(authHeader string) (*model.Player, bool, error){
+    database, err := db.GetDb()
+	if err != nil {
+		return nil, false, err
+	}
+    
+    claims, validUser := getValidClaimsFromHeader(authHeader)
+    
+    if !validUser {
+        return nil, false, err
+    }
+    
+    player, err := database.LookupPlayer(claims["userid"].(string))
+
+	if err != nil {
+		return nil, false, err
+	}
+    
+    return player, validUser, err
+    
 }

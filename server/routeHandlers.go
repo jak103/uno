@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"github.com/google/uuid"
+    "github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/labstack/echo/v4"
 )
@@ -15,113 +15,161 @@ type Response struct {
 }
 
 func setupRoutes(e *echo.Echo) {
-	e.GET("/newgame/:username", newGame)
+	e.GET("/newgame/", newGame)
 	e.GET("/update", update)
 	e.POST("/startgame", startGame)
-	e.POST("/login/:game/:username", login)
+	e.POST("/login/:username", login)
+    e.POST("/joinGame/:game", join)
 	e.POST("/play/:number/:color", play)
 	e.POST("/draw", draw)
 }
 
 func newGame(c echo.Context) error {
-	gameid, gameErr := createNewGame()
+	game, gameErr := createNewGame()
     
     if  gameErr != nil {
 		return gameErr
 	}
     
-	// TODO: validate username
-	encodedJWT, err := newJWT(c.Param("username"), uuid.New(), gameid, true, []byte(signKey))
-
-	payload := newPayload(c.Param("username"), gameid)
-
-	if err == nil {
-		payload = MakeJWTPayload(payload, encodedJWT)
-	} else {
-		// TODO: return some sort of error!
-		payload = newPayload(c.Param("username"), gameid)
-	}
-
-	return c.JSONPretty(http.StatusOK, &Response{true, payload}, "  ")
+    return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
 }
 
 func login(c echo.Context) error {
-	validGame := joinGame(c.Param("game"), c.Param("username"))
+	username := c.Param("username")
+    
+    database, err := db.GetDb()
+	if err != nil {
+		return err
+	}
+    
+    player, playerErr := database.CreatePlayer(username)
 
-	return respondWithJWTIfValid(c, validGame)
+	if playerErr != nil {
+		return playerErr
+	}
+    
+    token, err := newJWT(username, player.ID);
+    
+    if err != nil {
+		return err
+	}
+    
+	return c.JSONPretty(http.StatusOK, &Response{true, makeJWTPayload(token)}, "  ")
+}
+
+func join(c echo.Context) error {
+    authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+    player, validPlayer, err := getPlayerFromHeader(authHeader)
+    
+    if err != nil {
+		return err
+	}
+    
+    if !validPlayer {
+        return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    }
+    
+	game, err := joinGame(c.Param("game"), player)
+    
+	if err != nil {
+		return err
+	}
+
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
 }
 
 func startGame(c echo.Context) error {
-	dealCards()
+    authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+    player, validPlayer, err := getPlayerFromHeader(authHeader)
+    
+    if err != nil {
+		return err
+	}
+    
+    if !validPlayer {
+        return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    }
+    
+	dealCards(c.Param("game"), player)
 	return update(c)
 }
 
 func update(c echo.Context) error {
-	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
-
-	if !validUser {
-		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+    player, validPlayer, err := getPlayerFromHeader(authHeader)
+    
+    if err != nil {
+		return err
 	}
-
-	valid := updateGame(claims["gameid"].(string))
-	return respondIfValid(c, valid && validUser, claims["userid"].(string), claims["gameid"].(string))
+    
+    if !validPlayer {
+        return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    }
+    
+	game, err := updateGame(c.Param("game"), player)
+	if err != nil {
+		return err
+	}
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
 }
 
 func play(c echo.Context) error {
-	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
-
-	if !validUser {
-		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+	// TODO Cards have a value, which can include skip, reverse, etc
+	card := model.Card{c.Param("number"), c.Param("color")}
+    
+    authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+    player, validPlayer, err := getPlayerFromHeader(authHeader)
+    
+    if err != nil {
+		return err
 	}
     
-    // TODO Cards have a value, which can include skip, reverse, etc
-    card := model.Card{c.Param("number"), c.Param("color")}
-	valid := playCard(claims["gameid"].(string), claims["userid"].(string), card)
-	return respondIfValid(c, valid, claims["userid"].(string), claims["gameid"].(string))
+    if !validPlayer {
+        return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    }
+    
+	game, err := playCard(c.Param("game"), player, card)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
 }
 
 func draw(c echo.Context) error {
-	claims, validUser := getValidClaims(c.Get(echo.HeaderAuthorization).(string))
+    authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+    player, validPlayer, err := getPlayerFromHeader(authHeader)
+    
+    if err != nil {
+		return err
+	}
+    
+    if !validPlayer {
+        return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+    }
 
-	if !validUser {
-		return c.JSONPretty(http.StatusUnauthorized, &Response{false, nil}, " ")
+	game, err := drawCard(c.Param("game"), player)
+
+	if err != nil {
+		return err
 	}
 
-	valid := drawCard(claims["gameid"].(string), claims["userid"].(string))
-	return respondIfValid(c, valid, claims["userid"].(string), claims["gameid"].(string))
+	return c.JSONPretty(http.StatusOK, &Response{true, newPayload(game)}, "  ")
+
 }
 
-func respondIfValid(c echo.Context, valid bool, userId string, gameId string) error {
-	var response *Response
-	if valid {
-		response = &Response{true, newPayload(userId, gameId)}
-	} else {
-		response = &Response{false, nil}
-	}
-	return c.JSONPretty(http.StatusOK, response, "  ")
-}
+func newPayload(game *model.Game) map[string]interface{} {
+	payload := make(map[string]interface{})
 
-func respondWithJWTIfValid(c echo.Context, valid bool) error {
-	// TODO: validate username and game id
-	// TODO: check if they have a JWT before just overriding it! If they do, we need to make a JWT based off of their current one, but add/change the gameid.
-	encodedJWT, err := newJWT(c.Param("username"), uuid.New(), c.Param("game"), false, []byte(signKey))
+	// Update known variables
+	payload["direction"] = game.Direction
+	payload["current_player"] = game.CurrentPlayer
+	payload["all_players"] = game.Players
+	payload["draw_pile"] = game.DrawPile
+	payload["discard_pile"] = game.DiscardPile
+	payload["game_id"] = game.ID
+	payload["game_over"] = game.Status == "Finished"
 
-	payload := newPayload(c.Param("username"), c.Param("game"))
-
-	if err == nil {
-		payload = MakeJWTPayload(payload, encodedJWT)
-	} else {
-		// TODO: return some sort of error!
-
-	}
-
-	var response *Response
-
-	if valid {
-		response = &Response{true, payload}
-	} else {
-		response = &Response{false, nil}
-	}
-
-	return c.JSONPretty(http.StatusOK, response, "  ")
+	return payload
 }

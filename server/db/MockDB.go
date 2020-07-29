@@ -59,9 +59,12 @@ func (db *mockDB) DeletePlayer(id string) error {
 
 // LookupGameByID looks up an existing game in the database.
 func (db *mockDB) LookupGameByID(id string) (*model.Game, error) {
-	if game, ok := db.games[id]; ok {
-		return &game, nil
+	if id != "" {
+		if game, ok := db.games[id]; ok {
+			return &game, nil
+		}
 	}
+
 	return nil, errors.New("mockdb: game not found")
 }
 
@@ -82,8 +85,17 @@ func (db *mockDB) LookupPlayer(id string) (*model.Player, error) {
 }
 
 // JoinGame join a player to a game.
-func (db *mockDB) JoinGame(id string, username string) error {
-	return nil
+func (db *mockDB) JoinGame(id string, username string) (*model.Game, error) {
+	if game, ok := db.games[id]; ok {
+		if player, err := db.LookupPlayer(username); err != nil {
+			return nil, err
+		} else {
+			game.Players = append(game.Players, *player)
+			return &game, nil
+		}
+	} else {
+		return nil, errors.New("mockdb: game not found")
+	}
 }
 
 // SaveGame saves the game
