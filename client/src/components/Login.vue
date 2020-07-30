@@ -14,7 +14,7 @@
                 <v-form>
                   <v-text-field test-id="login-game-id" label="GAME ID" type="text" v-model="game_id"></v-text-field>
                   <v-text-field test-id="login-user-name" label="USERNAME" type="text" v-model="user_name"></v-text-field>
-                  <v-btn test-id="login-join-game" @click.native="login" color="primary" :to="to">Join Game</v-btn>
+                  <v-btn test-id="login-join-game" @click="login" color="primary">Join Game</v-btn>
                   <v-btn test-id="login-new-game" color="primary" @click.native="newGame">Create new game</v-btn>
                   <v-card test-id="login-status" v-if="status != ''">{{ status }}</v-card>
                 </v-form>
@@ -43,15 +43,22 @@ export default {
   },
   methods: {
     async login() {
+        console.log("Running login");
       if (this.user_name != "") {
+        console.log("Hitting API");
         let res = await unoService.login(this.game_id, this.user_name);
         if (res.data.valid) {
+          console.log("Reponse was valid");
+          this.$router.push({name: "About", params:{ game_id: this.game_id, valid: res.data.valid, username: this.user_name}});
+          /*
           this.to = {
             name: "About",
             params: { game_id: this.game_id, valid: res.data.valid, username: this.user_name}
           };
+          */
         }
       } else {
+          // TODO: Move this to a snack
         alert("Please enter a username. This will be displayed to other players")
       }
     },
