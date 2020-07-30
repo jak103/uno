@@ -1,6 +1,17 @@
 <template>
-  <div>
-    You won the game! We'd give you a trophy, but it's uno.
+  <div id="gameOver">
+    <div id='displayMessage'> 
+      <h1>Game Over</h1>
+      <p>Thank-You For Playing Uno!</p>
+    </div>
+    <div id = "buttonContainer">
+      <div id="goHome">
+        <button id = "buttons"> Go Home</button>
+      </div>
+      <div id="playAgain">
+        <button id = "buttons"> Play Again?</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -11,5 +22,35 @@ export default {
 </script>
 
 <style scoped>
+
+  #displayMessage{
+    text-align: center;
+    font-size: 300%;
+    padding-top: 300px;
+    padding-right: 30px;
+    padding-bottom: 50px;
+    padding-left: 80px;
+  }
+  #buttonContainer{
+    columns: 2;
+    width: 650px;
+    margin: 0 auto;
+  }
+  #playAgain{
+    padding-left: 150px;
+    font-size: 150%;
+  }
+  #buttons{
+    border-style: solid;
+    border-color: white;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+  }
+  #goHome{
+    padding-left: 50px;
+    font-size: 150%;
+  }
 
 </style>
