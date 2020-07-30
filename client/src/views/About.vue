@@ -24,7 +24,7 @@
               :class="'ma-3 pa-6'"
               outlined
               tile
-            >{{ player }}</v-card>
+            >{{ player.name }}</v-card>
           </v-row>
 
           <!-- Current Card and actions -->

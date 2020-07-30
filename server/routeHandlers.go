@@ -31,7 +31,7 @@ func newGame(c echo.Context) error {
 		return err
 	}
 
-	return c.JSONPretty(http.StatusOK, &Response{true, getGameState(game)}, "  ")
+	return c.JSONPretty(http.StatusOK, &Response{true, getGameState(game, "0")}, "  ")
 }
 
 func login(c echo.Context) error {
@@ -41,7 +41,7 @@ func login(c echo.Context) error {
 		return err
 	}
 
-	return c.JSONPretty(http.StatusOK, &Response{true, getGameState(game)}, "  ")
+	return c.JSONPretty(http.StatusOK, &Response{true, getGameState(game, "0")}, "  ")
 }
 
 func startGame(c echo.Context) error {
