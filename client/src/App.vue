@@ -8,6 +8,7 @@
           <v-btn
             text 
             large
+            to='/'
           >
             <div class="headline">
                 USU DevOps :: UNO
