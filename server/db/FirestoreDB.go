@@ -154,7 +154,27 @@ func (db *firestoreDB) LookupPlayer(id string) (*model.Player, error) {
 
 // JoinGame join a player to a game.
 func (db *firestoreDB) JoinGame(id string, username string) (*model.Game, error) {
-	return nil, nil
+	game, gameErr := db.LookupGameByID(id)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	player, playerErr := db.LookupPlayer(username)
+
+	if playerErr != nil {
+		return nil, playerErr
+	}
+
+	game.Players = append(game.Players, *player)
+
+	err := db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
 }
 
 // SaveGame saves the game
