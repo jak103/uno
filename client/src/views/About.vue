@@ -69,14 +69,16 @@
       <v-snackbar 
         v-model="snackbar"
         :timeout='0'>
-        Hey I'm a message!!
+        {{snackbarText}}
         
         <v-btn text @click="snackbar=false">
           Close
         </v-btn>
       </v-snackbar>
-    </v-container>
 
+      <v-btn @click.native="sendMessage">Send Message</v-btn>
+      
+    </v-container>
   </div>
 </template>
 
@@ -104,7 +106,8 @@ export default {
       players: [],
       current_card: [],
       game_over: "",
-      snackbar: true
+      snackbar: false,
+      snackbarText: ""
     };
   },
   components: {
@@ -140,12 +143,17 @@ export default {
     drawCard() {
       unoService.drawCard(this.game_id, this.username)
         .then(this.updateData());
-    }
-  },
+    },
   created() {
     setInterval(() => {
       this.updateData();
     }, 2000);
+  },
+  sendMessage() {
+    alert("here bb")
+    this.snackbarText = "I am a message :)"
+    this.snackbar = true
   }
+}
 };
 </script>
