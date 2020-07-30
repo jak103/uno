@@ -10,30 +10,60 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createMockServerAndRequest() (echo.Context, *httptest.ResponseRecorder) {
+func TestTotalGamePlayAuth(t *testing.T) {
+	// Setup
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodPost, "/newgame", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
 
-	return c, rec
-}
+	// Login
+	loginRec := httptest.NewRecorder()
+	loginReq := httptest.NewRequest(http.MethodPost, "/login/tester_name", nil)
+	e.ServeHTTP(loginRec, loginReq)
+	var loginRes Response
+	json.Unmarshal([]byte(loginRec.Body.String()), &loginRes)
 
-func TestNewGame(t *testing.T) {
-	// Setup
-	c, rec := createMockServerAndRequest()
+	// Login Assertions
+	assert.Equal(t, http.StatusOK, loginRec.Code)
+	assert.Equal(t, loginRes.ValidGame, true)
+	// JWT present
+	assert.NotEqual(t, loginRes.Payload["JWT"], nil)
 
-	// Assertions
-	if assert.NoError(t, newGame(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
+	// New Game
+	newGameRec := httptest.NewRecorder()
+	newGameReq := httptest.NewRequest(http.MethodGet, "/newgame/", nil)
+	newGameReq.Header.Set("Authorization", "Bearer "+loginRes.Payload["JWT"].(string))
+	e.ServeHTTP(newGameRec, newGameReq)
+	assert.Equal(t, http.StatusOK, newGameRec.Code)
 
-		// store response in map and make sure valid field is true
-		var recData map[string]interface{}
-		json.Unmarshal([]byte(rec.Body.String()), &recData)
-		assert.Equal(t, true, recData["valid"])
-	}
+	// Start Game
+	// startRec := httptest.NewRecorder()
+	// startReq := httptest.NewRequest(http.MethodPost, "/startgame", nil)
+	// startReq.Header.Set("Authorization", "Bearer "+loginRes.Payload["JWT"].(string))
+	// e.ServeHTTP(startRec, startReq)
+	// assert.Equal(t, http.StatusOK, startRec.Code)
+
+	// Draw
+	// drawRec := httptest.NewRecorder()
+	// drawReq := httptest.NewRequest(http.MethodPost, "/draw", nil)
+	// drawReq.Header.Set("Authorization", "Bearer "+loginRes.Payload["JWT"].(string))
+	// drawReq.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	// e.ServeHTTP(drawRec, drawReq)
+	// assert.Equal(t, http.StatusOK, drawRec.Code)
+
+	// Play
+	// playRec := httptest.NewRecorder()
+	// playReq := httptest.NewRequest(http.MethodPost, "/play/1/blue", nil)
+	// playReq.Header.Set("Authorization", "Bearer "+loginRes.Payload["JWT"].(string))
+	// e.ServeHTTP(playRec, playReq)
+
+	// assert.Equal(t, http.StatusOK, playRec.Code)
+
+	// Update
+	// updateRec := httptest.NewRecorder()
+	// updateReq := httptest.NewRequest(http.MethodGet, "/update", nil)
+	// updateReq.Header.Set("Authorization", "Bearer "+loginRes.Payload["JWT"].(string))
+	// e.ServeHTTP(updateRec, updateReq)
+	// assert.Equal(t, http.StatusOK, updateRec.Code)
 }
 
 func TestLogin_error(t *testing.T) {
@@ -81,15 +111,14 @@ func TestPlay_error(t *testing.T) {
 	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodGet, "/play", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-    // TODO: finish mocking up an auth header here, and in other tests
-    /*isHost := true
-    encodedJWT, err := newJWT("Thomas", "userid", "gameid", isHost, []byte(signKey))
-    
-    assert.Equal(t, nil, err)
-    
-    req.Header.Set(echo.HeaderAuthorization, "bearer" + encodedJWT)*/
-    
-    
+	// TODO: finish mocking up an auth header here, and in other tests
+	/*isHost := true
+	  encodedJWT, err := newJWT("Thomas", "userid", "gameid", isHost, []byte(signKey))
+
+	  assert.Equal(t, nil, err)
+
+	  req.Header.Set(echo.HeaderAuthorization, "bearer" + encodedJWT)*/
+
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
