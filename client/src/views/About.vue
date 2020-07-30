@@ -25,7 +25,7 @@
               outlined
               tile
             >
-				{{ player.Name }}	
+				{{ player.name }}	
 				<v-btn @click.native="callUno">Call Uno!</v-btn>
 			</v-card>
           </v-row>
@@ -133,7 +133,7 @@ export default {
         .then(this.updateData());
     },
 	callUno() {
-		unoService.callUno(this.game_id, this.username)
+		unoService.callUno(this.game_id, this.username, this.current_player)
 			.then(this.updateData());
 	}
   },

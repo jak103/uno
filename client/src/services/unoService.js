@@ -25,7 +25,7 @@ export default {
         return BaseService.post(`/draw/${gameId}/${userName}`);
     },
 
-	callUno(gameId, userName) {
-		return BaseService.post(`/call/${gameId}/${userName}`);
+	callUno(gameId, userName, currentPlayer) {
+		return BaseService.post(`/call/${gameId}/${userName}/${currentPlayer}`);
 	}
 }
