@@ -1,17 +1,12 @@
 <template>
   <div>
     <v-container>
-      <v-row :class="'mb-6'">
+      <v-row :class='mb-6'>
         <v-col :cols="6">
           <!-- Game stats -->
           <v-row>
             <v-card :class="'ma-3 pa-6'" outlined tile>
-              Current Game id: {{ game_id }}
-              <span v-if="!valid">Invalid Game Id</span>
-            </v-card>
-            <v-card :class="'ma-3 pa-6'" outlined tile>
-              <v-btn v-if="valid" @click.native="startGame">Start Game</v-btn>
-              <v-btn v-else to="/">Create a new game</v-btn>
+              Current Game id: {{ $route.params.id }}              
             </v-card>
           </v-row>
 
@@ -73,61 +68,37 @@
 import unoService from "../services/unoService";
 import Card from "../components/Card";
 export default {
-  props: {
-    game_id: {
-      required: false
-    },
-    valid: {
-      type: Boolean,
-      required: false
-    },
-    username: {
-      type: String,
-      required: false
-    }
-  },
-  data() {
-    return {
-      cards: [],
-      current_player: "",
-      players: [],
-      current_card: [],
-      game_over: ""
-    };
-  },
+  name: "Game",
   components: {
     Card
   },
+  data() {
+    return {
+      state: {}
+    };
+  },
   methods: {
-    updateData() {
-      unoService.update(this.game_id, this.username).then(res => {
-        if (res.data.valid) {
-          this.valid = res.data.valid;
-          this.cards = res.data.payload.deck;
-          this.current_player = res.data.payload.current_player;
-          this.players = res.data.payload.all_players;
-          this.current_card = res.data.payload.current_card;
-          if (res.data.game_over != "") {
-            this.game_over = res.data.game_over;
-          }
-        }
-      });
+    async updateData() {      
+      let gameState = await unoService.getGameState(this.$route.params.id);
+      if (gameState != null) {
+        this.state = gameState;
+      }
     },
-    startGame() {
-        unoService.startGame(this.game_id, this.username)
-        .then(() => {
-          this.updateData();
-        });
+
+    async startGame() {
+      await unoService.startGame(this.$route.params.id);
+      this.updateData();
+      
     },
-    playCard(card) {
-        unoService.playCard(this.game_id, this.username, card.number, card.color)
-        .then(() => {
-          this.updateData();
-        });
+
+    async playCard(card) {
+      await unoService.playCard(this.$route.params.id, this.username, card.number, card.color);
+      this.updateData();      
     },
-    drawCard() {
-      unoService.drawCard(this.game_id, this.username)
-        .then(this.updateData());
+
+    async drawCard() {
+      await unoService.drawCard(this.$route.params.id);
+      this.updateData();
     }
   },
   created() {

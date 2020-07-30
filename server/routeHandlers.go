@@ -7,25 +7,44 @@ import (
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var sim bool = true
 
-type Response struct {
-	ValidGame bool                   `json:"valid"` // Valid game id
-	GameState map[string]interface{} `json:"gamestate"`
-}
-
 func setupRoutes(e *echo.Echo) {
-	e.GET("/newgame/", newGame)
-	e.GET("/update", update)
-	e.POST("/startgame", startGame)
-	e.POST("/login/:username", login)
-	e.POST("/joinGame/:game", join)
-	e.POST("/play/:number/:color", play)
-	e.POST("/draw", draw)
+	// Routes that don't require a valid JWT
+	e.GET("/games", getGames)
+
+	// Create a group that requires a valid JWT
+	group := e.Group("/api")
+
+	group.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey: []byte("usudevops"),
+		AuthScheme: "Token",
+	}))
+
+	group.POST("/game", newGame)
+	group.POST("/game/:id/join", joinGame)
+	group.POST("/game/:id/start", startGame)
+	group.POST("/game/:id/play", play)
+	group.POST("/game/:id/draw", play)
+	group.GET("/game/:id", getGameState)
 }
 
+func getGames(c echo.Context) error {
+	database, err := db.GetDb()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could find games")
+	}
+
+	games := database.GetGameSummaries()
+
+	return c.JSON(http.StatusOK, games)
+}
+
+/*
 func newGame(c echo.Context) error {
 	game, gameErr := createNewGame()
 
@@ -33,32 +52,32 @@ func newGame(c echo.Context) error {
 		return gameErr
 	}
 
-	return c.JSON(http.StatusOK, &Response{true, getGameState(game, "0")})
+	return c.JSON(http.StatusOK, buildGameState(game, "0"))
 }
 
-func login(c echo.Context) error {
-	username := c.Param("username")
+// func login(c echo.Context) error {
+// 	username := c.Param("username")
 
-	database, err := db.GetDb()
+// 	database, err := db.GetDb()
 
-	if err != nil {
-		return err
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	player, playerErr := database.CreatePlayer(username)
+// 	player, playerErr := database.CreatePlayer(username)
 
-	if playerErr != nil {
-		return playerErr
-	}
+// 	if playerErr != nil {
+// 		return playerErr
+// 	}
 
-	token, err := newJWT(username, player.ID)
+// 	//token, err := newJWT(username, player.ID)
 
-	if err != nil {
-		return err
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return c.JSON(http.StatusOK, &Response{true, getGameState(game, "0")})
-}
+// 	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, "0")})
+// }
 
 func join(c echo.Context) error {
 	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
@@ -78,7 +97,7 @@ func join(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, &Response{true, getGameState(game, "0")})
+	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, "0")})
 }
 
 func startGame(c echo.Context) error {
@@ -95,6 +114,14 @@ func startGame(c echo.Context) error {
 
 	dealCards(c.Param("game"), player)
 	return update(c)
+}
+
+func getGameState(c echo.Context) error {
+	playerID := getPlayerFromContext(c)
+
+	game, _ := updateGame(c.Param("game"), nil)
+
+	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
 }
 
 func update(c echo.Context) error {
@@ -116,7 +143,7 @@ func update(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, &Response{true, getGameState(game, playerID)})
+	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
 }
 
 func play(c echo.Context) error {
@@ -141,7 +168,7 @@ func play(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, &Response{true, getGameState(game, playerID)})
+	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
 }
 
 func draw(c echo.Context) error {
@@ -163,11 +190,12 @@ func draw(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, &Response{true, getGameState(game, playerID)})
+	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
 
 }
+*/
 
-func getGameState(game *model.Game, playerID string) map[string]interface{} {
+func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState := make(map[string]interface{})
 
 	// Update known variables

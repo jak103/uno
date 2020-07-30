@@ -21,6 +21,14 @@ type mongoDB struct {
 	players  *mongo.Collection
 }
 
+func (db *mongoDB) GetGameSummaries() *[]model.GameSummary {
+	games := make([]model.GameSummary, 0)
+
+	db.games.Find(context.Background(), filter interface{}, opts ...*options.FindOptions)
+		
+	return &games
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *mongoDB) HasGameByPassword(password string) bool {
 	game, err := db.LookupGameByPassword(password)

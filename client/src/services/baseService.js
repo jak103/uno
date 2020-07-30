@@ -6,7 +6,7 @@ const myAxios = axios.create({
   baseURL: process.env.NODE_ENV === 'production' ? 'https://uno-fievsqoyiq-uw.a.run.app' : 'http://localhost:8080'
 });
 
-myAxios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+//myAxios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 myAxios.interceptors.request.use(function (config) {
   const token = localStorage.get('token');

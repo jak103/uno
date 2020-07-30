@@ -1,31 +1,27 @@
 import BaseService from "./baseService";
 
 export default {
-    setToken(token) {
-        BaseService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    },
-
     async login(userName) {
-        return BaseService.post(`/login/${userName}`);
+        return BaseService.post(`/api/login/${userName}`);
     },
 
     async newGame() {
-        return BaseService.get(`/newgame/`);
+        return BaseService.get(`/api/newgame/`);
     },
 
-    update() {
-        return BaseService.get(`/update`);
+    getGameState(gameId) {
+        return BaseService.get(`/api/game/${gameId}`);
     },
 
     startGame() {
-        return BaseService.post(`/startgame`);
+        return BaseService.post(`/api/startgame`);
     },
 
     playCard(cardNumber, cardColor) {
-        return BaseService.post(`/play/${cardNumber}/${cardColor}`);
+        return BaseService.post(`/api/play/${cardNumber}/${cardColor}`);
     },
 
     drawCard() {
-        return BaseService.post(`/draw`);
+        return BaseService.post(`/api/draw`);
     }
 }
