@@ -36,7 +36,7 @@ func TestNewGame(t *testing.T) {
 	}
 }
 
-func TestLogin(t *testing.T) {
+func TestLogin_error(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
@@ -46,12 +46,10 @@ func TestLogin(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, login(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-	}
+	assert.Error(t, login(c)) // This should error because no game was created
 }
 
-func TestDraw(t *testing.T) {
+func TestDraw_error(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
@@ -61,12 +59,10 @@ func TestDraw(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, draw(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-	}
+	assert.Error(t, login(c)) // This should error because no game was created
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdate_error(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
@@ -76,7 +72,31 @@ func TestUpdate(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Assertions
-	if assert.NoError(t, update(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-	}
+	assert.Error(t, login(c)) // This should error because no game was created
+}
+
+func TestPlay_error(t *testing.T) {
+	// Setup
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodGet, "/play", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// Assertions
+	assert.Error(t, login(c)) // This should error because no game was created
+}
+
+func TestStartGame_error(t *testing.T) {
+	// Setup
+	e := echo.New()
+	setupRoutes(e)
+	req := httptest.NewRequest(http.MethodGet, "/startgame", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// Assertions
+	assert.Error(t, login(c)) // This should error because no game was created
 }

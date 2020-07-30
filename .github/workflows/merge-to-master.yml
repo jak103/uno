@@ -1,0 +1,30 @@
+name: Auto Merge dev to master after dev builds correctly.
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  merge-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Wait for Build check to succeed
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        id: wait-for-build
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Build
+          ref: ${{ github.sha }}
+
+      - name: Merge dev to master with a passing build
+        if: steps.wait-for-build.outputs.conclusion == 'success'
+        uses: everlytic/branch-merge@1.0.2
+        with:
+          # Token to authenticate with GitHub
+          github_token: ${{ github.token }}
+          # Branch or SHA1 ref that you are merging into the target_branch.
+          source_ref: dev
+          # Branch you are merging into
+          target_branch: master
