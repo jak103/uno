@@ -21,8 +21,8 @@ type mongoDB struct {
 	players  *mongo.Collection
 }
 
-func (db *mongoDB) GetGameSummaries() *[]model.GameSummary {
-	games := make([]model.GameSummary, 0)
+func (db *mongoDB) GetAllGames() *[]model.Game {
+	games := make([]model.Game, 0)
 
 	//db.games.Find(context.Background(), filter interface{}, opts ...*options.FindOptions)
 

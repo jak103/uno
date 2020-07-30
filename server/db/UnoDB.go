@@ -6,8 +6,8 @@ import (
 
 // UnoDB declares the database types for the applicaiton
 type UnoDB interface {
-	// Returns a GameSummary for each game in the database
-	GetGameSummaries() *[]model.GameSummary
+	// Returns all games in the database
+	GetAllGames() *[]model.Game
 	// Check if a game with the given password exists in the database.
 	HasGameByPassword(password string) bool
 	// Check if a game with the given ID exists in the database.

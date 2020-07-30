@@ -42,9 +42,9 @@ func getGames(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Could find games")
 	}
 
-	games := database.GetGameSummaries()
+	games := database.GetAllGames()
 
-	return c.JSON(http.StatusOK, "")
+	return c.JSON(http.StatusOK, games)
 }
 
 /*

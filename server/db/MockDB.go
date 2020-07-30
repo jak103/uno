@@ -14,6 +14,14 @@ type mockDB struct {
 	players       map[string]model.Player
 }
 
+func (db *mockDB) GetAllGames() *[]model.Game {
+	games := make([]model.Game, 0)
+
+	// TODO
+
+	return &games
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *mockDB) HasGameByPassword(password string) bool {
 	_, ok := db.gamePasswords[password]

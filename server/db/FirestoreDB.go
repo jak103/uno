@@ -17,6 +17,14 @@ type firestoreDB struct {
 	players *firestore.CollectionRef
 }
 
+func (db *firestoreDB) GetAllGames() *[]model.Game {
+	games := make([]model.Game, 0)
+
+	// TODO
+
+	return &games
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *firestoreDB) HasGameByPassword(password string) bool {
 	game, err := db.LookupGameByPassword(password)
