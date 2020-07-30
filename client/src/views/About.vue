@@ -65,7 +65,18 @@
           ></Card>
         </v-col>
       </v-row>
+  
+      <v-snackbar 
+        v-model="snackbar"
+        :timeout='0'>
+        Hey I'm a message!!
+        
+        <v-btn text @click="snackbar=false">
+          Close
+        </v-btn>
+      </v-snackbar>
     </v-container>
+
   </div>
 </template>
 
@@ -92,7 +103,8 @@ export default {
       current_player: "",
       players: [],
       current_card: [],
-      game_over: ""
+      game_over: "",
+      snackbar: true
     };
   },
   components: {
