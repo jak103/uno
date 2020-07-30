@@ -23,5 +23,9 @@ export default {
 
     drawCard() {
         return BaseService.post(`/api/draw`);
+    },
+
+    async getAllGames() {
+      return BaseService.get(`/games`);
     }
 }

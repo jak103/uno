@@ -24,8 +24,8 @@ type mongoDB struct {
 func (db *mongoDB) GetGameSummaries() *[]model.GameSummary {
 	games := make([]model.GameSummary, 0)
 
-	db.games.Find(context.Background(), filter interface{}, opts ...*options.FindOptions)
-		
+	//db.games.Find(context.Background(), filter interface{}, opts ...*options.FindOptions)
+
 	return &games
 }
 

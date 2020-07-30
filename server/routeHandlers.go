@@ -24,15 +24,18 @@ func setupRoutes(e *echo.Echo) {
 		AuthScheme: "Token",
 	}))
 
-	group.POST("/game", newGame)
-	group.POST("/game/:id/join", joinGame)
-	group.POST("/game/:id/start", startGame)
-	group.POST("/game/:id/play", play)
-	group.POST("/game/:id/draw", play)
-	group.GET("/game/:id", getGameState)
+	group.POST("/games", newGame)
+	group.POST("/games/:id/join", joinGame)
+	group.POST("/games/:id/start", startGame)
+	group.POST("/games/:id/play", play)
+	group.POST("/games/:id/draw", draw)
+	group.POST("/games/:id/uno", callUno)
+
+	group.GET("/games/:id", getGameState)
 }
 
 func getGames(c echo.Context) error {
+	//log.Println("Running getGames")
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -41,7 +44,7 @@ func getGames(c echo.Context) error {
 
 	games := database.GetGameSummaries()
 
-	return c.JSON(http.StatusOK, games)
+	return c.JSON(http.StatusOK, "")
 }
 
 /*

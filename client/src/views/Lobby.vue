@@ -120,6 +120,7 @@
 </template>
 
 <script>
+import unoService from '../services/unoService';
 // @ is an alias to /src
 export default {
   name: 'Lobby',
@@ -161,7 +162,7 @@ export default {
 
   methods: {
     async getAllGames() {
-      // TODO: get all the games and 
+      this.games = await unoService.getAllGames();
     },
 
     handleActionClick(game) {
