@@ -35,6 +35,7 @@ func TestTotalGamePlayAuth(t *testing.T) {
 	e.ServeHTTP(newGameRec, newGameReq)
 	assert.Equal(t, http.StatusOK, newGameRec.Code)
 
+	// TODO - uncomment when we have a way to tie an authorized user with a game
 	// Start Game
 	// startRec := httptest.NewRecorder()
 	// startReq := httptest.NewRequest(http.MethodPost, "/startgame", nil)
