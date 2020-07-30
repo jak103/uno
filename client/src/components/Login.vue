@@ -43,19 +43,10 @@ export default {
   },
   methods: {
     async login() {
-        console.log("Running login");
       if (this.user_name != "") {
-        console.log("Hitting API");
         let res = await unoService.login(this.game_id, this.user_name);
         if (res.data.valid) {
-          console.log("Reponse was valid");
           this.$router.push({name: "About", params:{ game_id: this.game_id, valid: res.data.valid, username: this.user_name}});
-          /*
-          this.to = {
-            name: "About",
-            params: { game_id: this.game_id, valid: res.data.valid, username: this.user_name}
-          };
-          */
         }
       } else {
           // TODO: Move this to a snack
