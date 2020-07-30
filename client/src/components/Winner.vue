@@ -17,11 +17,12 @@
 
 <script>
 export default {
-  name: 'GameOver'
+  name: "Winner",
 }
 </script>
 
-<style>
+<style scoped>
+
   #displayMessage{
     text-align: center;
     font-size: 300%;

@@ -23,9 +23,9 @@ const routes = [
     props: true
   },
   {
-    path: '/gameOver',
+    path: '/GameOver',
     name: 'GameOver',
-    component: () => import('../components/gameOver.vue')
+    component: () => import('../views/GameOver.vue')
   }
 ]
 
