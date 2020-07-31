@@ -188,7 +188,8 @@ func startGame(c echo.Context) error {
 
 func play(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
-	card := model.Card{c.Param("number"), c.Param("color")}
+	var playCard model.PlayCard
+	c.Bind(&playCard)
 
 	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
 	player, validPlayer, err := getPlayerFromHeader(authHeader)
@@ -240,7 +241,6 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["status"] = game.Status
 	gameState["name"] = game.Name
 	gameState["player_id"] = playerID
-    gameState["creator"] = game.Creator
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[0]
 	} else {
