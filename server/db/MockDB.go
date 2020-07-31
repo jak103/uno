@@ -15,7 +15,13 @@ type mockDB struct {
 }
 
 func (db *mockDB) GetAllGames() (*[]model.Game, error) {
-	return &db.games, nil
+	games := make([]model.Game, 0)
+
+	for _, game := range db.games {
+		games = append(games, game)
+	}
+
+	return &games, nil
 }
 
 // HasGame checks to see if a game with the given ID exists in the database.
