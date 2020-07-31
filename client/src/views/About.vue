@@ -68,6 +68,7 @@
   
       <v-snackbar 
         v-model="snackbar"
+        color="info"
         :timeout='0'>
         {{snackbarText}}
         
@@ -80,6 +81,7 @@
       <v-col cols=6>
         <v-card :class="'ma-3 pa-6'" outlined tile>
           <v-text-field label="Type a message..." 
+               v-model="newMessage"
                single-line outlined></v-text-field>
            <v-btn @click.native="sendMessage">Send Message</v-btn>
         </v-card>
@@ -157,7 +159,8 @@ export default {
     }, 2000);
   },
   sendMessage() {
-    this.snackbarText = "I am a message :)"
+    this.snackbarText = this.newMessage
+    this.newMessage = ""
     this.snackbar = true
   }
 }
