@@ -28,7 +28,8 @@ func setupRoutes(e *echo.Echo) {
 		AuthScheme: "Token",
 	}))
 
-	group.POST("/games/:id/start", startGame) // Travis Gengler
+	group.POST("/games/:id/join", joinExistingGame)
+	group.POST("/games/:id/start", startGame)
 
 	/*
 

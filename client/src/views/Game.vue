@@ -16,15 +16,15 @@
 
           <!-- Game Players -->
           <h3>Players</h3>
-          <v-row>
+          <v-row v-if="gameState.all_players !== undefined">
             <v-card
               v-for="player in gameState.all_players"
-              :key="player.id"
-              :color=" player == gameState.current_player ? '#1F7087' : ''"
+              :key="player.name"
+              :color=" player.id == gameState.current_player.id ? '#1F7087' : ''"
               class="ma-3 pa-6"
               outlined
               tile
-            >{{ player.Name }}</v-card>
+            >{{ player.name }}</v-card>
           </v-row>
 
           <!-- Current Card and actions -->
@@ -32,7 +32,7 @@
             <v-row v-if="gameState.current_card != undefined">
               <v-card class="center-text ma-3 pa-6" outlined tile>
                 <Card
-                  :number="gameState.current_card.number"
+                  :number="gameState.current_card.value"
                   :key="gameState.current_card.color"
                   :color="gameState.current_card.color"
                 />
@@ -58,7 +58,7 @@
           <Card
             v-for="(card, i) in gameState.player_cards"
             :key="i"
-            :number="card.number"
+            :number="card.value"
             :color="card.color"
             @click.native="playCard(card)"
           ></Card>
