@@ -216,7 +216,7 @@ export default {
       
       if (res.data.token && res.data.game) {
         localStorage.set('token', res.data.token);
-        this.$router.push({path: `/game/${res.data.game.id}`});
+        this.$router.push({path: `/game/${res.data.game.game_id}`});
       } else {
         alert ("Failed to create & join game");
       }
