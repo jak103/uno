@@ -13,12 +13,12 @@ export default {
     return BaseService.post(`/api/games/${gameId}/join`, { playerName: playerName });
   },
 
-  getGameState(gameId) {
+  async getGameState(gameId) {
     return BaseService.get(`/api/games/${gameId}`);
   },
 
-  startGame() {
-    return BaseService.post(`/api/startgame`);
+  startGame(gameId) {
+      return BaseService.post(`/api/games/${gameId}/start`);
   },
 
   playCard(cardNumber, cardColor) {

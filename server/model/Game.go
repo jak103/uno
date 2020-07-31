@@ -14,7 +14,7 @@ const (
 type Game struct {
 	ID            string     `bson:"_id,omitempty" json:"id"`
 	Name          string     `bson:"name,omitempty" json:"name"`
-	Creator       string     `bson:"creator,omitempty" json:"creator"`
+	Creator       Player     `bson:"creator,omitempty" json:"creator"`
 	Password      string     `bson:"password,omitempty" json:"password"`
 	DrawPile      []Card     `bson:"draw_pile,omitempty" json:"draw_pile"`
 	DiscardPile   []Card     `bson:"discard_pile,omitempty" json:"discard_pile"`
@@ -37,7 +37,7 @@ type GameSummary struct {
 func GameToSummary(g Game) (summary GameSummary) {
 	summary.ID = g.ID
 	summary.Name = g.Name
-	summary.Creator = g.Creator
+	summary.Creator = g.Creator.Name
 	summary.Status = g.Status
 
 	for _, p := range g.Players {
