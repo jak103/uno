@@ -57,9 +57,12 @@
         <v-card-title
           class="blue"
         >
-          {{joinDialog.game.name}}
+          <strong>Game Name: {{joinDialog.game.name}}</strong>
         </v-card-title>
         <v-card-text>
+          <v-card-subtitle>
+            <h3>Current Players</h3>
+          </v-card-subtitle>
           <v-list>
             <v-list-item
               v-for="(player, i) in joinDialog.game.players"
