@@ -81,6 +81,15 @@ func TestPlay_error(t *testing.T) {
 	setupRoutes(e)
 	req := httptest.NewRequest(http.MethodGet, "/play", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+    // TODO: finish mocking up an auth header here, and in other tests
+    /*isHost := true
+    encodedJWT, err := newJWT("Thomas", "userid", "gameid", isHost, []byte(signKey))
+    
+    assert.Equal(t, nil, err)
+    
+    req.Header.Set(echo.HeaderAuthorization, "bearer" + encodedJWT)*/
+    
+    
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
