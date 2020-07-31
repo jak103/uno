@@ -78,6 +78,28 @@
           </v-card>
         </v-col>
       </v-row>
+
+      <v-snackbar 
+        v-model="snackbar"
+        color="info"
+        :timeout='0'>
+        {{snackbarText}}
+
+        <v-btn text @click="snackbar=false">
+          Close
+        </v-btn>
+      </v-snackbar>
+
+<!-- probably going to want to move this later to make things pretty -->
+      <v-col cols=6>
+        <v-card :class="'ma-3 pa-6'" outlined tile>
+          <v-text-field label="Type a message..." 
+               v-model="newMessage"
+               single-line outlined></v-text-field>
+           <v-btn @click.native="sendMessage">Send Message</v-btn>
+        </v-card>
+      </v-col>
+
     </v-container>
   </div>
 </template>
@@ -93,7 +115,9 @@ export default {
   data() {
     return {
       gameState: {},
-      cards: []
+      cards: [],
+      snackbar: false,
+      snackbarText: ""
     };
   },
   methods: {
@@ -119,25 +143,28 @@ export default {
         this.gameState = res.data;
       }
     },
-
+    sendMessage() {
+      this.snackbarText = this.username + " says: " + this.newMessage;
+      this.snackbar = true;
+    },
     async drawCard() {
       let res = await unoService.drawCard(this.$route.params.id);
       
       if (res.data) {
         this.gameState = res.data;
       }
-    }
-  },
-  created() {
-    this.updateData();
-    this.updateInterval = setInterval(() => {
+     }
+    },
+    created() {
       this.updateData();
-    }, 2000);
-  },
-  beforeDestroy (){
-    if(this.updateInterval){
-      clearInterval(this.updateInterval);
+      this.updateInterval = setInterval(() => {
+        this.updateData();
+      }, 2000);
+    },
+    beforeDestroy (){
+      if(this.updateInterval){
+        clearInterval(this.updateInterval);
+      }
     }
-  }
 };
 </script>
