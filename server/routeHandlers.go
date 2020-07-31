@@ -233,17 +233,18 @@ func play(c echo.Context) error {
 	player, validPlayer, err := getPlayerFromHeader(authHeader)
 
 	if !validPlayer {
-		return c.JSON(http.StatusBadRequest, "Not a valid player!");
+		return c.JSON(http.StatusBadRequest, "Not a valid player!")
 	}
 
 	game, err := playCard(c.Param("game"), player, card)
 
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Error playing the game card");
+		return c.JSON(http.StatusBadRequest, "Error playing the game card")
 	}
 
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
+
 /*
 func draw(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
@@ -274,12 +275,17 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 
 	// Update known variables
 	gameState["direction"] = game.Direction
-	gameState["current_player"] = game.CurrentPlayer
 	gameState["draw_pile"] = game.DrawPile
 	gameState["discard_pile"] = game.DiscardPile
 	gameState["game_id"] = game.ID
 	gameState["status"] = game.Status
 	gameState["name"] = game.Name
+	gameState["player_id"] = playerID
+	if game.DiscardPile != nil {
+		gameState["current_card"] = game.DiscardPile[0]
+	} else {
+		gameState["current_card"] = model.Card{}
+	}
 
 	for _, player := range game.Players {
 		if player.ID != playerID {
@@ -287,10 +293,13 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 				card.Color = "Blank"
 				card.Value = "Blank"
 			}
+		} else {
+			gameState["player_cards"] = player.Cards
 		}
 	}
 
 	gameState["all_players"] = game.Players
+	gameState["current_player"] = game.Players[game.CurrentPlayer]
 
 	return gameState
 }
