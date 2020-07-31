@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jak103/uno/db"
@@ -11,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-var sim bool = true
+var tokenSecret string = "usudevops"
 
 func setupRoutes(e *echo.Echo) {
 	// Routes that don't require a valid JWT
@@ -22,17 +23,17 @@ func setupRoutes(e *echo.Echo) {
 	group := e.Group("/api")
 
 	group.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey: []byte("usudevops"),
+		SigningKey: []byte(tokenSecret),
 		AuthScheme: "Token",
 	}))
 	/*
-		group.POST("/games/:id/join", joinGame)
-		group.POST("/games/:id/start", startGame)
-		group.POST("/games/:id/play", play)
-		group.POST("/games/:id/draw", draw)
+		group.POST("/games/:id/join", joinGame) // Jonathan Petersen
+		group.POST("/games/:id/start", startGame) // Travis Gengler
+		group.POST("/games/:id/play", play) // Ryan Johnson
+		group.POST("/games/:id/draw", draw) // Brady Svedin
 		group.POST("/games/:id/uno", callUno)
 
-		group.GET("/games/:id", getGameState)
+		group.GET("/games/:id", getGameState) //
 	*/
 }
 
@@ -85,7 +86,27 @@ func newGame(c echo.Context) error {
 		return gameErr
 	}
 
-	return c.JSON(http.StatusOK, buildGameState(game, creator.Name))
+	// Create token
+	token := generateToken(creator)
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, creator.Name)})
+}
+
+func generateToken(p *model.Player) string {
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["playerName"] = p.Name
+	claims["playerId"] = p.ID
+	claims["exp"] = time.Now().Add(time.Hour * 4).Unix()
+
+	t, err := token.SignedString([]byte(tokenSecret))
+
+	if err != nil {
+		return ""
+	}
+
+	return t
 }
 
 /*

@@ -121,6 +121,7 @@
 
 <script>
 import unoService from '../services/unoService';
+import localStorage from '../util/localStorage';
 // @ is an alias to /src
 export default {
   name: 'Lobby',
@@ -198,10 +199,27 @@ export default {
       this.clearJoinDialog();
     },
 
-    async createGame() {      
-      await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
+    async createGame() { 
+      if (!this.createDialog.name || this.createDialog.name == "") {
+        // invalid game name -- TODO use a snack bar for this
+        alert("Undefined Game Name");
+        return;
+      }
+     
+      if (!this.createDialog.creator || this.createDialog.creator == "") {
+        // invalid creator name -- TODO use a snack bar for this
+        alert("Undefined Creator Name");
+        return;
+      }
+
+      let res = await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
       
-      //this.$router.push({path: `/game/${this.dialog.game.id}`});
+      if (res.data.token && res.data.game) {
+        localStorage.set('token', res.data.token);
+        this.$router.push({path: `/game/${res.data.game.id}`});
+      } else {
+        alert ("Failed to create & join game");
+      }
     }
   },
 
