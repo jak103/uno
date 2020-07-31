@@ -182,21 +182,35 @@ func TestDrawCard(t *testing.T) {
 
 
 func TestDealCards(t *testing.T) {
-/*
+
+	// Test passing in a bogus game id, we should get an error
+	game, err := dealCards("Bogus game id")
+
+	// Assert that we got an actual err
+	assert.NotNil(t, err, "We did not error on a bogus game id")
+
 	// Generate real game in database and real player
 	database, _ := db.GetDb()
 	game, player := setupGameWithPlayer(database)
 
 	// Test Drawing a card with a full deck and real player
-	game, err = drawCard(game.ID, player.ID)
-	game, _ = database.LookupGameByID(game.ID)
-	player = &game.Players[game.CurrentPlayer]
+	game, err = dealCards(game.ID)
+	player = &game.Players[game.CurrentPlayer] //getting from the game who the current player is
+
+
+	//TODO add an assert that makes sure it gets the proper game
+
 
 	// Assert that no error occured, the player has a new card and the draw pile
 	// has one less card
-	assert.Nil(t, err, "Failed to draw card.")
-	assert.Equal(t, 1, len(player.Cards))
-	assert.Equal(t, 107, len(game.DrawPile))
+	assert.Nil(t, err, "Failed to deal cards.")
+	assert.Equal(t, 7, len(player.Cards))
+	assert.Equal(t, 101, len(game.DrawPile))
+
+
+	//TODO add in additional players and check that it deals to them properly too
+
+
 
 	// Move all cards into the discard pile, Empty out the draw pile completely,
 	// and test drawing a card. It should resuffle leaving one card on the discard pile
@@ -204,7 +218,7 @@ func TestDealCards(t *testing.T) {
 	game.DrawPile = game.DrawPile[:0]
 	lastCard := game.DiscardPile[len(game.DiscardPile)-1]
 
-	database.SaveGame(*game)
+	database.SaveGame(*game)		//Use this if you make a modification to the game, drawcard will save it for you but need to call whenever you change game state
 
 	game, err = drawCard(game.ID, player.ID)
 	player = &game.Players[game.CurrentPlayer]
@@ -256,5 +270,5 @@ func TestDealCards(t *testing.T) {
 	game, _ = database.JoinGame(game.ID, player2.ID)
 
 	database.SaveGame(*game)
-*/
+
 }

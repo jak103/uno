@@ -264,7 +264,7 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 		Deal out 7 cards to each player
 		Set the first card for the game to start from
 */
-func dealCards(gameID string, username string) (*model.Game, error) {
+func dealCards(gameID string) (*model.Game, error) {  //will need to go into routeHandlers later and remove username string from the parameters being passed in
 	database, err := db.GetDb()
 
 	if err != nil {
