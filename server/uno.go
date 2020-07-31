@@ -137,7 +137,7 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 			gameData.DiscardPile = append(gameData.DiscardPile, card)
 
 			for index, item := range hand {
-				if item == card {
+				if item == card || (item.Value == "W" && card.Value == "W") || (item.Value == "W4" && card.Value == "W4") {
 					gameData.Players[gameData.CurrentPlayer].Cards = append(hand[:index], hand[index+1:]...)
 					break
 				}
@@ -149,11 +149,12 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 
 			if card.Value == "D2" {
 				gameData = goToNextPlayer(gameData)
-				var drawnCard model.Card
-				gameData, drawnCard = drawTopCard(gameData)
-				gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
-				gameData, drawnCard = drawTopCard(gameData)
-				gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
+				gameData = drawNCards(gameData, 2)
+			}
+
+			if card.Value == "W4" {
+				gameData = goToNextPlayer(gameData)
+				gameData = drawNCards(gameData, 4)
 			}
 
 			if card.Value == "R" {
@@ -224,6 +225,15 @@ func goToNextPlayer(gameData *model.Game) *model.Game {
 		}
 	}
 
+	return gameData
+}
+
+func drawNCards(gameData *model.Game, nCards uint) *model.Game {
+	for i := uint(0); i < nCards; i++ {
+		var drawnCard model.Card
+		gameData, drawnCard = drawTopCard(gameData)
+		gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
+	}
 	return gameData
 }
 
