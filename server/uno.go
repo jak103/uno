@@ -281,3 +281,19 @@ func drawTopCard(game *model.Game) (*model.Game, model.Card) {
 	game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
 	return game, drawnCard
 }
+
+func checkGameExists(gameID string) (bool, error) {
+	database, err := db.GetDb()
+
+	if err != nil {
+		return false, err
+	}
+
+	_, gameErr := database.LookupGameByID(gameID)
+
+	if gameErr != nil {
+		return false, gameErr
+	}
+
+	return true, nil
+}
