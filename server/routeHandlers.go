@@ -73,22 +73,19 @@ func newGame(c echo.Context) error {
 	}
 
 	gameName := m["name"].(string)
-	creator := m["creator"].(string)
+	creatorName := m["creator"].(string)
 
-	if gameName == "" || creator == "" {
+	if gameName == "" || creatorName == "" {
 		return c.JSON(http.StatusBadRequest, "Missing game name or creator")
 	}
 
-	//player, pErr := createPlayer(creator)
-	//game, gameErr := createNewGame(gameName, player)
+	game, creator, gameErr := createNewGame(gameName, creatorName)
 
-	// Creat token
+	if gameErr != nil {
+		return gameErr
+	}
 
-	// if gameErr != nil {
-	// 	return gameErr
-	// }
-
-	return c.JSON(http.StatusOK, "") //buildGameState(game, "0"))
+	return c.JSON(http.StatusOK, buildGameState(game, creator.Name))
 }
 
 /*
