@@ -41,39 +41,16 @@ func randColor(i int) string {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func getGameUpdate(game string, reqPlayer *model.Player) (*model.Game, error) {
+func getGameUpdate(gameID string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
 		return nil, err
 	}
 
-	gameData, gameErr := database.LookupGameByID(game)
+	gameData, gameErr := database.LookupGameByID(gameID)
 
 	if gameErr != nil {
-		return nil, err
-	}
-
-	found := false
-	for i := 0; i < len(gameData.Players); i++ {
-		loopPlayer := gameData.Players[i]
-		if loopPlayer.ID == reqPlayer.ID {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		return nil, errors.New("Player not in game, cannot start")
-	}
-
-	if gameData.Status != "Playing" {
-		gameData.Status = "Playing"
-	}
-
-	err = database.SaveGame(*gameData)
-
-	if err != nil {
 		return nil, err
 	}
 

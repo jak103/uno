@@ -68,7 +68,9 @@
               v-for="(player, i) in joinDialog.game.players"
               :key="i"
             >
-              <v-list-item-content>
+              <v-list-item-content
+                class="pl-4"
+              >
                 -- {{player}}
               </v-list-item-content>
             </v-list-item>

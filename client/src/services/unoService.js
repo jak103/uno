@@ -13,7 +13,7 @@ export default {
       return BaseService.post(`/api/login/${userName}`);
   },
 
-  getGameState(gameId) {
+  async getGameState(gameId) {
       return BaseService.get(`/api/games/${gameId}`);
   },
 
