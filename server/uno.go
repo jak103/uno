@@ -80,7 +80,7 @@ func updateGame(game string, reqPlayer *model.Player) (*model.Game, error) {
 	return gameData, nil
 }
 
-func createNewGame(gameName, creator string) (*model.Game, error) {
+func createNewGame(gameName string, creator model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -89,6 +89,17 @@ func createNewGame(gameName, creator string) (*model.Game, error) {
 
 	game, err := database.CreateGame()
 
+	if err != nil {
+		return nil, err
+	}
+
+	game, err = database.JoinGame(game.ID, creator.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = database.SaveGame(*game)
 	if err != nil {
 		return nil, err
 	}
