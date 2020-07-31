@@ -20,21 +20,22 @@ type firestoreDB struct {
 func (db *firestoreDB) GetAllGames() (*[]model.Game, error) {
 	games := make([]model.Game, 0)
 
-	// documents := db.games.DocumentRefs(context.Background())
-	// for {
-	// 	docSnapshot, err := documents.Next()
+	documents := db.games.DocumentRefs(context.Background())
+	for {
+		docRef, docRefErr := documents.Next()
 
-	// 	if err == iterator.Done {
-	// 		break
-	// 	}
+		if docRefErr == iterator.Done {
+			break
+		}
 
-	// 	var game model.Game
-	// 	if err = docSnapshot.DataTo(&game); err != nil {
-	// 		break
-	// 	}
+		var game model.Game
 
-	// 	games = append(games, game)
-	// }
+		if docSnapshot, _ := docRef.Get(context.Background()); docSnapshot != nil {
+			_ = docSnapshot.DataTo(&game)
+		}
+
+		games = append(games, game)
+	}
 
 	return &games, nil
 }
