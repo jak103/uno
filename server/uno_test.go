@@ -242,14 +242,18 @@ func TestDealCards(t *testing.T) {
 
 	//TODO check with lots of players that the deck size is big enough and we dont run out of cards dealing
 	
-	
+	//refresh the drawPile and the discardPile
+	game.DrawPile = generateShuffledDeck()
+	game.DiscardPile = []model.Card{}
+	//remove all but the top 5 cards so we will run out for sure part way through dealing
+	game.DrawPile = game.DrawPile[:5]
+	database.SaveGame(*game)
 
+	//run deal cards
+	game, err = dealCards(game.ID)
+	//check if the draw pile refreshed
+	assert.Equal(t, 78, len(game.DrawPile))
 
 
 	//database.SaveGame(*game)		//Use this if you make a modification to the game, drawcard will save it for you but need to call whenever you change game state
-
-	
-
-	
-
 }
