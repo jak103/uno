@@ -76,15 +76,8 @@
         </v-btn>
       </v-snackbar>
 
-<!-- probably going to want to move this later to make things pretty -->
-      <v-col cols=6>
-        <v-card :class="'ma-3 pa-6'" outlined tile>
-          <v-text-field label="Type a message..." 
-               single-line outlined></v-text-field>
-           <v-btn @click.native="sendMessage">Send Message</v-btn>
-        </v-card>
-      </v-col>
-
+      <v-btn @click.native="sendMessage">Send Message</v-btn>
+      
     </v-container>
   </div>
 </template>
@@ -157,8 +150,14 @@ export default {
     }, 2000);
   },
   sendMessage() {
-    this.snackbarText = "I am a message :)"
-    this.snackbar = true
+    //alert("here bb")
+    //console.log("beans")
+    //this.snackbarText = "I am a message :)"
+    //this.snackbar = true
+prompt('Your message to the user', 'Suggested user input').then(result => {
+this.snackbar = true  
+console.log(`Dialog result: ${result.result}, text: ${result.text}`)
+})
   }
 }
 };
