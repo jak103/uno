@@ -224,6 +224,7 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["status"] = game.Status
 	gameState["name"] = game.Name
 	gameState["player_id"] = playerID
+
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[0]
 	} else {
@@ -243,7 +244,7 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 
 	gameState["all_players"] = game.Players
 	gameState["current_player"] = game.Players[game.CurrentPlayer]
-
+	gameState["creator"] = game.Creator
 	return gameState
 }
 

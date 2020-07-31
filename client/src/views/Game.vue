@@ -69,7 +69,7 @@
             outlined
             tile
           >
-            <v-row v-if="gameState.creator.id == gameState.player_id">
+            <v-row v-if="gameState.creator != undefined && gameState.creator.id == gameState.player_id">
                 You are the creator of the game. When you are ready: <v-btn @click.native="startGame">Start Game</v-btn>
             </v-row>
             <v-row v-else>
@@ -100,7 +100,6 @@ export default {
     async updateData() {      
       let res = await unoService.getGameState(this.$route.params.id);
       
-
       if (res.data != null) {
         this.gameState = res.data;
       }
@@ -108,7 +107,8 @@ export default {
 
     async startGame() {
       await unoService.startGame(this.$route.params.id);
-      this.updateData();
+      // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
+      this.updateData(); 
     },
 
     async playCard(card) {      
@@ -134,10 +134,8 @@ export default {
     }, 2000);
   },
   beforeDestroy (){
-    console.log("Before destory");
     if(this.updateInterval){
-      console.log("clearning interval");
-        clearInterval(this.updateInterval);
+      clearInterval(this.updateInterval);
     }
   }
 };
