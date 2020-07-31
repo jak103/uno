@@ -6,7 +6,7 @@ export default {
   },
 
   async newGame(gameName, creatorName) {
-      return BaseService.post(`/games/`, {name: gameName, creator: creatorName});
+      return BaseService.post(`/games`, {name: gameName, creator: creatorName});
   },
 
   async login(userName) {
