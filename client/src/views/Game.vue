@@ -113,7 +113,5 @@ export default {
         clearInterval(this.updateInterval);
     }
   }
-
-  // Thomas O'Reilly, stop type on destroy
 };
 </script>
