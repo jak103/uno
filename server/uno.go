@@ -16,23 +16,13 @@ import (
 
 // A simple helper function to pull a card from a game and put it in the players hand.
 // THis is used in  a lot of places, so this should be  a nice help
+// Currently does not check for DrawPile size.
 func drawCardHelper(game *model.Game, player *model.Player) {
 	lastIndex := len(game.DrawPile) - 1
 	card := game.DrawPile[lastIndex]
 
 	player.Cards = append(player.Cards, card)
 	game.DrawPile = game.DrawPile[:lastIndex]
-}
-
-// A simpler helper function for getting the player with a matching ID to playerID
-// from the list of players in the game.
-func getPlayer(game *model.Game, playerID string) *model.Player {
-	for _, item := range game.Players {
-		if playerID == item.ID {
-			return &item
-		}
-	}
-	return nil
 }
 
 // given a player and a card look for the card in players hand and return the index
@@ -222,34 +212,51 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 		return nil, gameErr
 	}
 
-	// We loop through the players in the game
-	for _, player := range game.Players {
-		// We check that the current item has the same id as the one provided
-		if playerID == player.ID {
-			// Our player exists and we will talk a card from the draw pile
-			// and place it in the players hand
-
-			// We must make sure the draw pile is not empty. If empty move over discard pile,
-			// if discard pile is also empty... i have set it to add a new deck, probably should do something else.
-			if len(game.DrawPile) == 0 {
-				if len(game.DiscardPile) == 0 {
-					game.DrawPile = generateShuffledDeck()
-				} else {
-					game.DrawPile = shuffleCards(game.DiscardPile)
-					game.DiscardPile = game.DiscardPile[:0]
-				}
+	// We get the current player from the game
+	player := &game.Players[game.CurrentPlayer]
+	//We then check if the player attempting to play a card is the current player
+	if player.ID == playerID {
+		// We check if the draw pile has available cards
+		if len(game.DrawPile) == 0 {
+			// we check that the discard pile has cards to reshuffle
+			if len(game.DiscardPile) <= 1 {
+				// If there are not cards on the table add a new deck
+				// TODO in the future do more complicated logic such as skip the players turn or something like that.
+				game.DrawPile = generateShuffledDeck()
+			} else {
+				//Reshuffle all discarded cards except the last one back into the draw pile.
+				oldDiscard := game.DiscardPile[:len(game.DiscardPile)-1]
+				game.DrawPile = shuffleCards(oldDiscard)
+				game.DiscardPile = game.DiscardPile[len(game.DiscardPile)-1:]
 			}
-			drawCardHelper(game, &player)
-			//We must then save the game state.
-			database.SaveGame(*game)
-			return game, nil
+		}
+
+		// Get the index of last card in draw pile, this is the card to be drawn.
+		lastIndex := len(game.DrawPile) - 1
+
+		// append the card into the players cards from the draw pile
+		player.Cards = append(player.Cards, game.DrawPile[lastIndex])
+
+		// Remove the card from the draw pile
+		game.DrawPile = game.DrawPile[:lastIndex]
+
+		// Save the game into the database
+		database.SaveGame(*game)
+
+		// Return a successfully updated game.
+		return game, nil
+	}
+
+	// Check why they couldn't draw, is it not their turn, or are they not part of this game?
+	for _, item := range game.Players {
+		if item.ID == playerID {
+			return nil, fmt.Errorf("It is not your turn to play")
 		}
 	}
-	// If we reached this point the player does not exist in this game
-	// we return error
 
 	// TODO Make real error
-	return nil, fmt.Errorf("SOmething bad happend")
+	return nil, fmt.Errorf("You cannot participate in a game you do not belong")
+
 }
 
 func dealCards(gameID string, username string) (*model.Game, error) {
