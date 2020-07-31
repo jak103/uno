@@ -6,7 +6,8 @@
           <!-- Game stats -->
           <v-row>
             <v-card :class="'ma-3 pa-6'" outlined tile>
-              Current Game id: {{ $route.params.id }}              
+              Current Game id: {{ $route.params.id }}
+              Status: {{gameState.status}}      
             </v-card>
           </v-row>
 
@@ -74,14 +75,15 @@ export default {
   },
   data() {
     return {
-      state: {}
+      gameState: {}
     };
   },
   methods: {
     async updateData() {      
-      let gameState = await unoService.getGameState(this.$route.params.id);
-      if (gameState != null) {
-        this.state = gameState;
+      let res = await unoService.getGameState(this.$route.params.id);
+
+      if (res.data != null) {
+        this.gameState = res.data;
       }
     },
 

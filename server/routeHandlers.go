@@ -116,12 +116,13 @@ func getGameState(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
 	gameID := c.Param("id")
 
-	log.Println("playerID", playerID)
-	log.Println("gameID", gameID)
+	game, err := getGameUpdate(gameID)
 
-	//getGameUpdate()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid game ID")
+	}
 
-	return c.JSON(http.StatusOK, "") //buildGameState(game, playerID))
+	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
 /*
@@ -268,7 +269,8 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["draw_pile"] = game.DrawPile
 	gameState["discard_pile"] = game.DiscardPile
 	gameState["game_id"] = game.ID
-	gameState["game_over"] = (game.Status == "Finished")
+	gameState["status"] = game.Status
+	gameState["name"] = game.Name
 
 	for _, player := range game.Players {
 		if player.ID != playerID {

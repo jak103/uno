@@ -9,7 +9,6 @@ const myAxios = axios.create({
 //myAxios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 myAxios.interceptors.request.use(function (config) {
-  console.log("Axios request interceptor");
   const token = localStorage.get('token');
   if (token) {
     config.headers.Authorization = `Token ${token}`;
