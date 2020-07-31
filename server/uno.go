@@ -259,6 +259,11 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 
 }
 
+
+/*This function will:
+		Deal out 7 cards to each player
+		Set the first card for the game to start from
+*/
 func dealCards(gameID string, username string) (*model.Game, error) {
 	database, err := db.GetDb()
 
@@ -272,23 +277,24 @@ func dealCards(gameID string, username string) (*model.Game, error) {
 		return nil, err
 	}
 
-	//TODO Match this up with the database.
-
+	
+	//For each player currently in the game
 	for k := range game.Players {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
 			lastIndex := len(game.DrawPile) - 1
-			card := game.DrawPile[lastIndex]
-			cards = append(cards, card)
+			cards = append(cards, game.DrawPile[lastIndex])
 			game.DrawPile = game.DrawPile[:lastIndex]
-
 		}
 		game.Players[k].Cards = cards
 	}
 	//This will draw one more card, but instead of adding it to a players hand it will add it to the discard pile and set it as the current Card
 	lastIndex := len(game.DrawPile) - 1
-	startCard := game.DrawPile[lastIndex]
-	game.DiscardPile = append(game.DiscardPile, startCard)
+	game.DiscardPile = append(game.DiscardPile, game.DrawPile[lastIndex])
 	game.DrawPile = game.DrawPile[:lastIndex]
+
+	// Save the game into the database
+	database.SaveGame(*game)
+
 	return game, nil
 }
