@@ -21,11 +21,11 @@ export default {
     return BaseService.post(`/api/games/${gameId}/draw`);
   },
   
-  startGame(gameId) {
-      return BaseService.post(`/api/games/${gameId}/start`);
+  async playCard(gameId, cardValue, cardColor) {
+    return BaseService.post(`/api/games/${gameId}/play`, {value: cardValue, color: cardColor});
   },
-
-  async playCard(cardNumber, cardColor) {
-    return BaseService.post(`/api/games/${gameId}/play`);
+  
+  async startGame(gameId) {
+      return BaseService.post(`/api/games/${gameId}/start`);
   },
 }
