@@ -30,11 +30,11 @@ func setupRoutes(e *echo.Echo) {
 		group.POST("/games/:id/join", joinGame) // Jonathan Petersen
 		group.POST("/games/:id/start", startGame) // Travis Gengler
 		group.POST("/games/:id/play", play) // Ryan Johnson
-		group.POST("/games/:id/draw", draw) // Brady Svedin
 		group.POST("/games/:id/uno", callUno)
 
 		group.GET("/games/:id", getGameState) //
 	*/
+	group.POST("/games/:id/draw", draw) // Brady Svedin
 }
 
 func getGames(c echo.Context) error {
@@ -225,30 +225,18 @@ func play(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
 }
+*/
 
 func draw(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
-	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
-	player, validPlayer, err := getPlayerFromHeader(authHeader)
+	game, err := drawCard(c.Param("id"), playerID)
 
 	if err != nil {
 		return err
 	}
 
-	if !validPlayer {
-		return c.JSON(http.StatusUnauthorized, &Response{false, nil})
-	}
-
-	game, err := drawCard(c.Param("game"), player)
-
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
-
+	return c.JSON(http.StatusOK, map[string]interface{}{"game": buildGameState(game, playerID)})
 }
-*/
 
 func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState := make(map[string]interface{})

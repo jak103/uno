@@ -158,7 +158,7 @@ func playCard(game string, player *model.Player, card model.Card) (*model.Game, 
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(game string, player *model.Player) (*model.Game, error) {
+func drawCard(game string, player string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
