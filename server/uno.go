@@ -247,8 +247,15 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 		return game, nil
 	}
 
+	// Check why they couldn't draw, is it not their turn, or are they not part of this game?
+	for _, item := range game.Players {
+		if item.ID == playerID {
+			return nil, fmt.Errorf("It is not your turn to play")
+		}
+	}
+
 	// TODO Make real error
-	return nil, fmt.Errorf("It is not your turn to play")
+	return nil, fmt.Errorf("You cannot participate in a game you do not belong")
 
 }
 
