@@ -54,12 +54,18 @@ func TestDrawCardHelper(t *testing.T) {
 
 func TestDrawCard(t *testing.T) {
 
-	database, _ := db.GetDb()
+	// Test passing in a bogus game id, we should get an error
+	game, err := drawCard("Bogus game id", "Bogus player id")
 
+	// Assert that we got an actual err
+	assert.NotNil(t, err, "We did not error on a bogus game id")
+
+	// Generate real game in database and real player
+	database, _ := db.GetDb()
 	game, player := setupGameWithPlayer(database)
 
 	// Test Drawing a card with a full deck and real player
-	game, err := drawCard(game.ID, player.ID)
+	game, err = drawCard(game.ID, player.ID)
 	game, _ = database.LookupGameByID(game.ID)
 	player = &game.Players[game.CurrentPlayer]
 
