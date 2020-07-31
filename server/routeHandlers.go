@@ -28,10 +28,10 @@ func setupRoutes(e *echo.Echo) {
 	}))
 
 	group.POST("/games/:id/join", joinExistingGame) // Jonathan Petersen
-    group.POST("/games/:id/start", startGame) // Travis Gengler
-    
+	group.POST("/games/:id/start", startGame)       // Travis Gengler
+
 	/*
-		
+
 		group.POST("/games/:id/play", play) // Ryan Johnson
 		group.POST("/games/:id/draw", draw) // Brady Svedin
 		group.POST("/games/:id/uno", callUno)
@@ -132,14 +132,7 @@ func getGameState(c echo.Context) error {
 	gameID := c.Param("id")
 	log.Println("playerID", playerID)
 	log.Println("gameID", gameID)
-    
-    
-    database, err := db.GetDb()
 
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Could not connect to database.")
-	}
-    
 	game, err := getGameUpdate(gameID)
 
 	if err != nil {
@@ -153,40 +146,38 @@ func getGameState(c echo.Context) error {
 
 func startGame(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
-    
-    
-    
-    database, err := db.GetDb()
+
+	database, err := db.GetDb()
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Could not connect to database.")
 	}
-    
-    gameID := c.Param("id")
-    
+
+	gameID := c.Param("id")
+
 	game, gameErr := database.LookupGameByID(gameID)
-    
-    if gameErr != nil {
+
+	if gameErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Could not find game.")
 	}
-    
-    if( game.Creator.ID != playerID ){
-        return c.JSON(http.StatusUnauthorized, "Only the player who created the game can start it.")
-    }
-    
-    // get the game state back after dealing cards, etc.
+
+	if game.Creator.ID != playerID {
+		return c.JSON(http.StatusUnauthorized, "Only the player who created the game can start it.")
+	}
+
+	// get the game state back after dealing cards, etc.
 	game, saveErr := dealCards(game)
-    
-    if saveErr != nil {
+
+	if saveErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Could not save game state.")
 	}
-    
-    gameState := buildGameState(game, playerID)
-    
-    log.Println("Start game")
+
+	gameState := buildGameState(game, playerID)
+
+	log.Println("Start game")
 	log.Println("=======================================================================================================================================================================================================================================================================================================================================")
 
-    return c.JSON(http.StatusOK, gameState)
+	return c.JSON(http.StatusOK, gameState)
 }
 
 /*

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"errors"
-    "math/rand"
+	"math/rand"
+
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 )
@@ -163,41 +163,41 @@ func drawCard(game string, player *model.Player) (*model.Game, error) {
 
 // TODO: need to deal the actual cards, not just random numbers
 func dealCards(game *model.Game) (*model.Game, error) {
-	
-    // pick a starting player
-    game.CurrentPlayer = rand.Intn(len(game.Players))
-    
-    // get a deck
-    game.DrawPile = generateShuffledDeck()
-    
-    // give everyone a hand of seven cards
-    for k := range game.Players {
-        cards := []model.Card{}
-        for i := 0; i < 7; i++ {
 
-            drawnCard := game.DrawPile[len(game.DrawPile)-1]
-            game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
-            cards = append(cards, drawnCard)
-        }
-        game.Players[k].Cards = cards
-    }
-    
-    // draw a card for the discard
-    drawnCard := game.DrawPile[len(game.DrawPile)-1]
-    game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
-    
-    game.DiscardPile = append(game.DiscardPile, drawnCard)
-    
+	// pick a starting player
+	game.CurrentPlayer = rand.Intn(len(game.Players))
+
+	// get a deck
+	game.DrawPile = generateShuffledDeck()
+
+	// give everyone a hand of seven cards
+	for k := range game.Players {
+		cards := []model.Card{}
+		for i := 0; i < 7; i++ {
+
+			drawnCard := game.DrawPile[len(game.DrawPile)-1]
+			game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
+			cards = append(cards, drawnCard)
+		}
+		game.Players[k].Cards = cards
+	}
+
+	// draw a card for the discard
+	drawnCard := game.DrawPile[len(game.DrawPile)-1]
+	game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
+
+	game.DiscardPile = append(game.DiscardPile, drawnCard)
+
 	game.Status = "Playing"
-    
-    database, err := db.GetDb()
+
+	database, err := db.GetDb()
 
 	if err != nil {
 		return nil, err
 	}
-    
-    // save the new game status
-    err = database.SaveGame(*game) 
-    
+
+	// save the new game status
+	err = database.SaveGame(*game)
+
 	return game, err
 }

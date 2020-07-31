@@ -30,24 +30,24 @@ func getDeckConfig() ([4]string, map[string]int, map[string]int) {
 	colors := [4]string{"red", "blue", "green", "yellow"}
 
 	standardCardCounts := map[string]int{
-		"zero":     1,
-		"one":      2,
-		"two":      2,
-		"three":    2,
-		"four":     2,
-		"five":     2,
-		"six":      2,
-		"seven":    2,
-		"eight":    2,
-		"nine":     2,
-		"skip":     2,
-		"draw_two": 2,
-		"reverse":  2,
+		"0":  1,
+		"1":  2,
+		"2":  2,
+		"3":  2,
+		"4":  2,
+		"5":  2,
+		"6":  2,
+		"7":  2,
+		"8":  2,
+		"9":  2,
+		"S":  2,
+		"D2": 2,
+		"R":  2,
 	}
 
 	wildCardCounts := map[string]int{
-		"wild":           4,
-		"wild_draw_four": 4,
+		"W":  4,
+		"W4": 4,
 	}
 
 	return colors, standardCardCounts, wildCardCounts
