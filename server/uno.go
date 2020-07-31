@@ -80,28 +80,33 @@ func updateGame(game string, reqPlayer *model.Player) (*model.Game, error) {
 	return gameData, nil
 }
 
-func createNewGame(gameName string, creator model.Player) (*model.Game, error) {
+func createNewGame(gameName string, creatorName string) (*model.Game, *model.Player, error) {
 	database, err := db.GetDb()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
+	}
+
+	creator, err := database.CreatePlayer(creatorName)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	game, err := database.CreateGame()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	game, err = database.JoinGame(game.ID, creator.ID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	err = database.SaveGame(*game)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return game, nil
+	return game, creator, nil
 }
 
 func joinGame(game string, player *model.Player) (*model.Game, error) {
