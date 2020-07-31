@@ -89,7 +89,7 @@ func newGame(c echo.Context) error {
 	// Create token
 	token := generateToken(creator)
 
-	return c.JSON(http.StatusOK, {token: token, game: buildGameState(game, creator.Name)})
+	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, creator.Name)})
 }
 
 func generateToken(p *model.Player) string {
