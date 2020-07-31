@@ -149,9 +149,9 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
             
             if card.Value == "D2" {
                 gameData = goToNextPlayer(gameData)
-                gameData, drawnCard := draw(gameData)
+                gameData, drawnCard := drawTopCard(gameData)
                 gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
-                gameData, drawnCard := draw(gameData)
+                gameData, drawnCard = drawTopCard(gameData)
                 gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
             }
             
@@ -201,8 +201,7 @@ func drawCard(gameID, playerID string) (*model.Game, error) {
 		return nil, errors.New("Wrong player")
 	}
 
-	drawnCard := gameData.DrawPile[len(gameData.DrawPile)-1]
-	gameData.DrawPile = gameData.DrawPile[:len(gameData.DrawPile)-1]
+	gameData, drawnCard := drawTopCard(gameData)
 	gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
 
 	gameData = goToNextPlayer(gameData)
@@ -240,14 +239,14 @@ func dealCards(game *model.Game) (*model.Game, error) {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
 
-			game, drawnCard := draw(game)
+			game, drawnCard := drawTopCard(game)
 			cards = append(cards, drawnCard)
 		}
 		game.Players[k].Cards = cards
 	}
 
 	// draw a card for the discard
-	game, drawnCard := draw(game)
+	game, drawnCard := drawTopCard(game)
 	game.DiscardPile = append(game.DiscardPile, drawnCard)
 
 	game.Status = "Playing"
@@ -264,7 +263,7 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	return game, err
 }
 
-func draw(game *model.Game) *model.Game, *model.Card {
+func drawTopCard(game *model.Game) (*model.Game, *model.Card) {
     drawnCard := game.DrawPile[len(game.DrawPile)-1]
 	game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
     return game, drawnCard
