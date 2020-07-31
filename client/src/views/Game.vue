@@ -7,6 +7,7 @@
           <v-row>
             <v-card :class="'ma-3 pa-6'" outlined tile>
               Current Game id: {{ $route.params.id }}
+              <br />
               Status: {{gameState.status}}      
             </v-card>
           </v-row>
@@ -14,7 +15,7 @@
           <!-- Game Players -->
           <v-row>
             <v-card
-              v-for="player in players"
+              v-for="player in gameState.all_players"
               :key="player"
               :color="current_player == player ? '#1F7087' : ''"
               :class="'ma-3 pa-6'"
@@ -109,7 +110,9 @@ export default {
     }, 2000);
   },
   beforeDestroy (){
+    console.log("Before destory");
     if(this.updateInterval){
+      console.log("clearning interval");
         clearInterval(this.updateInterval);
     }
   }
