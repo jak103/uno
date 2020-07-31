@@ -210,65 +210,28 @@ func TestDealCards(t *testing.T) {
 
 	//TODO add in additional players and check that it deals to them properly too
 
-
-
-	// Move all cards into the discard pile, Empty out the draw pile completely,
-	// and test drawing a card. It should resuffle leaving one card on the discard pile
-	game.DiscardPile = append(game.DiscardPile, game.DrawPile...)
-	game.DrawPile = game.DrawPile[:0]
-	lastCard := game.DiscardPile[len(game.DiscardPile)-1]
-
-	database.SaveGame(*game)		//Use this if you make a modification to the game, drawcard will save it for you but need to call whenever you change game state
-
-	game, err = drawCard(game.ID, player.ID)
-	player = &game.Players[game.CurrentPlayer]
-
-	//Assert no error, player has 2 cards from both draw tests,
-	// draw is missing three from two draws and one in discard
-	// discard has one last remaining card.
-	// Assert last card in discard is actually to proper last card
-	assert.Nil(t, err, "Failed to draw card.")
-	assert.Equal(t, 2, len(player.Cards))
-	assert.Equal(t, 105, len(game.DrawPile))
-	assert.Equal(t, 1, len(game.DiscardPile))
-	assert.Equal(t, lastCard.Color, game.DiscardPile[0].Color)
-	assert.Equal(t, lastCard.Value, game.DiscardPile[0].Value)
-
-	database.SaveGame(*game)
-
-	game, err = drawCard(game.ID, player.ID)
-	player = &game.Players[game.CurrentPlayer]
-
-	// Assert no errors, assert player now has 3 cards
-	// assert new draw pile with one missing
-	// assert discard still has one card
-	// Assert last card in discard is actually to proper last card
-	assert.Nil(t, err, "Failed to draw card.")
-	assert.Equal(t, 3, len(player.Cards))
-	assert.Equal(t, 107, len(game.DrawPile))
-	assert.Equal(t, 1, len(game.DiscardPile))
-	assert.Equal(t, lastCard.Color, game.DiscardPile[0].Color)
-	assert.Equal(t, lastCard.Value, game.DiscardPile[0].Value)
-
-	// Create a bogus player with a bogus ID
-	otherPlayer := model.Player{ID: " id 2 ", Name: "Name 2", Cards: []model.Card{}}
-
-	// Simulate a someone trying to participate in a game they are not a part of.
-	_, err = drawCard(game.ID, otherPlayer.ID)
-
-	// Assert that we got an error from the draw card function as we should have.
-	// Assert that the player didn't get any cards
-	// Assert that the draw pile didn't lose any cards.
-	assert.NotNil(t, err, "Player not in the game drew a card. Please make sure only players in the game can draw")
-	assert.Equal(t, "You cannot participate in a game you do not belong", err.Error())
-	assert.Equal(t, 0, len(otherPlayer.Cards))
-	assert.Equal(t, 107, len(game.DrawPile))
-
-	// Create a real player and add them to the game so there is more than one player.
+	// Create additional players and add them to the game
 	player2, _ := database.CreatePlayer("Player 2")
+	player3, _ := database.CreatePlayer("Player 3")
+	player4, _ := database.CreatePlayer("Player 4")
+	player5, _ := database.CreatePlayer("Player 5")
 
 	game, _ = database.JoinGame(game.ID, player2.ID)
-
 	database.SaveGame(*game)
+	game, _ = database.JoinGame(game.ID, player3.ID)
+	database.SaveGame(*game)
+	game, _ = database.JoinGame(game.ID, player4.ID)
+	database.SaveGame(*game)
+	game, _ = database.JoinGame(game.ID, player5.ID)
+	database.SaveGame(*game)
+
+
+	//TODO check with lots of players that the deck size is big enough and we dont run out of cards dealing
+
+	//database.SaveGame(*game)		//Use this if you make a modification to the game, drawcard will save it for you but need to call whenever you change game state
+
+	
+
+	
 
 }
