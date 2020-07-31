@@ -112,13 +112,19 @@ func TestDrawCard(t *testing.T) {
 	assert.Equal(t, lastCard.Color, game.DiscardPile[0].Color)
 	assert.Equal(t, lastCard.Value, game.DiscardPile[0].Value)
 
-	// Create a player to simulate one playing but its not their turn and attempt to play
+	// Create a bogus player with a bogus ID
 	otherPlayer := model.Player{ID: " id 2 ", Name: "Name 2", Cards: []model.Card{}}
 
+	// Simulate a player Drawing out of turn, either it's not their turn or they don't belong in this game.
 	_, err = drawCard(game.ID, otherPlayer.ID)
 
-	// Assert that we got an error from the draw card.
-	assert.NotNil(t, err, "Player played out of turn. Please make sure only the player whoes turn it is can play.")
+	// Assert that we got an error from the draw card function as we should have.
+	// Assert that the player didn't get any cards
+	// Assert that the draw pile didn't lose any cards.
+	assert.NotNil(t, err, "Player drew out of turn. Please make sure only the player whoes turn it is can play.")
+	assert.Equal(t, "It is not your turn to play", err.Error())
+	assert.Equal(t, 0, len(otherPlayer.Cards))
+	assert.Equal(t, 107, len(game.DrawPile))
 
 }
 
