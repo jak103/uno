@@ -188,17 +188,10 @@ func startGame(c echo.Context) error {
 
 func play(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
-	var playCard model.PlayCard
-	c.Bind(&playCard)
+	var card model.Card
+	c.Bind(&card)
 
-	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
-	player, validPlayer, err := getPlayerFromHeader(authHeader)
-
-	if !validPlayer {
-		return c.JSON(http.StatusBadRequest, "Not a valid player!")
-	}
-
-	game, err := playCard(c.Param("game"), player, card)
+	game, err := playCard(c.Param("game"), playerID, card)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Error playing the game card")

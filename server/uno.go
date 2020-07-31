@@ -115,7 +115,7 @@ func joinGame(game string, player *model.Player) (*model.Game, error) {
 	return gameData, nil
 }
 
-func playCard(game string, player *model.Player, card model.Card) (*model.Game, error) {
+func playCard(game string, playerID string, card model.Card) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -127,25 +127,59 @@ func playCard(game string, player *model.Player, card model.Card) (*model.Game, 
 	if gameErr != nil {
 		return nil, err
 	}
+    
+	if gameData.Players[gameData.CurrentPlayer].ID == playerID {
+        hand := gameData.Players[gameData.CurrentPlayer].Cards
+		if checkForCardInHand(card, hand) && (card.Color == currCard[0].Color || card.Value == currCard[0].Value || card.Value == "W4" || card.Value == "W" ) {
+			// Valid card can be played
+			
+			gameData.DiscardPile = append(gameData.DiscardPile, card)
 
-	// if gameData.CurrentPlayer == username {
-	// 	cards := allCards[username]
-	// 	if card.Color == currCard[0].Color || card.Value == currCard[0].Value {
-	// 		// Valid card can be played
-	// 		playerIndex = (playerIndex + 1) % len(players)
-	// 		currPlayer = players[playerIndex]
-	// 		currCard[0] = card
-
-	// 		for index, item := range cards {
-	// 			if item == currCard[0] {
-	// 				allCards[username] = append(cards[:index], cards[index+1:]...)
-	// 				break
-	// 			}
-	// 		}
-	// 	}
-	// 	return true
-	// }
+			for index, item := range hand {
+				if item == card {
+					gameData.Players[gameData.CurrentPlayer].Cards = append(hand[:index], hand[index+1:]...)
+					break
+				}
+			}
+            
+            if card.Value == "S" {
+                gameData = goToNextPlayer(gameData)
+            }
+            
+            if card.Value == "D2" {
+                gameData = goToNextPlayer(gameData)
+                gameData, drawnCard := draw(gameData)
+                gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
+                gameData, drawnCard := draw(gameData)
+                gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
+            }
+            
+            if card.Value == "R" {
+                gameData.Direction = !gameData.Direction
+            }
+            
+            gameData = goToNextPlayer(gameData)
+            
+		}
+	}
+    
+    err = database.SaveGame(*gameData)
+    
+    if err != nil {
+		return nil, err
+	}
+    
 	return gameData, nil
+}
+
+func checkForCardInHand(card model.Card, hand []model.Cards) bool {
+for _, c := range hand {
+        // the wild cards, W4 and W, don't need to match in color; not for the previous card, and not with the hand. The card itself can become any color.
+		if c.Value == card.Value && (c.Color == card.Color || card.Value == "W4" || card.Value == "W") {
+			return true
+		}
+	}
+	return false
 }
 
 // TODO: Keep track of current card that is top of the deck
@@ -186,17 +220,14 @@ func dealCards(game *model.Game) (*model.Game, error) {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
 
-			drawnCard := game.DrawPile[len(game.DrawPile)-1]
-			game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
+			game, drawnCard := draw(game)
 			cards = append(cards, drawnCard)
 		}
 		game.Players[k].Cards = cards
 	}
 
 	// draw a card for the discard
-	drawnCard := game.DrawPile[len(game.DrawPile)-1]
-	game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
-
+	game, drawnCard := draw(game)
 	game.DiscardPile = append(game.DiscardPile, drawnCard)
 
 	game.Status = "Playing"
@@ -211,4 +242,10 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	err = database.SaveGame(*game)
 
 	return game, err
+}
+
+func draw(game *model.Game) *model.Game, *model.Card {
+    drawnCard := game.DrawPile[len(game.DrawPile)-1]
+	game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
+    return game, drawnCard
 }
