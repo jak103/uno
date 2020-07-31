@@ -69,7 +69,12 @@
             outlined
             tile
           >
-            <v-btn @click.native="startGame">Start Game</v-btn>
+            <v-row v-if="gameState.creator.id == gameState.player_id">
+                You are the creator of the game. When you are ready: <v-btn @click.native="startGame">Start Game</v-btn>
+            </v-row>
+            <v-row v-else>
+                Please wait for the creator to start the game.
+            </v-row>
           </v-card>
         </v-col>
       </v-row>
