@@ -26,8 +26,9 @@ func setupRoutes(e *echo.Echo) {
 		SigningKey: []byte(tokenSecret),
 		AuthScheme: "Token",
 	}))
+
+	group.POST("/games/:id/join", joinExistingGame) // Jonathan Petersen
 	/*
-		group.POST("/games/:id/join", joinGame) // Jonathan Petersen
 		group.POST("/games/:id/start", startGame) // Travis Gengler
 		group.POST("/games/:id/play", play) // Ryan Johnson
 		group.POST("/games/:id/draw", draw) // Brady Svedin
@@ -93,6 +94,18 @@ func newGame(c echo.Context) error {
 	token := generateToken(creator)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, creator.Name)})
+}
+
+func joinExistingGame(c echo.Context) error {
+	log.Println("Handling joining a game")
+	log.Println("=======================================================================================================================================================================================================================================================================================================================================")
+
+	playerID := getPlayerFromContext(c)
+	gameID := c.Param("id")
+
+	joinGame(gameID, playerID)
+
+	return c.JSON(http.StatusOK, "")
 }
 
 func generateToken(p *model.Player) string {

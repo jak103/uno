@@ -112,13 +112,13 @@ func createNewGame(gameName string, creatorName string) (*model.Game, *model.Pla
 	return game, creator, nil
 }
 
-func joinGame(game string, player *model.Player) (*model.Game, error) {
+func joinGame(game string, playerID string) (*model.Game, error) {
 	database, err := db.GetDb()
 	if err != nil {
 		return nil, err
 	}
 
-	gameData, gameErr := database.JoinGame(game, player.ID)
+	gameData, gameErr := database.JoinGame(game, playerID)
 
 	if gameErr != nil {
 		return nil, gameErr
