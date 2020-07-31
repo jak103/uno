@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-
+    "math/rand"
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 )
@@ -101,7 +101,7 @@ func createNewGame(gameName string, creatorName string) (*model.Game, *model.Pla
 		return nil, nil, err
 	}
 	game.Name = gameName
-	game.Creator = creatorName
+	game.Creator = *creator
 	game.Status = model.WaitingForPlayers
 
 	err = database.SaveGame(*game)
@@ -185,39 +185,42 @@ func drawCard(game string, player *model.Player) (*model.Game, error) {
 }
 
 // TODO: need to deal the actual cards, not just random numbers
-func dealCards(game string, player *model.Player) (*model.Game, error) {
-	database, err := db.GetDb()
+func dealCards(game *model.Game) (*model.Game, error) {
+	
+    // pick a starting player
+    game.CurrentPlayer = rand.Intn(len(game.Players))
+    
+    // get a deck
+    game.DrawPile = generateShuffledDeck()
+    
+    // give everyone a hand of seven cards
+    for k := range game.Players {
+        cards := []model.Card{}
+        for i := 0; i < 7; i++ {
+
+            drawnCard := game.DrawPile[len(game.DrawPile)-1]
+            game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
+            cards = append(cards, drawnCard)
+        }
+        game.Players[k].Cards = cards
+    }
+    
+    // draw a card for the discard
+    drawnCard := game.DrawPile[len(game.DrawPile)-1]
+    game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
+    
+    game.DiscardPile = append(game.DiscardPile, drawnCard)
+    
+	game.Status = "Playing"
+    
+    database, err := db.GetDb()
 
 	if err != nil {
 		return nil, err
 	}
-
-	gameData, gameErr := database.LookupGameByID(game)
-
-	if gameErr != nil {
-		return nil, err
-	}
-
-	// The game has started, no more players are joining
-	// loop through players, set their cards
-	// gameStarted = true
-	// currPlayer = players[rand.Intn(len(players))]
-	// deck := generateShuffledDeck()
-
-	// for k := range players {
-	// 	cards := []model.Card{}
-	// 	for i := 0; i < 7; i++ {
-
-	// 		drawnCard := deck[len(deck)-1]
-	// 		deck = deck[:len(deck)-1]
-	// 		cards = append(cards, drawnCard)
-	// 		//cards = append(cards, model.Card{rand.Intn(10), randColor(rand.Intn(4))})
-	// 	}
-	// 	allCards[players[k]] = cards
-	// }
-
-	// currCard = deck
-	//currCard = newRandomCard()
-
-	return gameData, nil
+    
+    // save the new game status
+    err = database.SaveGame(*game) 
+    
+	return game, err
 }

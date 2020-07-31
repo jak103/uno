@@ -6,20 +6,21 @@
           <!-- Game stats -->
           <v-row>
             <v-card :class="'ma-3 pa-6'" outlined tile>
-              Current Game id: {{ $route.params.id }}              
+              Current Game id: {{ $route.params.id }}
+              <v-btn @click.native="startGame">Start Game</v-btn>
             </v-card>
           </v-row>
 
           <!-- Game Players -->
           <v-row>
             <v-card
-              v-for="player in players"
+              v-for="player in state.all_players"
               :key="player"
-              :color="current_player == player ? '#1F7087' : ''"
+              :color="state.all_players[current_player] == player ? '#1F7087' : ''"
               :class="'ma-3 pa-6'"
               outlined
               tile
-            >{{ player.name }}</v-card>
+            >{{ player.Name }}</v-card>
           </v-row>
 
           <!-- Current Card and actions -->
@@ -81,7 +82,7 @@ export default {
     async updateData() {      
       let gameState = await unoService.getGameState(this.$route.params.id);
       if (gameState != null) {
-        this.state = gameState;
+        this.state = gameState.data.game;
       }
     },
 
@@ -92,8 +93,10 @@ export default {
     },
 
     async playCard(card) {
-      await unoService.playCard(this.$route.params.id, this.username, card.number, card.color);
-      this.updateData();      
+      let gameState = await unoService.playCard(this.$route.params.id, this.username, card.number, card.color);
+      if (gameState != null) {
+        this.state = gameState.data.game;
+      }   
     },
 
     async drawCard() {

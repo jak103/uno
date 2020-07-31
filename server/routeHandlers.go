@@ -28,8 +28,10 @@ func setupRoutes(e *echo.Echo) {
 	}))
 
 	group.POST("/games/:id/join", joinExistingGame) // Jonathan Petersen
+    group.POST("/games/:id/start", startGame) // Travis Gengler
+    
 	/*
-		group.POST("/games/:id/start", startGame) // Travis Gengler
+		
 		group.POST("/games/:id/play", play) // Ryan Johnson
 		group.POST("/games/:id/draw", draw) // Brady Svedin
 		group.POST("/games/:id/uno", callUno)
@@ -70,7 +72,7 @@ func newGame(c echo.Context) error {
 	err := c.Bind(&m)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Could bind to input")
+		return c.JSON(http.StatusInternalServerError, "Could not bind to input")
 	}
 
 	if m["name"] == nil || m["creator"] == nil {
@@ -93,7 +95,7 @@ func newGame(c echo.Context) error {
 	// Create token
 	token := generateToken(creator)
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, creator.Name)})
+	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, creator.ID)})
 }
 
 func joinExistingGame(c echo.Context) error {
@@ -131,10 +133,60 @@ func getGameState(c echo.Context) error {
 
 	log.Println("playerID", playerID)
 	log.Println("gameID", gameID)
+    
+    
+    database, err := db.GetDb()
 
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not connect to database.")
+	}
+    
+	game, gameErr := database.LookupGameByID(gameID)
+    
+    if gameErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not find game.")
+	}
 	//getGameUpdate()
 
-	return c.JSON(http.StatusOK, "") //buildGameState(game, playerID))
+	return c.JSON(http.StatusOK, map[string]interface{}{"game": buildGameState(game, playerID)}) //buildGameState(game, playerID))
+}
+
+func startGame(c echo.Context) error {
+	playerID := getPlayerFromContext(c)
+    
+    
+    
+    database, err := db.GetDb()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not connect to database.")
+	}
+    
+    gameID := c.Param("id")
+    
+	game, gameErr := database.LookupGameByID(gameID)
+    
+    if gameErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not find game.")
+	}
+    
+    if( game.Creator.ID != playerID ){
+        return c.JSON(http.StatusUnauthorized, "Only the player who created the game can start it.")
+    }
+    
+    // get the game state back after dealing cards, etc.
+	game, saveErr := dealCards(game)
+    
+    if saveErr != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not save game state.")
+	}
+    
+    gameState := buildGameState(game, playerID)
+    
+    log.Println("Start game")
+	log.Println("=======================================================================================================================================================================================================================================================================================================================================")
+
+    return c.JSON(http.StatusOK, map[string]interface{}{"game": gameState})
 }
 
 /*
@@ -182,24 +234,6 @@ func join(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, "0")})
 }
-
-func startGame(c echo.Context) error {
-	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
-	player, validPlayer, err := getPlayerFromHeader(authHeader)
-
-	if err != nil {
-		return err
-	}
-
-	if !validPlayer {
-		return c.JSON(http.StatusUnauthorized, &Response{false, nil})
-	}
-
-	dealCards(c.Param("game"), player)
-	return update(c)
-}
-
-
 
 func update(c echo.Context) error {
 	playerID := getPlayerFromContext(c)

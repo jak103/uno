@@ -17,8 +17,8 @@ export default {
       return BaseService.get(`/api/games/${gameId}`);
   },
 
-  startGame() {
-      return BaseService.post(`/api/startgame`);
+  startGame(gameId) {
+      return BaseService.post(`/api/games/${gameId}/start`);
   },
 
   playCard(cardNumber, cardColor) {
