@@ -40,12 +40,16 @@ func getGames(c echo.Context) error {
 	database, err := db.GetDb()
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Could find games")
+		return c.JSON(http.StatusInternalServerError, "Could not find games: Failed to connect to db")
 	}
 
-	games := database.GetAllGames()
-	gameSummaries := make([]model.GameSummary, 0)
+	games, err := database.GetAllGames()
 
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not find games")
+	}
+
+	gameSummaries := make([]model.GameSummary, 0)
 	for _, g := range *games {
 		gameSummaries = append(gameSummaries, model.GameToSummary(g))
 	}
