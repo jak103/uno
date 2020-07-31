@@ -198,7 +198,19 @@ export default {
       this.clearJoinDialog();
     },
 
-    async createGame() {      
+    async createGame() { 
+      if (!this.createDialog.name || this.createDialog.name == "") {
+        // invalid game name -- TODO use a snack bar for this
+        alert("Undefined Game Name");
+        return;
+      }
+     
+      if (!this.createDialog.creator || this.createDialog.creator == "") {
+        // invalid creator name -- TODO use a snack bar for this
+        alert("Undefined Creator Name");
+        return;
+      }
+      
       await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
       
       //this.$router.push({path: `/game/${this.dialog.game.id}`});
