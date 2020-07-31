@@ -82,19 +82,16 @@ func updateGame(game string, reqPlayer *model.Player) (*model.Game, error) {
 
 func createNewGame(gameName string, creator model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
-
 	if err != nil {
 		return nil, err
 	}
 
 	game, err := database.CreateGame()
-
 	if err != nil {
 		return nil, err
 	}
 
 	game, err = database.JoinGame(game.ID, creator.ID)
-
 	if err != nil {
 		return nil, err
 	}
