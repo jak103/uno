@@ -28,16 +28,11 @@ func setupRoutes(e *echo.Echo) {
 		AuthScheme: "Token",
 	}))
 
-	group.POST("/games/:id/join", joinExistingGame)
 	group.POST("/games/:id/start", startGame)
+	group.POST("/games/:id/play", play) // Ryan Johnson
+	group.POST("/games/:id/draw", draw) // Brady Svedin
+	//	group.POST("/games/:id/uno", callUno)
 
-	/*
-
-		group.POST("/games/:id/play", play) // Ryan Johnson
-		group.POST("/games/:id/draw", draw) // Brady Svedin
-		group.POST("/games/:id/uno", callUno)
-
-	*/
 	group.GET("/games/:id", getGameState)
 }
 
@@ -188,82 +183,10 @@ func startGame(c echo.Context) error {
 
 	gameState := buildGameState(game, playerID)
 
-	log.Println("Start game")
-	log.Println("=======================================================================================================================================================================================================================================================================================================================================")
-
 	return c.JSON(http.StatusOK, gameState)
 }
 
-/*
-// func login(c echo.Context) error {
-// 	username := c.Param("username")
-
-// 	database, err := db.GetDb()
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	player, playerErr := database.CreatePlayer(username)
-
-// 	if playerErr != nil {
-// 		return playerErr
-// 	}
-
-// 	//token, err := newJWT(username, player.ID)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, "0")})
-// }
-
-func join(c echo.Context) error {
-	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
-	player, validPlayer, err := getPlayerFromHeader(authHeader)
-
-	if err != nil {
-		return err
-	}
-
-	if !validPlayer {
-		return c.JSON(http.StatusUnauthorized, &Response{false, nil})
-	}
-
-	game, err := joinGame(c.Param("game"), player)
-
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, "0")})
-}
-
-func update(c echo.Context) error {
-	playerID := getPlayerFromContext(c)
-	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
-	player, validPlayer, err := getPlayerFromHeader(authHeader)
-
-	if err != nil {
-		return err
-	}
-
-	if !validPlayer {
-		return c.JSON(http.StatusUnauthorized, &Response{false, nil})
-	}
-
-	game, err := updateGame(c.Param("game"), player)
-
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
-}
-*/
 func play(c echo.Context) error {
-	// TODO Cards have a value, which can include skip, reverse, etc
 	playerID := getPlayerFromContext(c)
 	card := model.Card{c.Param("number"), c.Param("color")}
 
@@ -283,7 +206,6 @@ func play(c echo.Context) error {
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
-/*
 func draw(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
 	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
@@ -294,7 +216,7 @@ func draw(c echo.Context) error {
 	}
 
 	if !validPlayer {
-		return c.JSON(http.StatusUnauthorized, &Response{false, nil})
+		return c.JSON(http.StatusUnauthorized, "")
 	}
 
 	game, err := drawCard(c.Param("game"), player)
@@ -303,10 +225,9 @@ func draw(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
+	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 
 }
-*/
 
 func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState := make(map[string]interface{})
