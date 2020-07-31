@@ -69,7 +69,7 @@
               :key="i"
             >
               <v-list-item-content
-                style="padding-left: 10px"
+                class="pl-4"
               >
                 -- {{player}}
               </v-list-item-content>
