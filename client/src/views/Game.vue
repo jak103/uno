@@ -60,7 +60,7 @@
             :key="i"
             :number="card.value"
             :color="card.color"
-            @click.native="playCard(card)"
+            @click="playCard(card)"
           ></Card>
         </v-col>
         <v-col v-else>
@@ -109,17 +109,22 @@ export default {
     async startGame() {
       await unoService.startGame(this.$route.params.id);
       this.updateData();
-      
     },
 
-    async playCard(card) {
-      await unoService.playCard(card.number, card.color);
-      this.updateData();      
+    async playCard(card) {      
+      let res = await unoService.playCard(card.number, card.color);
+      
+      if (res.data) {
+        this.gameState = res.data;
+      }
     },
 
     async drawCard() {
-      await unoService.drawCard(this.$route.params.id);
-      this.updateData();
+      let res = await unoService.drawCard(this.$route.params.id);
+      
+      if (res.data) {
+        this.gameState = res.data;
+      }
     }
   },
   created() {

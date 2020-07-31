@@ -17,16 +17,15 @@ export default {
     return BaseService.get(`/api/games/${gameId}`);
   },
 
+  async drawCard(gameId) {
+    return BaseService.post(`/api/games/${gameId}/draw`);
+  },
+  
   startGame(gameId) {
       return BaseService.post(`/api/games/${gameId}/start`);
   },
 
-  playCard(cardNumber, cardColor) {
-    return BaseService.post(`/api/play/${cardNumber}/${cardColor}`);
+  async playCard(cardNumber, cardColor) {
+    return BaseService.post(`/api/games/${gameId}/play`);
   },
-
-  drawCard() {
-    return BaseService.post(`/api/draw`);
-  },
-
 }

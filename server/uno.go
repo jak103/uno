@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"math/rand"
 
 	"github.com/jak103/uno/db"
@@ -149,27 +150,46 @@ func playCard(game string, player *model.Player, card model.Card) (*model.Game, 
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(game string, player *model.Player) (*model.Game, error) {
+func drawCard(gameID, playerID string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
 		return nil, err
 	}
 
-	gameData, gameErr := database.LookupGameByID(game)
+	gameData, gameErr := database.LookupGameByID(gameID)
 
 	if gameErr != nil {
 		return nil, err
 	}
 
-	// if checkID(game) && username == currPlayer {
-	// 	playerIndex = (playerIndex + 1) % len(players)
-	// 	currPlayer = players[playerIndex]
-	// 	// TODO: Use deck utils instead
-	// 	//allCards[username] = append(allCards[username], newRandomCard()[0])
-	// 	return true
-	// }
+	if gameData.Players[gameData.CurrentPlayer].ID != playerID {
+		return nil, errors.New("Wrong player")
+	}
+
+	drawnCard := gameData.DrawPile[len(gameData.DrawPile)-1]
+	gameData.DrawPile = gameData.DrawPile[:len(gameData.DrawPile)-1]
+	gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
+
+	gameData = goToNextPlayer(gameData)
+
+	database.SaveGame(*gameData)
+
 	return gameData, nil
+}
+
+func goToNextPlayer(gameData *model.Game) *model.Game {
+	if gameData.Direction {
+		gameData.CurrentPlayer++
+		gameData.CurrentPlayer %= len(gameData.Players)
+	} else {
+		gameData.CurrentPlayer--
+		if gameData.CurrentPlayer < 0 {
+			gameData.CurrentPlayer = len(gameData.Players) - 1
+		}
+	}
+
+	return gameData
 }
 
 // TODO: need to deal the actual cards, not just random numbers
