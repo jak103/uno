@@ -62,7 +62,7 @@ func updateGame(game string, reqPlayer *model.Player) (*model.Game, error) {
 			break
 		}
 	}
-    
+
 	if !found {
 		return nil, errors.New("Player not in game, cannot start")
 	}
@@ -80,7 +80,7 @@ func updateGame(game string, reqPlayer *model.Player) (*model.Game, error) {
 	return gameData, nil
 }
 
-func createNewGame() (*model.Game, error) {
+func createNewGame(gameName, creator string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {

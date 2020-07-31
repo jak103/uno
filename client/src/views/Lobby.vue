@@ -162,7 +162,8 @@ export default {
 
   methods: {
     async getAllGames() {
-      this.games = await unoService.getAllGames();
+      let res = await unoService.getAllGames();
+      this.games = res.data;
     },
 
     handleActionClick(game) {

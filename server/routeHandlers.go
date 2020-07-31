@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -58,13 +59,36 @@ func getGames(c echo.Context) error {
 }
 
 func newGame(c echo.Context) error {
-	game, gameErr := createNewGame()
+	log.Println("Handling new game creation")
+	m := echo.Map{}
 
-	if gameErr != nil {
-		return gameErr
+	err := c.Bind(&m)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could bind to input")
 	}
 
-	return c.JSON(http.StatusOK, buildGameState(game, "0"))
+	if m["name"] == nil || m["creator"] == nil {
+		return c.JSON(http.StatusBadRequest, "Missing game name or creator")
+	}
+
+	gameName := m["name"].(string)
+	creator := m["creator"].(string)
+
+	if gameName == "" || creator == "" {
+		return c.JSON(http.StatusBadRequest, "Missing game name or creator")
+	}
+
+	//player, pErr := createPlayer(creator)
+	//game, gameErr := createNewGame(gameName, player)
+
+	// Creat token
+
+	// if gameErr != nil {
+	// 	return gameErr
+	// }
+
+	return c.JSON(http.StatusOK, "") //buildGameState(game, "0"))
 }
 
 /*

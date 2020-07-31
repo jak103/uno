@@ -24,9 +24,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowHeaders: []string{echo.HeaderAuthorization},
-	}))
+	e.Use(middleware.CORS())
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:  "/client/dist/",
