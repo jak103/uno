@@ -282,8 +282,15 @@ func dealCards(gameID string) (*model.Game, error) {  //will need to go into rou
 	for k := range game.Players {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
+
 			//grab the top card from the draw pile
 			lastIndex := len(game.DrawPile) - 1
+			if lastIndex < 0 {
+				//TODO check if something else should be happening, but for now we will just throw an extra deck on the pile
+				game.DrawPile = generateShuffledDeck()
+				lastIndex := len(game.DrawPile) - 1
+			}
+
 			//append the card to the slice "cards" that we will add to the player
 			cards = append(cards, game.DrawPile[lastIndex])
 			//remove the top card from the draw pile

@@ -208,11 +208,6 @@ func TestDealCards(t *testing.T) {
 	assert.Equal(t, 101, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
 	
-	
-	
-
-	//TODO add in additional players and check that it deals to them properly too
-
 	// Create additional players and add them to the game
 	player2, _ := database.CreatePlayer("Player 2")
 	player3, _ := database.CreatePlayer("Player 3")
@@ -245,8 +240,11 @@ func TestDealCards(t *testing.T) {
 	assert.Equal(t, 73, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
 
-
 	//TODO check with lots of players that the deck size is big enough and we dont run out of cards dealing
+	
+	
+
+
 
 	//database.SaveGame(*game)		//Use this if you make a modification to the game, drawcard will save it for you but need to call whenever you change game state
 
