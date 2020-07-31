@@ -282,10 +282,14 @@ func dealCards(gameID string, username string) (*model.Game, error) {
 	for k := range game.Players {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
+			//grab the top card from the draw pile
 			lastIndex := len(game.DrawPile) - 1
+			//append the card to the slice "cards" that we will add to the player
 			cards = append(cards, game.DrawPile[lastIndex])
+			//remove the top card from the draw pile
 			game.DrawPile = game.DrawPile[:lastIndex]
 		}
+		//Add all 7 cards to that players hand
 		game.Players[k].Cards = cards
 	}
 	//This will draw one more card, but instead of adding it to a players hand it will add it to the discard pile and set it as the current Card
