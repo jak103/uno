@@ -53,7 +53,10 @@ func getGames(c echo.Context) error {
 
 	gameSummaries := make([]model.GameSummary, 0)
 	for _, g := range *games {
-		gameSummaries = append(gameSummaries, model.GameToSummary(g))
+		log.Println("game", g)
+		summary := model.GameToSummary(g)
+		log.Println("summary", summary)
+		gameSummaries = append(gameSummaries, summary)
 	}
 
 	return c.JSON(http.StatusOK, gameSummaries)

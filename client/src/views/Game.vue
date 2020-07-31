@@ -106,5 +106,7 @@ export default {
       this.updateData();
     }, 2000);
   }
+
+  // Thomas O'Reilly, stop type on destroy
 };
 </script>

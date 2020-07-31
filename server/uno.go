@@ -100,6 +100,9 @@ func createNewGame(gameName string, creatorName string) (*model.Game, *model.Pla
 	if err != nil {
 		return nil, nil, err
 	}
+	game.Name = gameName
+	game.Creator = creatorName
+	game.Status = model.WaitingForPlayers
 
 	err = database.SaveGame(*game)
 	if err != nil {
