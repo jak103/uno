@@ -14,7 +14,7 @@ export default {
   },
 
   getGameState(gameId) {
-      return BaseService.get(`/api/game/${gameId}`);
+      return BaseService.get(`/api/games/${gameId}`);
   },
 
   startGame() {

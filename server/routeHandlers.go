@@ -33,8 +33,8 @@ func setupRoutes(e *echo.Echo) {
 		group.POST("/games/:id/draw", draw) // Brady Svedin
 		group.POST("/games/:id/uno", callUno)
 
-		group.GET("/games/:id", getGameState) //
 	*/
+	group.GET("/games/:id", getGameState)
 }
 
 func getGames(c echo.Context) error {
@@ -109,6 +109,18 @@ func generateToken(p *model.Player) string {
 	return t
 }
 
+func getGameState(c echo.Context) error {
+	playerID := getPlayerFromContext(c)
+	gameID := c.Param("id")
+
+	log.Println("playerID", playerID)
+	log.Println("gameID", gameID)
+
+	//getGameUpdate()
+
+	return c.JSON(http.StatusOK, "") //buildGameState(game, playerID))
+}
+
 /*
 // func login(c echo.Context) error {
 // 	username := c.Param("username")
@@ -171,13 +183,7 @@ func startGame(c echo.Context) error {
 	return update(c)
 }
 
-func getGameState(c echo.Context) error {
-	playerID := getPlayerFromContext(c)
 
-	game, _ := updateGame(c.Param("game"), nil)
-
-	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
-}
 
 func update(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
@@ -279,7 +285,7 @@ func getPlayerFromContext(c echo.Context) string {
 	// TODO Update this to the actual claim key once the JWT team is done
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
-	playerID := claims["playerID"].(string)
+	playerID := claims["playerId"].(string)
 
 	return playerID
 }

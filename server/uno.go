@@ -41,7 +41,7 @@ func randColor(i int) string {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func updateGame(game string, reqPlayer *model.Player) (*model.Game, error) {
+func getGameUpdate(game string, reqPlayer *model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
