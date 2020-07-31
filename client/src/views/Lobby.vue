@@ -142,12 +142,7 @@ export default {
         { text: "Status", value: "status" },
         { text: "Action", value: "action" },
       ],
-      games: [
-        { id: "45223235", name: "mygame", creator: "Jak", players: ["Jak","Jim", "Bob"], status: "Playing" },
-        { id: "83732332", name: "Best game ever", creator: "Logan", players: ["Logan"], status: "Waiting for players" },
-        { id: "23423553", name: "Friends only", creator: "Ryan", players: ["Ryan", "A", "B", "C", "D", "E", "F", "H", "I"], status: "Playing" },
-        { id: "35939332", name: "Brianna's game", creator: "Brianna", players: ["Brianna", "Scott"], status: "Waiting for players" },
-      ],
+      games: [],
       joinDialog: {
         visible: false,
         headers: [
@@ -193,13 +188,17 @@ export default {
       this.createDialog.visible = false;
     },
 
-    joinGame() {      
+    async joinGame() {      
       this.joinDialog.visible = false;
-      // TODO: join game here
-      // let success = await unoservice.joinGame();
-      // if success
-      this.$router.push({path: `/game/${this.joinDialog.game.id}`});
+      let res = await unoService.joinGame(this.joinDialog.game.id, this.joinDialog.yourname);
+
       this.clearJoinDialog();
+      if (res.data.token && res.data.game) {
+        localStorage.set('token', res.data.token);
+        this.$router.push({path: `/game/${res.data.game.game_id}`});
+      } else {
+        alert ("Failed to create & join game");
+      }
     },
 
     async createGame() { 
