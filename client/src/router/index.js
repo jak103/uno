@@ -23,6 +23,17 @@ const routes = [
     props: true
   },
   {
+    path: '/login',
+    name: 'Login',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+
+    // This is what you should always do except for '/' => 'Home'
+    component: () => import('../components/Login.vue'),
+    props: true
+  },
+  {
     path: '/GameOver',
     name: 'GameOver',
     component: () => import('../views/GameOver.vue')

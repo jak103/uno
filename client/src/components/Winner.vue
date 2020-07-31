@@ -5,11 +5,8 @@
       <p>Thank-You For Playing Uno!</p>
     </div>
     <div id = "buttonContainer">
-      <div id="goHome">
-        <button id = "buttons"> Go Home</button>
-      </div>
       <div id="playAgain">
-        <button id = "buttons"> Play Again?</button>
+        <button id = "buttons" v-on:click="redirectCall"> Play Again?</button>
       </div>
     </div>
   </div>
@@ -18,7 +15,13 @@
 <script>
 export default {
   name: "Winner",
-}
+  methods: {
+    redirectCall() {
+      this.$router.push({ name: 'Login'});
+    }
+ }
+};
+
 </script>
 
 <style scoped>
