@@ -121,6 +121,7 @@
 
 <script>
 import unoService from '../services/unoService';
+import localStorage from '../util/localStorage';
 // @ is an alias to /src
 export default {
   name: 'Lobby',
@@ -198,9 +199,14 @@ export default {
       this.clearJoinDialog();
     },
 
-    async createGame() {      
-      await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
+    async createGame() { 
+      // TODO Check that dialog fields are populated     
+      let res = await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
       
+      if (res.data.token) {
+        localStorage.set('token', res.data.token);
+      }
+
       //this.$router.push({path: `/game/${this.dialog.game.id}`});
     }
   },
