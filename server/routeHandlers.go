@@ -222,7 +222,7 @@ func update(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
 }
-
+*/
 func play(c echo.Context) error {
 	// TODO Cards have a value, which can include skip, reverse, etc
 	playerID := getPlayerFromContext(c)
@@ -231,23 +231,19 @@ func play(c echo.Context) error {
 	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
 	player, validPlayer, err := getPlayerFromHeader(authHeader)
 
-	if err != nil {
-		return err
-	}
-
 	if !validPlayer {
-		return c.JSON(http.StatusUnauthorized, &Response{false, nil})
+		return c.JSON(http.StatusBadRequest, "Not a valid player!");
 	}
 
 	game, err := playCard(c.Param("game"), player, card)
 
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, "Error playing the game card");
 	}
 
-	return c.JSON(http.StatusOK, &Response{true, buildGameState(game, playerID)})
+	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
-
+/*
 func draw(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
 	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)

@@ -102,9 +102,14 @@ export default {
     }
   },
   created() {
-    setInterval(() => {
+    this.updateInterval = setInterval(() => {
       this.updateData();
     }, 2000);
+  },
+  beforeDestroy (){
+    if(this.updateInterval){
+        clearInterval(this.updateInterval);
+    }
   }
 
   // Thomas O'Reilly, stop type on destroy
