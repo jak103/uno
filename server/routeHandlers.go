@@ -15,6 +15,7 @@ var sim bool = true
 func setupRoutes(e *echo.Echo) {
 	// Routes that don't require a valid JWT
 	e.GET("/games", getGames)
+	e.POST("/games", newGame)
 
 	// Create a group that requires a valid JWT
 	group := e.Group("/api")
@@ -23,15 +24,15 @@ func setupRoutes(e *echo.Echo) {
 		SigningKey: []byte("usudevops"),
 		AuthScheme: "Token",
 	}))
+	/*
+		group.POST("/games/:id/join", joinGame)
+		group.POST("/games/:id/start", startGame)
+		group.POST("/games/:id/play", play)
+		group.POST("/games/:id/draw", draw)
+		group.POST("/games/:id/uno", callUno)
 
-	group.POST("/games", newGame)
-	group.POST("/games/:id/join", joinGame)
-	group.POST("/games/:id/start", startGame)
-	group.POST("/games/:id/play", play)
-	group.POST("/games/:id/draw", draw)
-	group.POST("/games/:id/uno", callUno)
-
-	group.GET("/games/:id", getGameState)
+		group.GET("/games/:id", getGameState)
+	*/
 }
 
 func getGames(c echo.Context) error {
@@ -43,11 +44,15 @@ func getGames(c echo.Context) error {
 	}
 
 	games := database.GetAllGames()
+	gameSummaries := make([]model.GameSummary, 0)
 
-	return c.JSON(http.StatusOK, games)
+	for _, g := range *games {
+		gameSummaries = append(gameSummaries, model.GameToSummary(g))
+	}
+
+	return c.JSON(http.StatusOK, gameSummaries)
 }
 
-/*
 func newGame(c echo.Context) error {
 	game, gameErr := createNewGame()
 
@@ -58,6 +63,7 @@ func newGame(c echo.Context) error {
 	return c.JSON(http.StatusOK, buildGameState(game, "0"))
 }
 
+/*
 // func login(c echo.Context) error {
 // 	username := c.Param("username")
 

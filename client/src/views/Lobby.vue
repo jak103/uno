@@ -197,7 +197,9 @@ export default {
       this.clearJoinDialog();
     },
 
-    createGame() {
+    async createGame() {      
+      await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
+      
       //this.$router.push({path: `/game/${this.dialog.game.id}`});
     }
   },

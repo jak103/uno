@@ -1,31 +1,32 @@
 import BaseService from "./baseService";
 
 export default {
-    async login(userName) {
-        return BaseService.post(`/api/login/${userName}`);
-    },
+  async getAllGames() {
+    return BaseService.get(`/games`);
+  },
 
-    async newGame() {
-        return BaseService.get(`/api/newgame/`);
-    },
+  async newGame(gameName, creatorName) {
+      return BaseService.post(`/games/`, {name: gameName, creator: creatorName});
+  },
 
-    getGameState(gameId) {
-        return BaseService.get(`/api/game/${gameId}`);
-    },
+  async login(userName) {
+      return BaseService.post(`/api/login/${userName}`);
+  },
 
-    startGame() {
-        return BaseService.post(`/api/startgame`);
-    },
+  getGameState(gameId) {
+      return BaseService.get(`/api/game/${gameId}`);
+  },
 
-    playCard(cardNumber, cardColor) {
-        return BaseService.post(`/api/play/${cardNumber}/${cardColor}`);
-    },
+  startGame() {
+      return BaseService.post(`/api/startgame`);
+  },
 
-    drawCard() {
-        return BaseService.post(`/api/draw`);
-    },
+  playCard(cardNumber, cardColor) {
+      return BaseService.post(`/api/play/${cardNumber}/${cardColor}`);
+  },
 
-    async getAllGames() {
-      return BaseService.get(`/games`);
-    }
+  drawCard() {
+      return BaseService.post(`/api/draw`);
+  },
+
 }
