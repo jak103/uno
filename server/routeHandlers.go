@@ -202,25 +202,15 @@ func play(c echo.Context) error {
 
 func draw(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
-	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
-	player, validPlayer, err := getPlayerFromHeader(authHeader)
+	gameID := c.Param("id")
 
-	if err != nil {
-		return err
-	}
-
-	if !validPlayer {
-		return c.JSON(http.StatusUnauthorized, "")
-	}
-
-	game, err := drawCard(c.Param("game"), player)
+	game, err := drawCard(gameID, playerID)
 
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
-
 }
 
 func buildGameState(game *model.Game, playerID string) map[string]interface{} {
