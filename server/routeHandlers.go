@@ -16,8 +16,9 @@ var tokenSecret string = "usudevops"
 
 func setupRoutes(e *echo.Echo) {
 	// Routes that don't require a valid JWT
-	e.GET("/games", getGames)
-	e.POST("/games", newGame)
+	e.GET("/api/games", getGames)
+	e.POST("/api/games", newGame)
+	e.POST("/api/games/:id/join", joinExistingGame)
 
 	// Create a group that requires a valid JWT
 	group := e.Group("/api")
@@ -27,8 +28,8 @@ func setupRoutes(e *echo.Echo) {
 		AuthScheme: "Token",
 	}))
 
-	group.POST("/games/:id/join", joinExistingGame) // Jonathan Petersen
-	group.POST("/games/:id/start", startGame)       // Travis Gengler
+	group.POST("/games/:id/join", joinExistingGame)
+	group.POST("/games/:id/start", startGame)
 
 	/*
 
@@ -56,9 +57,7 @@ func getGames(c echo.Context) error {
 
 	gameSummaries := make([]model.GameSummary, 0)
 	for _, g := range *games {
-		log.Println("game", g)
 		summary := model.GameToSummary(g)
-		log.Println("summary", summary)
 		gameSummaries = append(gameSummaries, summary)
 	}
 
@@ -66,7 +65,6 @@ func getGames(c echo.Context) error {
 }
 
 func newGame(c echo.Context) error {
-	log.Println("Handling new game creation")
 	m := echo.Map{}
 
 	err := c.Bind(&m)
@@ -99,15 +97,31 @@ func newGame(c echo.Context) error {
 }
 
 func joinExistingGame(c echo.Context) error {
-	log.Println("Handling joining a game")
-	log.Println("=======================================================================================================================================================================================================================================================================================================================================")
-
-	playerID := getPlayerFromContext(c)
 	gameID := c.Param("id")
+	m := echo.Map{}
+	err := c.Bind(&m)
 
-	joinGame(gameID, playerID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could bind to input")
+	}
 
-	return c.JSON(http.StatusOK, "")
+	if m["playerName"] == nil {
+		return c.JSON(http.StatusBadRequest, "Missing player name")
+	}
+
+	playerName := m["playerName"].(string)
+
+	if playerName == "" {
+		return c.JSON(http.StatusBadRequest, "Missing player name")
+	}
+
+	player, _ := createPlayer(playerName)
+
+	game, _ := joinGame(gameID, player)
+
+	token := generateToken(player)
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, player.Name)})
 }
 
 func generateToken(p *model.Player) string {
