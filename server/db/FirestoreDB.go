@@ -17,12 +17,12 @@ type firestoreDB struct {
 	players *firestore.CollectionRef
 }
 
-func (db *firestoreDB) GetAllGames() *[]model.Game {
+func (db *firestoreDB) GetAllGames() (*[]model.Game, error) {
 	games := make([]model.Game, 0)
 
 	// TODO
 
-	return &games
+	return &games, nil
 }
 
 // HasGame checks to see if a game with the given ID exists in the database.

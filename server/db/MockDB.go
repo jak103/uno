@@ -14,12 +14,12 @@ type mockDB struct {
 	players       map[string]model.Player
 }
 
-func (db *mockDB) GetAllGames() *[]model.Game {
+func (db *mockDB) GetAllGames() (*[]model.Game, error) {
 	games := make([]model.Game, 0)
 
 	// TODO
 
-	return &games
+	return &games, nil
 }
 
 // HasGame checks to see if a game with the given ID exists in the database.

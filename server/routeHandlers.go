@@ -39,10 +39,13 @@ func getGames(c echo.Context) error {
 	database, err := db.GetDb()
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Could find games")
+		return c.JSON(http.StatusInternalServerError, "Could not find games: Failed to connect to db")
 	}
 
-	games := database.GetAllGames()
+	games, err := database.GetAllGames()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not find games")
+	}
 
 	return c.JSON(http.StatusOK, games)
 }
