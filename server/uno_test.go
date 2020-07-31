@@ -186,7 +186,7 @@ func TestDealCards(t *testing.T) {
 	// Test passing in a bogus game id, we should get an error
 	game, err := dealCards("Bogus game id")
 
-	// Assert that we got an actual err
+	// Assert that we got an actual error
 	assert.NotNil(t, err, "We did not error on a bogus game id")
 
 	// Generate real game in database and real player
@@ -196,10 +196,6 @@ func TestDealCards(t *testing.T) {
 	// Test Drawing a card with a full deck and real player
 	game, err = dealCards(game.ID)
 	player = &game.Players[game.CurrentPlayer] //getting from the game who the current player is
-
-
-	//TODO add an assert that makes sure it gets the proper game
-
 
 	// Assert that no error occured, the player has a new card and the draw pile
 	// has one less card
@@ -239,8 +235,6 @@ func TestDealCards(t *testing.T) {
 		}
 	assert.Equal(t, 73, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
-
-	//TODO check with lots of players that the deck size is big enough and we dont run out of cards dealing
 	
 	//refresh the drawPile and the discardPile
 	game.DrawPile = generateShuffledDeck()
@@ -256,4 +250,16 @@ func TestDealCards(t *testing.T) {
 
 
 	//database.SaveGame(*game)		//Use this if you make a modification to the game, drawcard will save it for you but need to call whenever you change game state
+}
+
+
+
+
+
+
+
+//TODO add asserts that it returns the proper game
+//This is something for us to call so that we can check as needed
+func checkGameAgainstDatabase(t *testing.T, game *model.Game) {
+
 }
