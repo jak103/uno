@@ -206,7 +206,10 @@ func TestDealCards(t *testing.T) {
 	assert.Nil(t, err, "Failed to deal cards.")
 	assert.Equal(t, 7, len(player.Cards))
 	assert.Equal(t, 101, len(game.DrawPile))
-
+	assert.Equal(t, 1, len(game.DiscardPile))
+	
+	
+	
 
 	//TODO add in additional players and check that it deals to them properly too
 
@@ -217,6 +220,7 @@ func TestDealCards(t *testing.T) {
 	player5, _ := database.CreatePlayer("Player 5")
 
 	game, _ = database.JoinGame(game.ID, player2.ID)
+	//Have to save in between each player being added or the game state wont recall any but the last
 	database.SaveGame(*game)
 	game, _ = database.JoinGame(game.ID, player3.ID)
 	database.SaveGame(*game)
@@ -224,6 +228,22 @@ func TestDealCards(t *testing.T) {
 	database.SaveGame(*game)
 	game, _ = database.JoinGame(game.ID, player5.ID)
 	database.SaveGame(*game)
+
+
+	//refresh the drawPile and the discardPile
+	game.DrawPile = generateShuffledDeck()
+	game.DiscardPile = []model.Card{}
+
+	// Test Drawing a card with a full deck and multiple players
+	game, err = dealCards(game.ID)
+	// Assert that no error occured, the player has a new card and the draw pile
+	// has one less card
+	assert.Nil(t, err, "Failed to deal multiple players cards.")
+	for _, player := range game.Players {
+		assert.Equal(t, 7, len(player.Cards))
+		}
+	assert.Equal(t, 73, len(game.DrawPile))
+	assert.Equal(t, 1, len(game.DiscardPile))
 
 
 	//TODO check with lots of players that the deck size is big enough and we dont run out of cards dealing
