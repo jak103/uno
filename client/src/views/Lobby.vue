@@ -200,14 +200,26 @@ export default {
     },
 
     async createGame() { 
-      // TODO Check that dialog fields are populated     
-      let res = await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
-      
-      if (res.data.token) {
-        localStorage.set('token', res.data.token);
+      if (!this.createDialog.name || this.createDialog.name == "") {
+        // invalid game name -- TODO use a snack bar for this
+        alert("Undefined Game Name");
+        return;
+      }
+     
+      if (!this.createDialog.creator || this.createDialog.creator == "") {
+        // invalid creator name -- TODO use a snack bar for this
+        alert("Undefined Creator Name");
+        return;
       }
 
-      //this.$router.push({path: `/game/${this.dialog.game.id}`});
+      let res = await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
+      
+      if (res.data.token && res.data.game) {
+        localStorage.set('token', res.data.token);
+        this.$router.push({path: `/game/${res.data.game.id}`});
+      } else {
+        alert ("Failed to create & join game");
+      }
     }
   },
 
