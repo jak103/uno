@@ -22,6 +22,7 @@ export default {
   },
   
   async playCard(gameId, cardValue, cardColor) {
+    console.log(`cardValue`, cardValue);
     return BaseService.post(`/api/games/${gameId}/play`, {value: cardValue, color: cardColor});
   },
   

@@ -60,7 +60,7 @@
             :key="i"
             :number="card.value"
             :color="card.color"
-            @click="playCard(card)"
+            @click.native="playCard(card)"
           ></Card>
         </v-col>
         <v-col v-else>
@@ -111,8 +111,9 @@ export default {
       this.updateData(); 
     },
 
-    async playCard(card) {      
-      let res = await unoService.playCard(card.number, card.color);
+    async playCard(card) { 
+      console.log("Playing card", card);     
+      let res = await unoService.playCard(this.$route.params.id, card.value, card.color);
       
       if (res.data) {
         this.gameState = res.data;

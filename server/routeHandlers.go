@@ -139,8 +139,6 @@ func generateToken(p *model.Player) string {
 func getGameState(c echo.Context) error {
 	playerID := getPlayerFromContext(c)
 	gameID := c.Param("id")
-	log.Println("playerID", playerID)
-	log.Println("gameID", gameID)
 
 	game, err := getGameUpdate(gameID)
 
@@ -191,7 +189,9 @@ func play(c echo.Context) error {
 	var card model.Card
 	c.Bind(&card)
 
-	game, err := playCard(c.Param("game"), playerID, card)
+	log.Println("Player card", card)
+
+	game, err := playCard(c.Param("id"), playerID, card)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Error playing the game card")
@@ -226,7 +226,7 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["player_id"] = playerID
 
 	if game.DiscardPile != nil {
-		gameState["current_card"] = game.DiscardPile[0]
+		gameState["current_card"] = game.DiscardPile[len(game.DiscardPile)-1]
 	} else {
 		gameState["current_card"] = model.Card{}
 	}
