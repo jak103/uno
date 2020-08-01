@@ -29,10 +29,8 @@ func numDecksToUse(numPlayers int) int {
 
 // Returns the card colors, card counts, and wild card counts based
 // on the number of players in the game
-func getDeckConfigByPlayerSize(numPlayers int) ([4]string, map[string]int, map[string]int) {
+func getDeckConfigByPlayerSize(numDecks int) ([4]string, map[string]int, map[string]int) {
 	colors := [4]string{"red", "blue", "green", "yellow"}
-
-	numDecks := numDecksToUse(numPlayers)
 
 	standardCardCounts := map[string]int{
 		"zero":     1*numDecks,
@@ -58,37 +56,6 @@ func getDeckConfigByPlayerSize(numPlayers int) ([4]string, map[string]int, map[s
 	return colors, standardCardCounts, wildCardCounts
 }
 
-// Returns the standard card colors, standard card counts, and wild card counts
-// It would be awesome to have this be customizable from the front-end
-// so you can play with 15 reverse cards if you want
-// or with 6 colors or something
-func getDeckConfig() ([4]string, map[string]int, map[string]int) {
-	colors := [4]string{"red", "blue", "green", "yellow"}
-
-	standardCardCounts := map[string]int{
-		"zero":     1,
-		"one":      2,
-		"two":      2,
-		"three":    2,
-		"four":     2,
-		"five":     2,
-		"six":      2,
-		"seven":    2,
-		"eight":    2,
-		"nine":     2,
-		"skip":     2,
-		"draw_two": 2,
-		"reverse":  2,
-	}
-
-	wildCardCounts := map[string]int{
-		"wild":           4,
-		"wild_draw_four": 4,
-	}
-
-	return colors, standardCardCounts, wildCardCounts
-}
-
 // Returns the cards provided, but in a random order
 // Credit to https://yourbasic.org/golang/shuffle-slice-array/
 func shuffleCards(a []model.Card) []model.Card {
@@ -101,9 +68,9 @@ func shuffleCards(a []model.Card) []model.Card {
 // and with wild card values and counts as well.
 // Shuffles the deck before returning it.
 // This function is not necessarily efficient - feel free to optimize.
-func generateShuffledDeck() []model.Card {
-	// TODO - use getDeckConfigByPlayerSize() instead of getDeckConfig()
-	colors, standardCardCounts, wildCardCounts := getDeckConfig()
+func generateShuffledDeck(numPlayers int) []model.Card {
+	numDecks := numDecksToUse(numPlayers)
+	colors, standardCardCounts, wildCardCounts := getDeckConfigByPlayerSize(numDecks)
 	deck := []model.Card{}
 	for cardValue, count := range standardCardCounts {
 		for i := 0; i < count; i++ {
