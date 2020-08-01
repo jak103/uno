@@ -34,6 +34,7 @@ func setupRoutes(e *echo.Echo) {
 	//	group.POST("/games/:id/uno", callUno)
 
 	group.GET("/games/:id", getGameState)
+	group.GET("/players/token/:token", getPlayerFromToken)
 }
 
 func getGames(c echo.Context) error {
@@ -149,6 +150,32 @@ func getGameState(c echo.Context) error {
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 
 	//return c.JSON(http.StatusOK, map[string]interface{}{"game": buildGameState(game, playerID)}) //buildGameState(game, playerID))
+}
+
+func getPlayerFromToken(c echo.Context) error {
+
+	playerID, err := getPlayerFromContext(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
+	}
+
+	database, err := db.GetDb()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not connect to database.")
+	}
+
+	player, err := database.LookupPlayer(playerID)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not lookup player from database.")
+	}
+
+	if player.ID != playerID {
+		return c.JSON(http.StatusInternalServerError, "Unexpected ID returned on lookup. You can only look up player data for yourself.")
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"name": player.Name, "id": player.ID})
 }
 
 func startGame(c echo.Context) error {
