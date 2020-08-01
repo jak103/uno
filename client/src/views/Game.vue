@@ -60,7 +60,7 @@
             :key="i"
             :number="card.value"
             :color="card.color"
-            @click.native="playCard(card)"
+            @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
           ></Card>
         </v-col>
         <v-col v-else>
@@ -79,6 +79,49 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-dialog
+      v-model="chooseColorDialog.visible"
+      persistent
+      max-width="500px"
+    >
+      <v-card >
+        <v-card-title
+          class="blue"
+        >
+          Chose color for Wild card
+        </v-card-title>
+        <v-card-actions>
+            <v-col>
+              <v-btn
+                color="red"
+                large
+                @click.native="playWildCard('red')"
+              >Red</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="green"
+                large
+                @click.native="playWildCard('green')"
+              >Green</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="blue"
+                large
+                @click.native="playWildCard('blue')"
+              >Blue</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+              color="yellow"
+              large
+                @click.native="playWildCard('yellow')"
+              >Yellow</v-btn>
+            </v-col>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -93,7 +136,12 @@ export default {
   data() {
     return {
       gameState: {},
-      cards: []
+      cards: [],
+      chooseColorDialog: {
+        visible: false,
+        card: {},
+        color: ""
+      }
     };
   },
   methods: {
@@ -109,6 +157,18 @@ export default {
       await unoService.startGame(this.$route.params.id);
       // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
       this.updateData(); 
+    },
+
+    selectWildColor(card)
+    {
+      this.chooseColorDialog.card = card;
+      this.chooseColorDialog.visible = true;
+    },
+
+    async playWildCard(color) {
+      this.chooseColorDialog.visible = false;
+      this.chooseColorDialog.card.color = color;
+      this.playCard(this.chooseColorDialog.card);
     },
 
     async playCard(card) { 
