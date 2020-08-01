@@ -37,7 +37,7 @@
               <div v-if="gameState.status === 'Playing'">
                 <span>Cards in Hand:</span>
                 <ul class="hand">
-                  <li v-for="card of player.cards" v-bind:key="card">🃏</li>
+                  <li v-for="(card, index) of player.cards" :key="index">🃏</li>
                 </ul>
               </div>
             </v-card>
