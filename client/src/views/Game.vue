@@ -8,9 +8,15 @@
           <!-- Game stats -->
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
-              Current Game id: {{ gameState.game_id }}
-              <br />
-              Status: {{gameState.status}}      
+              <p>
+                Current Game id: {{ gameState.game_id }}
+              </p>
+              <p>
+                Status: {{ gameState.status }}
+              </p>
+              <p>
+                Your Name: {{ playerName }}
+              </p>
             </v-card>
           </v-row>
 
@@ -24,7 +30,17 @@
               class="ma-3 pa-6"
               outlined
               tile
-            >{{ player.name }}</v-card>
+            >
+              <div>
+                <span>Name: </span>{{ player.name }}
+              </div>
+              <div v-if="gameState.status === 'Playing'">
+                <span>Cards in Hand:</span>
+                <ul class="hand">
+                  <li v-for="(card, index) of player.cards" :key="index">🃏</li>
+                </ul>
+              </div>
+            </v-card>
           </v-row>
 
           <!-- Current Card and actions -->
@@ -137,6 +153,7 @@ export default {
     return {
       gameState: {},
       cards: [],
+      playerName: "",
       chooseColorDialog: {
         visible: false,
         card: {},
@@ -144,6 +161,7 @@ export default {
       }
     };
   },
+
   methods: {
     async updateData() {      
       let res = await unoService.getGameState(this.$route.params.id);
@@ -194,6 +212,15 @@ export default {
       this.updateData();
     }, 2000);
   },
+  mounted() {
+    unoService.getPlayerNameFromToken()
+    .then( resp => {
+        this.playerName = resp?.data?.name
+    })
+    .catch(err => {
+      console.err("Could not get player name from assigned token\n", err)
+    })
+  },
   beforeDestroy (){
     if(this.updateInterval){
       clearInterval(this.updateInterval);
@@ -201,3 +228,15 @@ export default {
   }
 };
 </script>
+
+<style>
+
+li {
+  display: inline;
+}
+
+span {
+  font-weight: bold;
+}
+
+</style>
