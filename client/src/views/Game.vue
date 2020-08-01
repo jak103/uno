@@ -1,5 +1,23 @@
 <template>
-  <div>
+  <div style="display: flex;" class="mb-0">
+    <v-navigation-drawer
+        :expand-on-hover="true"
+        style="overflow:hidden;"
+    >
+
+      <v-list
+        v-for="player in gameState.all_players"
+        :key="player.name"
+        :color=" player.id == gameState.current_player.id ? '#1F7087' : ''"
+        class="ma-3 pa-6"
+        outlined
+        tile
+        dense
+        nav
+      >
+        {{ player.name }}
+      </v-list>
+    </v-navigation-drawer>
     <v-container>
       <v-row class="mb-6">
       <!-- <v-row> -->
@@ -12,19 +30,6 @@
               <br />
               Status: {{gameState.status}}      
             </v-card>
-          </v-row>
-
-          <!-- Game Players -->
-          <h3>Players</h3>
-          <v-row v-if="gameState.all_players !== undefined">
-            <v-card
-              v-for="player in gameState.all_players"
-              :key="player.name"
-              :color=" player.id == gameState.current_player.id ? '#1F7087' : ''"
-              class="ma-3 pa-6"
-              outlined
-              tile
-            >{{ player.name }}</v-card>
           </v-row>
 
           <!-- Current Card and actions -->
@@ -99,7 +104,7 @@ export default {
   methods: {
     async updateData() {      
       let res = await unoService.getGameState(this.$route.params.id);
-      
+
       if (res.data != null) {
         this.gameState = res.data;
       }
