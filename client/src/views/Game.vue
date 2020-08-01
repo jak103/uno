@@ -6,8 +6,6 @@
       <!-- Game Players Drawer -->
       <v-navigation-drawer
           :expand-on-hover="true"
-          style="min-height: 100%;"
-          dark
       >
       <v-list
         nav
@@ -31,9 +29,10 @@
           <v-list-item
             v-for="player in gameState.all_players"
             :key="player.name"
-            :color=" player.id == gameState.current_player.id ? '#1F7087' : ''"
+            :input-value="player.id === gameState.current_player.id"
+            color="#1F7087"
             class="pa-3 player-drawer-item"
-            three-line
+            two-line
           >
             <v-list-item-icon>
               <v-icon class="pt-3">
@@ -88,13 +87,12 @@
         <!-- Current cards in the deck -->
         <v-col class="mb-6" v-if="gameState.status === 'Playing'">
           <v-card
-            v-if="gameState.status !== 'Finished'"
+            v-if="gameState.current_player != undefined &&  gameState.player_id === gameState.current_player.id"
             class="ma-3 pa-6"
             outlined
             tile
           >
-            Click to play a card from your hand or
-            <v-btn v-if="gameState.current_player != undefined &&  gameState.player_id === gameState.current_player.id" @click.native="drawCard">Draw from deck</v-btn>
+            Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
           </v-card>
           <v-card v-else-if="gameState.status === 'Finished'">The game is finished!</v-card>
 
