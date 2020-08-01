@@ -1,23 +1,56 @@
 <template>
-  <div style="display: flex;" class="mb-0">
-    <v-navigation-drawer
-        :expand-on-hover="true"
-        style="overflow:hidden;"
+  <div class="mb-0 game-wrapper">
+    <v-card 
+      class="overflow-hidden"
     >
-
-      <v-list
-        v-for="player in gameState.all_players"
-        :key="player.name"
-        :color=" player.id == gameState.current_player.id ? '#1F7087' : ''"
-        class="ma-3 pa-6"
-        outlined
-        tile
-        dense
-        nav
+      <!-- Game Players Drawer -->
+      <v-navigation-drawer
+          :expand-on-hover="true"
+          style="min-height: 100%;"
+          dark
       >
-        {{ player.name }}
-      </v-list>
-    </v-navigation-drawer>
+      <v-list
+        nav
+        dense
+      >
+        <v-list-item two-line >
+          <v-list-item-icon>
+            <v-icon class="pt-3">
+            mdi-account-group
+            </v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Players</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+            
+        <div v-if="gameState.all_players !== undefined">  
+          <v-list-item
+            v-for="player in gameState.all_players"
+            :key="player.name"
+            :color=" player.id == gameState.current_player.id ? '#1F7087' : ''"
+            class="pa-3 player-drawer-item"
+            three-line
+          >
+            <v-list-item-icon>
+              <v-icon class="pt-3">
+              mdi-account
+              </v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              {{ player.name }}
+              <ul class="hand ma-0 pa-0">
+                <li v-for="(card, index) of player.cards" :key="index">🃏</li>
+              </ul>
+            </v-list-item-content>
+          </v-list-item>
+        </div>
+        </v-list>
+      </v-navigation-drawer>
+    </v-card>
     <v-container>
       <v-row class="mb-6">
       <!-- <v-row> -->
@@ -26,9 +59,15 @@
           <!-- Game stats -->
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
-              Current Game id: {{ gameState.game_id }}
-              <br />
-              Status: {{gameState.status}}      
+              <p>
+                Current Game id: {{ gameState.game_id }}
+              </p>
+              <p>
+                Status: {{ gameState.status }}
+              </p>
+              <p>
+                Your Name: {{ playerName }}
+              </p>
             </v-card>
           </v-row>
 
@@ -142,6 +181,7 @@ export default {
     return {
       gameState: {},
       cards: [],
+      playerName: "",
       chooseColorDialog: {
         visible: false,
         card: {},
@@ -149,6 +189,7 @@ export default {
       }
     };
   },
+
   methods: {
     async updateData() {      
       let res = await unoService.getGameState(this.$route.params.id);
@@ -199,6 +240,15 @@ export default {
       this.updateData();
     }, 2000);
   },
+  mounted() {
+    unoService.getPlayerNameFromToken()
+    .then( resp => {
+        this.playerName = resp?.data?.name
+    })
+    .catch(err => {
+      console.err("Could not get player name from assigned token\n", err)
+    })
+  },
   beforeDestroy (){
     if(this.updateInterval){
       clearInterval(this.updateInterval);
@@ -206,3 +256,32 @@ export default {
   }
 };
 </script>
+
+<style>
+
+.game-wrapper {
+  display: flex; 
+  min-height:100%
+}
+
+.player-drawer-item {
+  overflow: hidden;
+}
+
+.player-drawer-item > div {
+  overflow: hidden;
+}
+
+.hand {
+  overflow: hidden;
+}
+
+.hand > li {
+  display: inline;
+}
+
+.hand span {
+  font-weight: bold;
+}
+
+</style>
