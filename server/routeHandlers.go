@@ -28,6 +28,9 @@ func setupRoutes(e *echo.Echo) {
 		AuthScheme: "Token",
 	}))
 
+	// Add Message to the Chat
+	group.POST("/chat/:id/add", addNewMessage) // Andrew McMullin
+
 	group.POST("/games/:id/start", startGame)
 	group.POST("/games/:id/play", play) // Ryan Johnson
 	group.POST("/games/:id/draw", draw) // Brady Svedin
@@ -117,6 +120,21 @@ func joinExistingGame(c echo.Context) error {
 	token := generateToken(player)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, player.Name)})
+}
+
+func addNewMessage(c echo.Context) error {
+	playerID := getPlayerFromContext(c)
+	var message model.Message
+	c.Bind(&message)
+	gameID := c.Param("id")
+
+	game, err := addMessage(gameID, playerID, message)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
 func generateToken(p *model.Player) string {
@@ -224,6 +242,7 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["status"] = game.Status
 	gameState["name"] = game.Name
 	gameState["player_id"] = playerID
+	gameState["messages"] = game.Messages
 
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[len(game.DiscardPile)-1]

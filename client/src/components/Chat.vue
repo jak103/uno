@@ -1,18 +1,22 @@
 <template>
-<div id="chatcontainer" class='container'>    
+<div id="chatcontainer" class='container'>  
+
+    <!-- Scrollable messaging Card   -->
     <v-card id='chatcard' outlined tile>
         <div class="col">
-            <div v-for="message in messages" 
-             :key="message.id"
-             :class="[message.name === gameState.current_player.name ? 'from-me' : 'from-them', 'message']">
-                <div class="message-author"><small>{{ message.name }}</small></div>
-                <div :id="'message-'+message.id" :class="[message.name !== gameState.current_player.name ? messageColors[message.id] : '', 'message-content']">{{ message.message }}</div>
+            <div v-for="(message) in messages" 
+                :key="message.id"
+                :class="[message.player.name === gameState.current_player.name ? 'from-me' : 'from-them', 'message']">
+                <div class="message-author"><small>{{ message.player.name }}</small></div>
+                <div :class="[message.player.color, 'message-content']">{{ message.message }}</div>
             </div>
         </div>
     </v-card>
+
+    <!-- Type and Send Card -->
     <v-card id='message-box' outlined tile>
         <div class="container">
-            <div class="row">
+            <div v-if="!displayInfo" class="row">
                 <div class="col-9">
                     <v-text-field
                         label="Message"
@@ -23,9 +27,12 @@
                 </div>
                 <div class="col-3">
                     <v-card-actions>
-                        <v-btn color="blue darken-1" text @click="sendMessage">Send</v-btn>
+                        <v-btn id="send-btn" color="blue darken-1" text @click.native="sendMessage">Send</v-btn>
                     </v-card-actions>
                 </div>
+            </div>
+            <div v-else class="text-center">
+                <p> {{ info }} </p>
             </div>
         </div>
     </v-card>
@@ -33,8 +40,7 @@
 </template>
 
 <script> 
-// import unoService from '../services/unoService';
-// import localStorage from '../util/localStorage';
+import unoService from '../services/unoService';
 
 export default {
     name: "Chat",
@@ -46,8 +52,39 @@ export default {
         return {
             newMessage: '',
             messages: [],
-            messageColors: ['primary', 'success', 'warning', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan',
-                            'primary', 'success', 'warning', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan'],
+
+            info: null,
+            displayInfo: false,
+            
+            players: [],
+            // It would be best to know a max number of people able to play
+            // TODO: get ride of the blue option similar to the `from-me`
+            messageColors: ['primary', 'success', 'warning', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan'],
+
+            loop_scroll: true,
+        }
+    },
+    watch: {
+        gameState(newVal, oldVal) {
+
+            this.messages = newVal.messages;
+            this.players = newVal.all_players;
+
+            // Assign Message Colors
+            for (var i = 0; i < this.players.length; i++) {
+                for (var j = 0; j < this.messages.length; j++) {
+                    this.messages[j].player.color = this.messageColors[i]
+                }
+            }
+            this.info = null;
+            this.displayInfo = false;
+
+            // If we have a new message scroll down
+            var len__new = newVal.messages.length - 1;
+            var len__old = oldVal.messages.length - 1;
+            if ( len__new !== len__old ) {
+                this.loop_scroll = true;
+            }
         }
     },
     methods: {
@@ -55,46 +92,40 @@ export default {
             var div = document.getElementById('chatcard');
             div.scrollTop = div.scrollHeight - div.clientHeight;
         },
-        sendMessage() {
-            // unoService.sendMessage(this.$route.params.id, this.gameState.current_player);
-            console.log('Added a new message: ', { name: this.gameState.current_player.name, message: this.newMessage, });
-            this.messages.push({ name: this.gameState.current_player.name, message: this.newMessage, });
-            this.newMessage = '';
-            this.scroll()
+        async sendMessage() {
+            if (this.newMessage != "") {
+                this.info = 'Sending to Server';
+                this.displayInfo = true;
+                let res = await unoService.sendMessage(this.$route.params.id, this.gameState.current_player.id, this.newMessage);
+                if (res.data) {
+                    this.newMessage = '';
+                }
+            }else{
+                this.info = 'Message is Empty, No message will be sent';
+                this.displayInfo = true;
+                this.loop_scroll = true;
+            }
         }
     },
-    async created() {
-        // let res = await unoService.getChat(this.$route.params.id);
-        // this.messages = res.data
-
-        // Ideas [This would need to update every interval in Game.vue]
-        // this.messages = this.gameState.messages
-
-        // Fake Data
-        this.messages = [
-            { id: 0, name: 'Matthew',  message: 'What\'s up guys!', },
-            { id: 1, name: 'Patrick',  message: 'Nothing much how are you?', },
-            { id: 2, name: 'Benjamin', message: 'Hey guys I\'m good!', },
-            { id: 3, name: 'Andrew',   message: 'I\'m watching Doctor Who', },
-            { id: 4, name: 'Andrew',   message: 'I\'m going to win this game', },
-            { id: 5, name: 'Benjamin', message: 'Doubt full', },
-            { id: 6, name: 'fjkjlk', message: 'Haha', },
-            { id: 7, name: 'fjgjlk', message: 'Haha', },
-            { id: 8, name: 'fjghkk', message: 'Haha', },
-            { id: 9, name: 'fjghlk', message: 'Haha', },
-            { id: 10, name: 'fjkjlk', message: 'Haha', },
-            { id: 11, name: 'fjghlk', message: 'Haha', },
-            { id: 12, name: 'fhkjl', message: 'Haha', },
-            { id: 13, name: 'fhkjl', message: 'Haha', },
-            { id: 14, name: 'fjgjlk', message: 'Haha', },
-        ]
+    created() {
+        this.scrollInterval = setInterval(() => {
+            if (this.loop_scroll) {
+                this.scroll();
+                this.loop_scroll = false
+            }
+        }, 100);
+    },
+    beforeDestroy (){
+        if(this.scrollInterval){
+            clearInterval(this.scrollInterval);
+        }
     }
-
 }
 </script>
 
 
 <style scoped>
+
 #chatcontainer {
     height: 100%;
     width: 100%;
@@ -126,19 +157,12 @@ export default {
 
 #message-box {
     height: 100px;
-    /* width: 100%; */
-    /* object-fit: cover; */
-    /* display: flex; */
-    /* max-width: 100%; */
 }
+
 .message {
     width: 100%;
     min-height: 80px;
 }
-
-
-@use postcss-nested;
-
 
 .message-content {
   max-width: 255px;
@@ -150,15 +174,6 @@ export default {
   border-radius:25px;
 }
 
-.message-content::before, :after {
-    content:"";
-    position:absolute;
-    bottom:-2px;
-    height:20px;
-}
-
-
-
 .from-me > .message-author {
     text-align: right;
 }
@@ -167,42 +182,10 @@ export default {
 	color:white; 
 	background:#0B93F6;
     float: right;
-    /* width:260px; */
-
 }
-
-.from-me::before {
-    right:-7px;
-    /* border-right:20px solid #0B93F6; */
-    border-bottom-left-radius: 16px 14px;
-    transform:translate(0, -2px);
-}
-
-.from-me::after {
-    right:-56px;
-    width:26px;
-    border-bottom-left-radius: 10px;
-    transform:translate(-30px, -2px);
-}
-
 
 .from-them > .message-content{
 	background:#E5E5EA;
 	color:black;
 }
-
-.from-them::before {
-    left:-7px;
-    /* border-left:20px solid #E5E5EA; */
-    border-bottom-right-radius: 16px 14px;
-    transform:translate(0, -2px);
-}
-
-.from-them::after {
-    left:4px;
-    width:26px;
-    border-bottom-right-radius: 10px;
-    transform:translate(-30px, -2px);
-}
-
 </style>

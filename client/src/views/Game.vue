@@ -79,13 +79,14 @@
         </v-col>
 
         <!-- Chat -->
-        <!-- <v-col :cols="2" v-show="chatOpen && gameState.status === 'Playing'"></v-col> -->
-        <v-col v-show="chatOpen && gameState.status === 'Playing'" class="float-chat">
-          <Chat :gameState="gameState" />
+        <v-col v-show="chatOpen" class="float-chat">
+          <Chat :gameState="gameState"/>
         </v-col>
       </v-row>
     </v-container>
-    <div @click="chatOpen = !chatOpen" class="float-button">
+
+    <!-- If we allow the Watchers to interact in the chat I'll need to update that on the class='from-me' or 'from-them' -->
+    <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined &&  gameState.player_id === gameState.current_player.id" @click="chatOpen = !chatOpen" class="float-button">
       Chat
     </div>
   </div>

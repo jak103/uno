@@ -222,6 +222,26 @@ func (db *firestoreDB) SavePlayer(player model.Player) error {
 	return nil
 }
 
+// SendMessage add a Message to a game chat.
+func (db *firestoreDB) AddMessage(id string, username string, message model.Message) (*model.Game, error) {
+
+	game, gameErr := db.LookupGameByID(id)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	game.Messages = append(game.Messages, message)
+
+	err := db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
+}
+
 // Disconnect disconnects from the remote database
 func (db *firestoreDB) disconnect() {
 	// Close the client connection if it is open

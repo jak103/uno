@@ -186,6 +186,25 @@ func (db *mongoDB) SavePlayer(player model.Player) error {
 	return err
 }
 
+func (db *mongoDB) AddMessage(id string, username string, message model.Message) (*model.Game, error) { // (game model.Game, player model.Player, message string) error {
+	game, gameErr := db.LookupGameByID(id)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	fmt.Println("Adding a new Message")
+	game.Messages = append(game.Messages, message)
+
+	err := db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
+}
+
 // disconnect disconnects from the remote database
 func (db *mongoDB) disconnect() {
 	fmt.Println("Disconnecting from the database.")

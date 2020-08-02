@@ -121,6 +121,16 @@ func (db *mockDB) SavePlayer(player model.Player) error {
 	return nil
 }
 
+// SendMessage add a Message to a game chat.
+func (db *mockDB) AddMessage(id string, username string, message model.Message) (*model.Game, error) {
+	if game, ok := db.games[id]; ok {
+		game.Messages = append(game.Messages, message)
+		return &game, nil
+	} else {
+		return nil, errors.New("mockdb: game not found")
+	}
+}
+
 // Disconnect disconnects from the remote database
 func (db *mockDB) disconnect() {
 	return
