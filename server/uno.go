@@ -8,7 +8,6 @@ import (
 	"github.com/jak103/uno/model"
 )
 
-
 ////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
@@ -270,7 +269,7 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	game.CurrentPlayer = rand.Intn(len(game.Players))
 
 	// get a deck
-	game.DrawPile = generateShuffledDeck()
+	game.DrawPile = generateShuffledDeck(len(game.Players))
 
 	// give everyone a hand of seven cards
 	for k := range game.Players {
