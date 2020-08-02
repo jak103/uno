@@ -24,7 +24,7 @@ func printCards(cards []model.Card) {
 
 // Get's the number of decks to use based on the number of players
 func numDecksToUse(numPlayers int) int {
-	return numPlayers / 5 + 1
+	return numPlayers/5 + 1
 }
 
 // Returns the card colors, card counts, and wild card counts based
@@ -33,24 +33,24 @@ func getDeckConfigByPlayerSize(numDecks int) ([4]string, map[string]int, map[str
 	colors := [4]string{"red", "blue", "green", "yellow"}
 
 	standardCardCounts := map[string]int{
-		"0":  1*numDecks,
-		"1":  2*numDecks,
-		"2":  2*numDecks,
-		"3":  2*numDecks,
-		"4":  2*numDecks,
-		"5":  2*numDecks,
-		"6":  2*numDecks,
-		"7":  2*numDecks,
-		"8":  2*numDecks,
-		"9":  2*numDecks,
-		"S":  2*numDecks,
-		"D2": 2*numDecks,
-		"R":  2*numDecks,
+		"0":  1 * numDecks,
+		"1":  2 * numDecks,
+		"2":  2 * numDecks,
+		"3":  2 * numDecks,
+		"4":  2 * numDecks,
+		"5":  2 * numDecks,
+		"6":  2 * numDecks,
+		"7":  2 * numDecks,
+		"8":  2 * numDecks,
+		"9":  2 * numDecks,
+		"S":  2 * numDecks,
+		"D2": 2 * numDecks,
+		"R":  2 * numDecks,
 	}
 
 	wildCardCounts := map[string]int{
-		"W":  4*numDecks,
-		"W4": 4*numDecks,
+		"W":  4 * numDecks,
+		"W4": 4 * numDecks,
 	}
 
 	return colors, standardCardCounts, wildCardCounts
