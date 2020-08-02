@@ -135,6 +135,7 @@ export default {
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
 
 .card {
+  cursor: pointer;
   width: 116px;
   height: 178px;
   float: left;

@@ -21,6 +21,26 @@ type mongoDB struct {
 	players  *mongo.Collection
 }
 
+func (db *mongoDB) GetAllGames() (*[]model.Game, error) {
+	games := make([]model.Game, 0)
+
+	cursor, err := db.games.Find(context.Background(), bson.M{}, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(context.Background()) {
+		g := model.Game{}
+		err := cursor.Decode(&g)
+		if err != nil {
+			panic(err)
+		}
+		games = append(games, g)
+	}
+
+	return &games, nil
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *mongoDB) HasGameByPassword(password string) bool {
 	game, err := db.LookupGameByPassword(password)
@@ -34,13 +54,25 @@ func (db *mongoDB) HasGameByID(id string) bool {
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *mongoDB) CreateGame() (*model.Game, error) {
-	myGame := model.Game{Password: ""}
+func (db *mongoDB) CreateGame(gameName string, creatorID string) (*model.Game, error) {
+	player, err := db.LookupPlayer(creatorID)
+	if err != nil {
+		return nil, err
+	}
+
+	myGame := model.Game{
+		Password: "12234",
+		Creator:  *player,
+		Name:     gameName,
+		Status:   model.WaitingForPlayers}
+	myGame.Players = append(myGame.Players, *player)
+
 	res, err := db.games.InsertOne(context.Background(), myGame)
 	if err != nil {
 		return nil, err
 	}
 	myGame.ID = res.InsertedID.(primitive.ObjectID).Hex()
+
 	return &myGame, nil
 }
 
@@ -116,8 +148,28 @@ func (db *mongoDB) LookupPlayer(id string) (*model.Player, error) {
 }
 
 // JoinGame join a player to a game.
-func (db *mongoDB) JoinGame(id string, username string) error {
-	return nil
+func (db *mongoDB) JoinGame(id string, username string) (*model.Game, error) {
+	game, gameErr := db.LookupGameByID(id)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	player, playerErr := db.LookupPlayer(username)
+
+	if playerErr != nil {
+		return nil, playerErr
+	}
+
+	game.Players = append(game.Players, *player)
+
+	err := db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
 }
 
 // SaveGame saves the game
