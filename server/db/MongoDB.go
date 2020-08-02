@@ -54,13 +54,25 @@ func (db *mongoDB) HasGameByID(id string) bool {
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *mongoDB) CreateGame() (*model.Game, error) {
-	myGame := model.Game{Password: ""}
+func (db *mongoDB) CreateGame(gameName string, creatorID string) (*model.Game, error) {
+	player, err := db.LookupPlayer(creatorID)
+	if err != nil {
+		return nil, err
+	}
+
+	myGame := model.Game{
+		Password: "12234",
+		Creator:  *player,
+		Name:     gameName,
+		Status:   model.WaitingForPlayers}
+	myGame.Players = append(myGame.Players, *player)
+
 	res, err := db.games.InsertOne(context.Background(), myGame)
 	if err != nil {
 		return nil, err
 	}
 	myGame.ID = res.InsertedID.(primitive.ObjectID).Hex()
+
 	return &myGame, nil
 }
 

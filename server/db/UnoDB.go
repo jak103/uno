@@ -13,7 +13,7 @@ type UnoDB interface {
 	// Check if a game with the given ID exists in the database.
 	HasGameByID(game string) bool
 	// Creates a game.
-	CreateGame() (*model.Game, error)
+	CreateGame(gameName string, creatorID string) (*model.Game, error)
 	// Creates a player with the given name.
 	CreatePlayer(name string) (*model.Player, error)
 	// DeleteGame deletes a game
