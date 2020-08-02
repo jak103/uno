@@ -186,28 +186,7 @@ func checkForCardInHand(card model.Card, hand []model.Card) bool {
 			return true
 		}
 	}
-	// If you get here either the player did not exist in this game or
-	// the player did not hold that card so we return false.
 	return false
-
-	// There are a couple ways this could be done.
-	// We could use a helper function to get the player, instead of looking for it each time.
-	/*
-		player := getPlayer(game, playerId)
-
-		if player == null{
-			return false
-		}
-
-		for index, item := range player.Cards {
-			if item.Color == card.Color && item.Value == card.Value {
-				player.Cards = append(player.Cards[:index], player.Cards[index+1:]...)
-				game.DiscardPile = append(game.DiscardPile, card)
-				return true
-			}
-		}
-
-	*/
 }
 
 // TODO: Keep track of current card that is top of the deck
