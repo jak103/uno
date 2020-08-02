@@ -48,7 +48,8 @@ func TestNumDecksToUse(t *testing.T) {
 	assert.Equal(t, 5, numDecksToUse(21))
 	assert.Equal(t, 6, numDecksToUse(26))
 	assert.Equal(t, 7, numDecksToUse(32))
-	assert.Equal(t, 8, numDecksToUse(47))
+	assert.Equal(t, 8, numDecksToUse(37))
+	assert.Equal(t, 9, numDecksToUse(41))
 }
 
 func TestShuffleCards(t *testing.T) {
