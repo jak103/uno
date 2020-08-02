@@ -1,10 +1,10 @@
 <template>
   <div>
     <v-container>
-      <v-row class="mb-6">
+      <v-row >
       <!-- <v-row> -->
 
-        <v-col :cols="6">
+        <v-col>
           <!-- Game stats -->
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
@@ -42,7 +42,7 @@
         </v-col>
 
         <!-- Current cards in the deck -->
-        <v-col class="mb-6" v-if="gameState.status === 'Playing'">
+        <v-col  v-if="gameState.status === 'Playing'">
           <v-card
             v-if="gameState.status !== 'Finished'"
             class="ma-3 pa-6"
@@ -77,23 +77,37 @@
             </v-row>
           </v-card>
         </v-col>
+
+        <!-- Chat -->
+        <!-- <v-col :cols="2" v-show="chatOpen && gameState.status === 'Playing'"></v-col> -->
+        <v-col v-show="chatOpen && gameState.status === 'Playing'" class="float-chat">
+          <Chat :gameState="gameState" />
+        </v-col>
       </v-row>
     </v-container>
+    <div @click="chatOpen = !chatOpen" class="float-button">
+      Chat
+    </div>
   </div>
 </template>
 
 <script>
 import unoService from "../services/unoService";
 import Card from "../components/Card";
+import Chat from "../components/Chat";
+
 export default {
   name: "Game",
   components: {
-    Card
+    Card,
+    Chat,
   },
   data() {
     return {
       gameState: {},
-      cards: []
+      cards: [],
+
+      chatOpen: false,
     };
   },
   methods: {
@@ -141,3 +155,36 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+
+.float-chat {
+  position:fixed;
+	width:450px;
+	height:550px;
+  bottom:125px;
+  right:50px;
+	background-color:#00263A;
+	color:#FFF;
+	border-radius:10px;
+  /* border-width: 5px;
+  border-color: #FFF;
+  outline: #FFF; */
+  padding: 5px 5px 5px 5px;
+}
+
+.float-button{
+	position:fixed;
+	width:60px;
+	height:60px;
+	bottom:50px;
+	right:50px;
+	background-color:#00263A;
+	color:#FFF;
+	border-radius:50px;
+  text-align:center;
+  padding: 20px 0px 0px 0px;
+	/* box-shadow: 2px 2px 3px #999; */
+}
+
+</style>
