@@ -85,39 +85,43 @@
         </v-col>
 
         <!-- Current cards in the deck -->
-        <v-col class="mb-6" v-if="gameState.status === 'Playing'">
-          <v-card
-            v-if="gameState.current_player != undefined &&  gameState.player_id === gameState.current_player.id"
-            class="ma-3 pa-6"
-            outlined
-            tile
-          >
-            Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
-          </v-card>
-          <v-card v-else-if="gameState.status === 'Finished'">The game is finished!</v-card>
-
-          <v-card v-else class="ma-3 pa-6" outlined tile>Waiting for {{ gameState.current_player.name }}</v-card>
-          <Card
-            v-for="(card, i) in gameState.player_cards"
-            :key="i"
-            :number="card.value"
-            :color="card.color"
-            @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
-          ></Card>
-        </v-col>
-        <v-col v-else>
+        <v-col class="mb-6">
           <v-card
             class="ma-3 pa-6"
             outlined
             tile
           >
-            <v-row v-if="gameState.creator != undefined && gameState.creator.id == gameState.player_id">
+            <v-card-text v-if="gameState.status === 'Waiting For Players'">
+              <v-row v-if="gameState.creator != undefined && gameState.creator.id == gameState.player_id">
                 You are the creator of the game. When you are ready: <v-btn @click.native="startGame">Start Game</v-btn>
-            </v-row>
-            <v-row v-else>
+              </v-row>
+              <v-row v-else>
                 Please wait for the creator to start the game.
-            </v-row>
+              </v-row>
+            </v-card-text>
+
+            <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
+              Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
+            </v-card-text>
+
+            <v-card-text v-else-if="gameState.status === 'Playing'">
+              Waiting for {{ gameState.current_player.name }}
+            </v-card-text>
+            
+            <v-card-text v-else-if="gameState.status === 'Finished'">
+              The game is finished!
+            </v-card-text>
           </v-card>
+
+          <div>
+            <Card
+              v-for="(card, i) in gameState.player_cards"
+              :key="i"
+              :number="card.value"
+              :color="card.color"
+              @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
+            ></Card>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -259,7 +263,7 @@ export default {
 
 .game-wrapper {
   display: flex; 
-  min-height:100%
+  min-height: 100%
 }
 
 .player-drawer-item {
