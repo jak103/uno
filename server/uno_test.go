@@ -1,10 +1,10 @@
 package main
 
 import (
-	"testing"
+	//"testing"
 
-	"github.com/jak103/uno/db"
-	"github.com/jak103/uno/model"
+	//"github.com/jak103/uno/db"
+	//"github.com/jak103/uno/model"
 )
 
 // This function is meant to get a game and a player into the data base in a usable state for testing.
