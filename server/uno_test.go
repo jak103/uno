@@ -3,7 +3,6 @@ package main
 import (
 	"testing"
 
-	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,8 +35,12 @@ func TestContains(t *testing.T) {
 func TestCheckForWinner(t *testing.T) {
 	players = []string{"player1", "player2"}
 	allCards = make(map[string][]model.Card)
+	assert.Equal(t, "player1", checkForWinner())
 	dealCards()
 	assert.Equal(t, "", checkForWinner())
 	allCards[players[0]] = make([]model.Card, 0)
 	assert.Equal(t, "player1", checkForWinner())
+	allCards[players[0]] = make([]model.Card, 5)
+	allCards[players[1]] = make([]model.Card, 0)
+	assert.Equal(t, "player2", checkForWinner())
 }
