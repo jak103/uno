@@ -21,7 +21,7 @@ func main() {
 	// Setup middleware
 	//e.File("/", "/client/dist/index.html")
 
-	e.Use(middleware.Logger())
+	//e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
@@ -43,6 +43,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	defer db.Disconnect()
+
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
 	}

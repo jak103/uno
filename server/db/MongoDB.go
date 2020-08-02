@@ -21,6 +21,26 @@ type mongoDB struct {
 	players  *mongo.Collection
 }
 
+func (db *mongoDB) GetAllGames() (*[]model.Game, error) {
+	games := make([]model.Game, 0)
+
+	cursor, err := db.games.Find(context.Background(), bson.M{}, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(context.Background()) {
+		g := model.Game{}
+		err := cursor.Decode(&g)
+		if err != nil {
+			panic(err)
+		}
+		games = append(games, g)
+	}
+
+	return &games, nil
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *mongoDB) HasGameByPassword(password string) bool {
 	game, err := db.LookupGameByPassword(password)
