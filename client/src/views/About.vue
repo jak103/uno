@@ -106,9 +106,7 @@ export default {
       current_card: [],
       game_over: "",
 
-      sortByNum: false,
-      sortByColor: false,
-      loadingHand: false,
+
     };
   },
   components: {
