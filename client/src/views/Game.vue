@@ -10,7 +10,7 @@
             <v-card class="ma-3 pa-6" outlined tile>
               Current Game id: {{ gameState.game_id }}
               <br />
-              Status: {{gameState.status}}      
+              Status: {{gameState.status}}
             </v-card>
           </v-row>
 
@@ -31,6 +31,7 @@
           <v-col cols="12" v-if="gameState.status === 'Playing'">
             <v-row v-if="gameState.current_card != undefined">
               <v-card class="center-text ma-3 pa-6" outlined tile>
+              <center>Current Card</center>
                 <Card
                   :number="gameState.current_card.value"
                   :key="gameState.current_card.color"
