@@ -53,15 +53,26 @@ func (db *firestoreDB) HasGameByID(id string) bool {
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *firestoreDB) CreateGame() (*model.Game, error) {
-	game := model.Game{ID: uuid.New().String(), Password: "12234"}
-	gameDoc := db.games.Doc(game.ID)
-
-	if _, err := gameDoc.Create(context.Background(), game); err != nil {
+func (db *firestoreDB) CreateGame(gameName string, creatorID string) (*model.Game, error) {
+	player, err := db.LookupPlayer(creatorID)
+	if err != nil {
 		return nil, err
 	}
 
-	return &game, nil
+	myGame := model.Game{
+		ID:       uuid.New().String(),
+		Password: "12234",
+		Creator:  *player,
+		Name:     gameName,
+		Status:   model.WaitingForPlayers}
+	myGame.Players = append(myGame.Players, *player)
+	gameDoc := db.games.Doc(myGame.ID)
+
+	if _, err := gameDoc.Create(context.Background(), myGame); err != nil {
+		return nil, err
+	}
+
+	return &myGame, nil
 }
 
 // CreatePlayer creates the player in the database
