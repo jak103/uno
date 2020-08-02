@@ -71,6 +71,19 @@
           <v-card v-else-if="gameState.status === 'Finished'">The game is finished!</v-card>
 
           <v-card v-else class="ma-3 pa-6" outlined tile>Waiting for {{ gameState.current_player.name }}</v-card>
+          
+          <!-- Organize Cards -->
+          <v-card v-if="gameState.status === 'Playing'" :class="'ma-3 pl-6 pa-4'" outlined tile>
+            <div v-if="loadingHand">Loading Original Hand Layout</div>
+            <v-row v-else class="pl-3">
+              Organize Cards
+              <v-btn @click.native="orgByColor">by Color</v-btn>
+              <v-btn @click.native="orgByNum">by Number</v-btn>
+              <v-btn @click.native="orgOff">Off</v-btn>
+            </v-row>
+          </v-card>
+
+
           <Card
             v-for="(card, i) in gameState.player_cards"
             :key="i"
@@ -158,7 +171,13 @@ export default {
         visible: false,
         card: {},
         color: ""
-      }
+      },
+
+      sortByNum: false,
+      sortByColor: false,
+      loadingHand: false,
+      colors: { 'red': 0, 'blue': 1 , 'green': 2, 'yellow': 3, 'wild': 4},
+      values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13}
     };
   },
 
@@ -169,8 +188,38 @@ export default {
       if (res.data != null) {
         this.gameState = res.data;
       }
+      this.decideSort()
     },
+    decideSort() {
+      if (this.sortByColor) {
+        this.orgByColor()
+      }else if (this.sortByNum) {
+        this.orgByNum()
+      }else{
+        this.loadingHand = false
+      }
+    },
+    orgOff() {
+      if (this.sortByColor == true || this.sortByNum == true) {
+        this.loadingHand = true;
+      }
+      this.sortByNum = false;
+      this.sortByColor = false;
+    },
+    orgByNum() {
+      this.sortByNum = true;
+      this.sortByColor = false;
 
+      this.gameState.player_cards.sort((a, b) => { return this.colors[a.color] - this.colors[b.color]; });
+      return this.gameState.player_cards.sort((a, b) => { return this.values[a.value] - this.values[b.value]; });
+    },
+    orgByColor() {
+      this.sortByNum = false;
+      this.sortByColor = true;
+
+      this.gameState.player_cards.sort((a, b) => { return this.values[a.value] - this.values[b.value]; });
+      return this.gameState.player_cards.sort((a, b) => { return this.colors[a.color] - this.colors[b.color]; });
+    },
     async startGame() {
       await unoService.startGame(this.$route.params.id);
       // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
@@ -230,6 +279,10 @@ export default {
 </script>
 
 <style>
+
+.v-btn {
+  margin: 0px 10px 0px 10px;
+}
 
 li {
   display: inline;
