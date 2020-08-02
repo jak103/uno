@@ -74,24 +74,19 @@ func createPlayer(name string) (*model.Player, error) {
 
 func createNewGame(gameName string, creatorName string) (*model.Game, *model.Player, error) {
 	database, err := db.GetDb()
-	game, err := database.CreateGame()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	creator, e := createPlayer(creatorName)
-
-	if e != nil {
-		return nil, nil, e
-	}
-
-	game, err = database.JoinGame(game.ID, creator.ID)
+	creator, err := database.CreatePlayer(creatorName)
 	if err != nil {
 		return nil, nil, err
 	}
-	game.Name = gameName
-	game.Creator = *creator
-	game.Status = model.WaitingForPlayers
+
+	game, err := database.CreateGame(gameName, creator.ID)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	err = database.SaveGame(*game)
 	if err != nil {

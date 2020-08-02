@@ -37,10 +37,18 @@ func (db *mockDB) HasGameByID(id string) bool {
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *mockDB) CreateGame() (*model.Game, error) {
-	myGame := model.Game{ID: uuid.New().String(), Password: "12234"}
+func (db *mockDB) CreateGame(gameName string, creatorID string) (*model.Game, error) {
+	player, _ := db.LookupPlayer(creatorID)
+	myGame := model.Game{
+		ID:       uuid.New().String(),
+		Password: "12234",
+		Creator:  *player,
+		Name:     gameName,
+		Status:   model.WaitingForPlayers}
 	db.games[myGame.ID] = myGame
 	db.gamePasswords[myGame.Password] = myGame
+
+	db.JoinGame(myGame.ID, player.ID)
 	return &myGame, nil
 }
 
