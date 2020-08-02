@@ -259,12 +259,11 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 
 }
 
-
 /*This function will:
-		Deal out 7 cards to each player
-		Set the first card for the game to start from
+Deal out 7 cards to each player
+Set the first card for the game to start from
 */
-func dealCards(gameID string) (*model.Game, error) {  //will need to go into routeHandlers later and remove username string from the parameters being passed in
+func dealCards(gameID string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -277,7 +276,6 @@ func dealCards(gameID string) (*model.Game, error) {  //will need to go into rou
 		return nil, err
 	}
 
-	
 	//For each player currently in the game
 	for k := range game.Players {
 		cards := []model.Card{}
@@ -287,8 +285,8 @@ func dealCards(gameID string) (*model.Game, error) {  //will need to go into rou
 			lastIndex := len(game.DrawPile) - 1
 			if lastIndex < 0 {
 				//TODO check if something else should be happening, but for now we will just throw an extra deck on the pile
-				game.DrawPile = generateShuffledDeck()
-				lastIndex := len(game.DrawPile) - 1
+				game.DrawPile = append(game.DiscardPile, generateShuffledDeck()...)
+				lastIndex = len(game.DrawPile) - 1
 			}
 
 			//append the card to the slice "cards" that we will add to the player

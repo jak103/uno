@@ -44,7 +44,7 @@ func login(c echo.Context) error {
 }
 
 func startGame(c echo.Context) error {
-	dealCards(c.Param("game"), c.Param("username"))
+	dealCards(c.Param("game"))
 	return update(c)
 }
 

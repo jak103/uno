@@ -152,35 +152,6 @@ func TestDrawCard(t *testing.T) {
 
 }
 
-/*func TestPlayCard(t *testing.T) {
-
-	database, _ := db.GetDb()
-
-	game, player := setupGameWithPlayer(database)
-
-	drawCard(game.ID, player.ID)
-
-	game, err := playCard(game.ID, player.ID, player.Cards[0])
-
-	if err == nil {
-		player, _ = database.LookupPlayer(player.ID)
-		assert.Equal(t, len(player.Cards), 0)
-		assert.Equal(t, len(game.DrawPile), 108)
-	} else {
-		assert.Fail(t, "Failed to play card.")
-	}
-}*/
-
-// func TestCheckForWinner(t *testing.T) {
-// 	players = []string{"player1", "player2"}
-// 	allCards = make(map[string][]model.Card)
-// 	dealCards()
-// 	assert.Equal(t, "", checkForWinner())
-// 	allCards[players[0]] = make([]model.Card, 0)
-// 	assert.Equal(t, "player1", checkForWinner())
-// }
-
-
 func TestDealCards(t *testing.T) {
 
 	// Test passing in a bogus game id, we should get an error
@@ -203,7 +174,7 @@ func TestDealCards(t *testing.T) {
 	assert.Equal(t, 7, len(player.Cards))
 	assert.Equal(t, 101, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
-	
+
 	// Create additional players and add them to the game
 	player2, _ := database.CreatePlayer("Player 2")
 	player3, _ := database.CreatePlayer("Player 3")
@@ -220,7 +191,6 @@ func TestDealCards(t *testing.T) {
 	game, _ = database.JoinGame(game.ID, player5.ID)
 	database.SaveGame(*game)
 
-
 	//refresh the drawPile and the discardPile
 	game.DrawPile = generateShuffledDeck()
 	game.DiscardPile = []model.Card{}
@@ -232,10 +202,10 @@ func TestDealCards(t *testing.T) {
 	assert.Nil(t, err, "Failed to deal multiple players cards.")
 	for _, player := range game.Players {
 		assert.Equal(t, 7, len(player.Cards))
-		}
+	}
 	assert.Equal(t, 73, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
-	
+
 	//refresh the drawPile and the discardPile
 	game.DrawPile = generateShuffledDeck()
 	game.DiscardPile = []model.Card{}
@@ -247,19 +217,5 @@ func TestDealCards(t *testing.T) {
 	game, err = dealCards(game.ID)
 	//check if the draw pile refreshed
 	assert.Equal(t, 78, len(game.DrawPile))
-
-
-	//database.SaveGame(*game)		//Use this if you make a modification to the game, drawcard will save it for you but need to call whenever you change game state
-}
-
-
-
-
-
-
-
-//TODO add asserts that it returns the proper game
-//This is something for us to call so that we can check as needed
-func checkGameAgainstDatabase(t *testing.T, game *model.Game) {
 
 }
