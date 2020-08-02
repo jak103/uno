@@ -8,9 +8,15 @@
           <!-- Game stats -->
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
-              Current Game id: {{ gameState.game_id }}
-              <br />
-              Status: {{gameState.status}}      
+              <p>
+                Current Game id: {{ gameState.game_id }}
+              </p>
+              <p>
+                Status: {{ gameState.status }}
+              </p>
+              <p>
+                Your Name: {{ playerName }}
+              </p>
             </v-card>
           </v-row>
 
@@ -24,7 +30,17 @@
               class="ma-3 pa-6"
               outlined
               tile
-            >{{ player.name }}</v-card>
+            >
+              <div>
+                <span>Name: </span>{{ player.name }}
+              </div>
+              <div v-if="gameState.status === 'Playing'">
+                <span>Cards in Hand:</span>
+                <ul class="hand">
+                  <li v-for="(card, index) of player.cards" :key="index">🃏</li>
+                </ul>
+              </div>
+            </v-card>
           </v-row>
 
           <!-- Current Card and actions -->
@@ -60,7 +76,7 @@
             :key="i"
             :number="card.value"
             :color="card.color"
-            @click.native="playCard(card)"
+            @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
           ></Card>
         </v-col>
         <v-col v-else>
@@ -89,6 +105,49 @@
     <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined &&  gameState.player_id === gameState.current_player.id" @click="chatOpen = !chatOpen" class="float-button">
       Chat
     </div>
+    <v-dialog
+      v-model="chooseColorDialog.visible"
+      persistent
+      max-width="500px"
+    >
+      <v-card >
+        <v-card-title
+          class="blue"
+        >
+          Chose color for Wild card
+        </v-card-title>
+        <v-card-actions>
+            <v-col>
+              <v-btn
+                color="red"
+                large
+                @click.native="playWildCard('red')"
+              >Red</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="green"
+                large
+                @click.native="playWildCard('green')"
+              >Green</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="blue"
+                large
+                @click.native="playWildCard('blue')"
+              >Blue</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+              color="yellow"
+              large
+                @click.native="playWildCard('yellow')"
+              >Yellow</v-btn>
+            </v-col>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -109,8 +168,16 @@ export default {
       cards: [],
 
       chatOpen: false,
+      
+      playerName: "",
+      chooseColorDialog: {
+        visible: false,
+        card: {},
+        color: ""
+      }
     };
   },
+
   methods: {
     async updateData() {      
       let res = await unoService.getGameState(this.$route.params.id);
@@ -124,6 +191,18 @@ export default {
       await unoService.startGame(this.$route.params.id);
       // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
       this.updateData(); 
+    },
+
+    selectWildColor(card)
+    {
+      this.chooseColorDialog.card = card;
+      this.chooseColorDialog.visible = true;
+    },
+
+    async playWildCard(color) {
+      this.chooseColorDialog.visible = false;
+      this.chooseColorDialog.card.color = color;
+      this.playCard(this.chooseColorDialog.card);
     },
 
     async playCard(card) { 
@@ -148,6 +227,15 @@ export default {
     this.updateInterval = setInterval(() => {
       this.updateData();
     }, 2000);
+  },
+  mounted() {
+    unoService.getPlayerNameFromToken()
+    .then( resp => {
+        this.playerName = resp?.data?.name
+    })
+    .catch(err => {
+      console.err("Could not get player name from assigned token\n", err)
+    })
   },
   beforeDestroy (){
     if(this.updateInterval){
@@ -186,6 +274,14 @@ export default {
   text-align:center;
   padding: 20px 0px 0px 0px;
 	/* box-shadow: 2px 2px 3px #999; */
+}
+
+li {
+  display: inline;
+}
+
+span {
+  font-weight: bold;
 }
 
 </style>

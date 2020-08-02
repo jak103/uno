@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -37,6 +38,7 @@ func setupRoutes(e *echo.Echo) {
 	//	group.POST("/games/:id/uno", callUno)
 
 	group.GET("/games/:id", getGameState)
+	group.GET("/players/token/:token", getPlayerFromToken)
 }
 
 func getGames(c echo.Context) error {
@@ -100,7 +102,7 @@ func joinExistingGame(c echo.Context) error {
 	err := c.Bind(&m)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Could bind to input")
+		return c.JSON(http.StatusInternalServerError, "Could not bind to input")
 	}
 
 	if m["playerName"] == nil {
@@ -114,6 +116,12 @@ func joinExistingGame(c echo.Context) error {
 	}
 
 	player, _ := createPlayer(playerName)
+
+	gameExists, err := checkGameExists(gameID)
+
+	if err != nil || !gameExists {
+		return c.JSON(http.StatusBadRequest, "Game with ID '"+gameID+"' does not exist")
+	}
 
 	game, _ := joinGame(gameID, player)
 
@@ -155,7 +163,7 @@ func generateToken(p *model.Player) string {
 }
 
 func getGameState(c echo.Context) error {
-	playerID := getPlayerFromContext(c)
+	playerID, err := getPlayerFromContext(c)
 	gameID := c.Param("id")
 
 	game, err := getGameUpdate(gameID)
@@ -169,8 +177,37 @@ func getGameState(c echo.Context) error {
 	//return c.JSON(http.StatusOK, map[string]interface{}{"game": buildGameState(game, playerID)}) //buildGameState(game, playerID))
 }
 
+func getPlayerFromToken(c echo.Context) error {
+
+	playerID, err := getPlayerFromContext(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
+	}
+
+	database, err := db.GetDb()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not connect to database.")
+	}
+
+	player, err := database.LookupPlayer(playerID)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not lookup player from database.")
+	}
+
+	if player.ID != playerID {
+		return c.JSON(http.StatusInternalServerError, "Unexpected ID returned on lookup. You can only look up player data for yourself.")
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"name": player.Name, "id": player.ID})
+}
+
 func startGame(c echo.Context) error {
-	playerID := getPlayerFromContext(c)
+	playerID, err := getPlayerFromContext(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
+	}
 
 	database, err := db.GetDb()
 
@@ -203,7 +240,11 @@ func startGame(c echo.Context) error {
 }
 
 func play(c echo.Context) error {
-	playerID := getPlayerFromContext(c)
+	playerID, err := getPlayerFromContext(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
+	}
+
 	var card model.Card
 	c.Bind(&card)
 
@@ -219,7 +260,10 @@ func play(c echo.Context) error {
 }
 
 func draw(c echo.Context) error {
-	playerID := getPlayerFromContext(c)
+	playerID, err := getPlayerFromContext(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
+	}
 	gameID := c.Param("id")
 
 	game, err := drawCard(gameID, playerID)
@@ -267,11 +311,14 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	return gameState
 }
 
-func getPlayerFromContext(c echo.Context) string {
+func getPlayerFromContext(c echo.Context) (string, error) {
 	// TODO Update this to the actual claim key once the JWT team is done
+	if c.Get("user") == nil {
+		return "", errors.New("Middleware could not determine a user for this connection")
+	}
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	playerID := claims["playerId"].(string)
 
-	return playerID
+	return playerID, nil
 }
