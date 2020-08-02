@@ -6,12 +6,14 @@ import (
 
 // UnoDB declares the database types for the applicaiton
 type UnoDB interface {
+	// Returns all games in the database
+	GetAllGames() (*[]model.Game, error)
 	// Check if a game with the given password exists in the database.
 	HasGameByPassword(password string) bool
 	// Check if a game with the given ID exists in the database.
 	HasGameByID(game string) bool
 	// Creates a game.
-	CreateGame() (*model.Game, error)
+	CreateGame(gameName string, creatorID string) (*model.Game, error)
 	// Creates a player with the given name.
 	CreatePlayer(name string) (*model.Player, error)
 	// DeleteGame deletes a game
@@ -25,7 +27,7 @@ type UnoDB interface {
 	// Looks up an existing player in the database.
 	LookupPlayer(id string) (*model.Player, error)
 	// Joins a player to a game.
-	JoinGame(gameID string, playerID string) error
+	JoinGame(gameID string, playerID string) (*model.Game, error)
 	// Saves a game to the database.
 	SaveGame(model.Game) error
 	// Saves a player to the database.

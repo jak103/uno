@@ -33,24 +33,24 @@ func getDeckConfigByPlayerSize(numDecks int) ([4]string, map[string]int, map[str
 	colors := [4]string{"red", "blue", "green", "yellow"}
 
 	standardCardCounts := map[string]int{
-		"zero":     1*numDecks,
-		"one":      2*numDecks,
-		"two":      2*numDecks,
-		"three":    2*numDecks,
-		"four":     2*numDecks,
-		"five":     2*numDecks,
-		"six":      2*numDecks,
-		"seven":    2*numDecks,
-		"eight":    2*numDecks,
-		"nine":     2*numDecks,
-		"skip":     2*numDecks,
-		"draw_two": 2*numDecks,
-		"reverse":  2*numDecks,
+		"0":  1*numDecks,
+		"1":  2*numDecks,
+		"2":  2*numDecks,
+		"3":  2*numDecks,
+		"4":  2*numDecks,
+		"5":  2*numDecks,
+		"6":  2*numDecks,
+		"7":  2*numDecks,
+		"8":  2*numDecks,
+		"9":  2*numDecks,
+		"S":  2*numDecks,
+		"D2": 2*numDecks,
+		"R":  2*numDecks,
 	}
 
 	wildCardCounts := map[string]int{
-		"wild":           4*numDecks,
-		"wild_draw_four": 4*numDecks,
+		"W":  4*numDecks,
+		"W4": 4*numDecks,
 	}
 
 	return colors, standardCardCounts, wildCardCounts
