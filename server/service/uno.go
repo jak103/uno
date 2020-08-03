@@ -19,7 +19,6 @@ func GetGameUpdate(gameID string) (*model.Game, error) {
 	}
 
 	gameData, gameErr := database.LookupGameByID(gameID)
-
 	if gameErr != nil {
 		return nil, err
 	}
@@ -75,6 +74,28 @@ func JoinGame(game string, player *model.Player) (*model.Game, error) {
 
 	if gameErr != nil {
 		return nil, gameErr
+	}
+
+	return gameData, nil
+}
+
+func addMessage(gameID string, playerID string, message model.Message) (*model.Game, error) { //*model.Player
+	database, err := db.GetDb()
+
+	if err != nil {
+		return nil, err
+	}
+
+	gameData, err := database.AddMessage(gameID, playerID, message)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = database.SaveGame(*gameData)
+
+	if err != nil {
+		return nil, err
 	}
 
 	return gameData, nil

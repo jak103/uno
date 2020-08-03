@@ -1,7 +1,37 @@
 <template>
-  <div :class="card_specifics">
+  <div v-if="!isNaN(number)" :class="card_classes">
     <span class="inner">
       <span class="mark">{{ number }}</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'S'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">S</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'D2'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">D</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'W4'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">4</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'W'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">w</span>
+    </span>
+  </div>
+  <div v-else-if="number === 'R'" :class="card_classes">
+    <span class="inner">
+      <span class="mark">R</span>
+    </span>
+  </div>
+  <div v-else :class="card_classes">
+    <span class="inner">
+      <span class="mark">E{{number}}</span>
     </span>
   </div>
 </template>
@@ -19,8 +49,11 @@ export default {
     },
   },
   computed: {
-    card_specifics: function() {
-      return "card num-" + this.number + " " + this.color.toLowerCase();
+    card_classes: function() {
+      if(!isNaN(this.number))
+        return `card num-${this.number} ${this.color.toLowerCase()}`;
+      else
+        return `card ${this.number.toLowerCase()} ${this.color.toLowerCase()}`;
     }
   }
 };
@@ -197,5 +230,47 @@ export default {
 .card.num-6.yellow .mark:after,
 .card.num-9.yellow .mark:after {
   background: #e6ca1e;
+}
+/* End Reverse Arrow CSS */
+.r:before,
+.r:after {
+  content: "R";
+}
+/* Start Skip CSS */
+.s:before,
+.s:after {
+  content: "S";
+}
+/* End Skip CSS */
+
+/* Start Draw 2 CSS */
+.d2:before,
+.draw_two:after {
+  content: "draw 2";
+}
+/* End Draw 2 CSS */
+
+/* Start Wild CSS */
+.w:before,
+.w:after {
+  content: "w";
+}
+.mark.w-mark {
+  background-image: linear-gradient(to left, red, yellow, green, blue) !important;
+}
+/* End Wild CSS */
+
+/* Start Draw 4 CSS */
+.w4:before,
+.w4:after {
+  content: "draw 4";
+}
+.mark.w4-mark {
+  background-image: linear-gradient(to left, red, yellow, green, blue) !important;
+}
+/* End Draw 4 CSS */
+
+.card.black .inner {
+  background: black;
 }
 </style>

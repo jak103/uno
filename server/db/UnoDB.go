@@ -32,6 +32,8 @@ type UnoDB interface {
 	SaveGame(model.Game) error
 	// Saves a player to the database.
 	SavePlayer(model.Player) error
+	// Adds a Players message to the db
+	AddMessage(gameID string, playerID string, message model.Message) (*model.Game, error)
 	// disconnects from the database.
 	disconnect()
 	// connect to the database

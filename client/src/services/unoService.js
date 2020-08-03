@@ -36,6 +36,11 @@ export default {
   },
   
   async startGame(gameId) {
-      return BaseService.post(`/api/games/${gameId}/start`);
+    return BaseService.post(`/api/games/${gameId}/start`);
   },
+
+  async sendMessage(gameId, playerId, message) {
+    return BaseService.post(`/api/chat/${gameId}/add`, { player: playerId, message: message});
+  },
+
 }
