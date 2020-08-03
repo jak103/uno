@@ -6,9 +6,9 @@
         <div class="col">
             <div v-for="(message) in messages" 
                 :key="message.id"
-                :class="[message.player.name === gameState.current_player.name ? 'from-me' : 'from-them', 'message']">
-                <div class="message-author"><small>{{ message.player.name }}</small></div>
-                <div :class="[message.player.color, 'message-content']">{{ message.message }}</div>
+                :class="[message.player.id === gameState.player_id ? 'from-me' : 'from-them', 'message']">
+                <div class="message-author"><small>{{ message.player.name }}</small><small v-show="message.player.color === undefined"> ... ( watching )</small></div>
+                <div :class="[message.player.color != undefined ? message.player.color : '', 'message-content']">{{ message.message }}</div>
             </div>
         </div>
     </v-card>
@@ -58,8 +58,8 @@ export default {
             
             players: [],
             // It would be best to know a max number of people able to play
-            // TODO: get ride of the blue option similar to the `from-me`
-            messageColors: ['primary', 'success', 'warning', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan'],
+            // TODO: get rid of the blue option similar to the `from-me`
+            messageColors: ['success', 'warning', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan'],
 
             loop_scroll: true,
             skipfirstGameState: false,
@@ -76,7 +76,9 @@ export default {
                     // Assign Message Colors to the players
                     for (var i = 0; i < this.players.length; i++) {
                         for (var j = 0; j < this.messages.length; j++) {
-                            this.messages[j].player.color = this.messageColors[i]
+                            if (this.messages[j].player.id === this.players[i].id) {
+                                this.messages[j].player.color = this.messageColors[i]
+                            }
                         }
                     }
 

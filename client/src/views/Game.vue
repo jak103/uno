@@ -119,31 +119,21 @@
             </v-card-text>
           </v-card>
 
-          <div
-           v-if="gameState.status === 'Playing'"
-          >
+          <div v-if="gameState.status === 'Playing'" >
+
             <!-- Organize Cards -->
-            <v-card  
-              :class="'ma-3 pl-6 pa-4'"
-              outlined 
-              tile
-            >
-              <v-row 
-                v-if="loadingHand"
-              >
+            <v-card :class="'ma-3 pl-6 pa-4'" outlined tile>
+              <v-row v-if="loadingHand">
                 Loading Original Hand Layout
               </v-row>
-              <v-row 
-                v-else 
-                class="pl-3"
-              >
+
+              <v-row v-else class="pl-3">
                 Organize Cards
                 <v-btn @click.native="orgByColor">by Color</v-btn>
                 <v-btn @click.native="orgByNum">by Number</v-btn>
                 <v-btn @click.native="orgOff">Off</v-btn>
               </v-row>
             </v-card>
-
 
             <Card
               v-for="(card, i) in gameState.player_cards"
@@ -162,8 +152,7 @@
       </v-row>
     </v-container>
 
-    <!-- If we allow the Watchers to interact in the chat I'll need to update that on the class='from-me' or 'from-them' -->
-    <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined &&  gameState.player_id === gameState.current_player.id" @click="chatOpen = !chatOpen" class="float-button">
+    <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
       Chat
     </div>
     <v-dialog
@@ -264,7 +253,7 @@ export default {
   },
 
   methods: {
-    async updateData() {      
+    async updateData() {
       let res = await unoService.getGameState(this.$route.params.id);
 
       if (res.data != null) {
@@ -289,15 +278,19 @@ export default {
       this.sortByColor = false;
     },
     orgByNum() {
-      this.gameState.player_cards.sort((a, b) => (this.colors[a.color] > this.colors[b.color]) ? 1 : -1 );
-      this.gameState.player_cards.sort((a, b) => (this.values[a.value] > this.values[b.value]) ? 1 : -1 );
+      if (this.gameState.player_cards != undefined) {
+        this.gameState.player_cards.sort((a, b) => (this.colors[a.color] > this.colors[b.color]) ? 1 : -1 );
+        this.gameState.player_cards.sort((a, b) => (this.values[a.value] > this.values[b.value]) ? 1 : -1 );
+      }
 
       this.sortByNum = true;
       this.sortByColor = false;
     },
     orgByColor() {
-      this.gameState.player_cards.sort((a, b) => (this.values[a.value] < this.values[b.value]) ? 1 : -1 );
-      this.gameState.player_cards.sort((a, b) => (this.colors[a.color] < this.colors[b.color]) ? 1 : -1 );
+      if (this.gameState.player_cards != undefined) {
+        this.gameState.player_cards.sort((a, b) => (this.values[a.value] < this.values[b.value]) ? 1 : -1 );
+        this.gameState.player_cards.sort((a, b) => (this.colors[a.color] < this.colors[b.color]) ? 1 : -1 );
+      }
 
       this.sortByNum = false;
       this.sortByColor = true;
