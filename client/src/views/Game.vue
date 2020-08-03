@@ -5,7 +5,7 @@
     >
       <!-- Game Players Drawer -->
       <v-navigation-drawer
-          :expand-on-hover="switch1"
+          :expand-on-hover="pane_lock"
       >
       <v-list
         nav
@@ -59,7 +59,7 @@
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
               <p>
-              <v-switch v-model="switch1" :label="`Lock Players Pane`"></v-switch>
+              <v-switch v-model="pane_lock" :label="`Unlock Players Pane`"></v-switch>
               </p>
               <p>
                 Current Game id: {{ gameState.game_id }}
@@ -212,7 +212,7 @@ export default {
   },
   data() {
     return {
-      switch1: true,
+      pane_lock: true,
       gameState: {},
       cards: [],
       playerName: "",
