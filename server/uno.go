@@ -9,10 +9,9 @@ import (
 )
 
 ////////////////////////////////////////////////////////////
-// Utility functions
+// These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-
-func updateGame(game string, username string) (*model.Game, error) {
+func getGameUpdate(gameID string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -164,7 +163,7 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 			if len(gameData.DiscardPile) <= 1 {
 				// If there are not cards on the table add a new deck
 				// TODO in the future do more complicated logic such as skip the players turn or something like that.
-				gameData.DrawPile = generateShuffledDeck()
+				gameData.DrawPile = generateShuffledDeck(1)
 			} else {
 				gameData = reshuffleDiscardPile(gameData)
 			}
@@ -215,7 +214,8 @@ func dealCards(game *model.Game) (*model.Game, error) {
 		for i := 0; i < 7; i++ {
 
 			if len(game.DrawPile)-1 < 0 {
-				game.DrawPile = append(game.DiscardPile, generateShuffledDeck()...)
+				fmt.Println("Added deck to drawpile")
+				game.DrawPile = append(game.DiscardPile, generateShuffledDeck(1)...)
 			}
 
 			var drawnCard model.Card
@@ -243,28 +243,6 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	err = database.SaveGame(*game)
 
 	return game, err
-}
-
-func drawTopCard(game *model.Game) (*model.Game, model.Card) {
-	drawnCard := game.DrawPile[len(game.DrawPile)-1]
-	game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
-	return game, drawnCard
-}
-
-func checkGameExists(gameID string) (bool, error) {
-	database, err := db.GetDb()
-
-	if err != nil {
-		return false, err
-	}
-
-	_, gameErr := database.LookupGameByID(gameID)
-
-	if gameErr != nil {
-		return false, gameErr
-	}
-
-	return true, nil
 }
 
 func checkForCardInHand(card model.Card, hand []model.Card) bool {

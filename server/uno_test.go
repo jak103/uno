@@ -1,8 +1,6 @@
 package main
 
 import (
-	//"testing"
-
 	"testing"
 
 	"github.com/jak103/uno/db"
@@ -13,13 +11,13 @@ import (
 // This function is meant to get a game and a player into the data base in a usable state for testing.
 func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 
-	game, _ := database.CreateGame()
-
 	player, _ := database.CreatePlayer("Player 1")
+
+	game, _ := database.CreateGame("Game 1", player.ID)
 
 	game, _ = database.JoinGame(game.ID, player.ID)
 
-	game.DrawPile = generateShuffledDeck()
+	game.DrawPile = generateShuffledDeck(1)
 
 	database.SaveGame(*game)
 
@@ -128,25 +126,19 @@ func TestDrawCard(t *testing.T) {
 
 func TestDealCards(t *testing.T) {
 
-	// Test passing in a bogus game id, we should get an error
-	game, err := dealCards("Bogus game id")
-
-	// Assert that we got an actual error
-	assert.NotNil(t, err, "We did not error on a bogus game id")
-
 	// Generate real game in database and real player
-	database, _ := db.GetDb()
+	database, err := db.GetDb()
 	game, player := setupGameWithPlayer(database)
 
 	// Test Drawing a card with a full deck and real player
-	game, err = dealCards(game.ID)
+	game, err = dealCards(game)
 	player = &game.Players[game.CurrentPlayer] //getting from the game who the current player is
 
 	// Assert that no error occured, the player has a new card and the draw pile
 	// has one less card
 	assert.Nil(t, err, "Failed to deal cards.")
 	assert.Equal(t, 7, len(player.Cards))
-	assert.Equal(t, 101, len(game.DrawPile))
+	assert.Equal(t, 100, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
 
 	// Create additional players and add them to the game
@@ -166,30 +158,18 @@ func TestDealCards(t *testing.T) {
 	database.SaveGame(*game)
 
 	//refresh the drawPile and the discardPile
-	game.DrawPile = generateShuffledDeck()
+	game.DrawPile = []model.Card{}
 	game.DiscardPile = []model.Card{}
 
 	// Test Drawing a card with a full deck and multiple players
-	game, err = dealCards(game.ID)
+	game, err = dealCards(game)
 	// Assert that no error occured, the player has a new card and the draw pile
 	// has one less card
 	assert.Nil(t, err, "Failed to deal multiple players cards.")
 	for _, player := range game.Players {
 		assert.Equal(t, 7, len(player.Cards))
 	}
-	assert.Equal(t, 73, len(game.DrawPile))
+	assert.Equal(t, 180, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
-
-	//refresh the drawPile and the discardPile
-	game.DrawPile = generateShuffledDeck()
-	game.DiscardPile = []model.Card{}
-	//remove all but the top 5 cards so we will run out for sure part way through dealing
-	game.DrawPile = game.DrawPile[:5]
-	database.SaveGame(*game)
-
-	//run deal cards
-	game, err = dealCards(game.ID)
-	//check if the draw pile refreshed
-	assert.Equal(t, 78, len(game.DrawPile))
 
 }
