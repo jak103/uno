@@ -137,7 +137,7 @@ func addNewMessage(c echo.Context) error {
 	c.Bind(&message)
 	gameID := c.Param("id")
 
-	game, err := addMessage(gameID, playerID, message)
+	game, err := service.AddMessage(gameID, playerID, message)
 
 	if err != nil {
 		return err

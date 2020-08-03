@@ -79,7 +79,7 @@ func JoinGame(game string, player *model.Player) (*model.Game, error) {
 	return gameData, nil
 }
 
-func addMessage(gameID string, playerID string, message model.Message) (*model.Game, error) { //*model.Player
+func AddMessage(gameID string, playerID string, message model.Message) (*model.Game, error) { //*model.Player
 	database, err := db.GetDb()
 
 	if err != nil {
