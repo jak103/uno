@@ -186,3 +186,17 @@ func TestCheckForCardInHand(t *testing.T){
 	assert.True(t, checkForCardInHand(validCard, hand))
 	assert.False(t, checkForCardInHand(falseCard, hand))
 }
+
+func TestCreatePlayer(t *testing.T){
+	// get the database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// use the createPlayer function
+	player, err := createPlayer("test")
+	assert.Nil(t, err, "could not create player")
+	// Lookup the player in the database to see if it is there
+	databasePlayer, err := database.LookupPlayer(player.ID)
+	assert.Nil(t, err, "could not find player")
+	// Test to see if the database player and the created player are the same
+	assert.Equal(t, player, databasePlayer)
+}
