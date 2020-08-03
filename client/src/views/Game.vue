@@ -5,7 +5,7 @@
     >
       <!-- Game Players Drawer -->
       <v-navigation-drawer
-          :expand-on-hover="pane_lock"
+          :expand-on-hover="!pane_lock"
       >
       <v-list
         nav
@@ -59,9 +59,6 @@
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
               <p>
-              <v-switch v-model="pane_lock" :label="`Unlock Players Pane`"></v-switch>
-              </p>
-              <p>
                 Current Game id: {{ gameState.game_id }}
               </p>
               <p>
@@ -72,6 +69,9 @@
               </p>
               <p v-if="gameState.draw_pile != undefined">
                 Cards Remaining in Draw Pile: {{ gameState.draw_pile.length }}
+              </p>
+              <p>
+                <v-switch v-model="pane_lock" :label="`Unlock Players Pane`"></v-switch>
               </p>
             </v-card>
           </v-row>
