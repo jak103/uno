@@ -131,7 +131,7 @@ func joinExistingGame(c echo.Context) error {
 }
 
 func addNewMessage(c echo.Context) error {
-	playerID := getPlayerFromContext(c)
+	playerID, err := getPlayerFromContext(c)
 	var message model.Message
 	c.Bind(&message)
 	gameID := c.Param("id")
