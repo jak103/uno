@@ -240,6 +240,10 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	return game, err
 }
 
+////////////////////////////////////////////////////////////
+// Utility Functions
+////////////////////////////////////////////////////////////
+
 func checkForCardInHand(card model.Card, hand []model.Card) bool {
 	for _, c := range hand {
 		// the wild cards, W4 and W, don't need to match in color; not for the previous card, and not with the hand. The card itself can become any color.
