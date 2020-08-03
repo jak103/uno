@@ -303,8 +303,6 @@ export default {
 
     runsnackbar(name, message) {
       this.newMessageName = name;
-      console.log(this.newMessageName)
-      console.log( this.gameState.current_player != undefined, this.playerName !== this.newMessageName )
       this.snackbarText = name + " says: " + message;
       this.snackbar = true;
     },
