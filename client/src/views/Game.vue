@@ -216,9 +216,8 @@
         v-model="snackbar"
         color="info"
         :timeout='4000'
-        v-show="gameState.status === 'Playing' && gameState.current_player != undefined && playerName !== newMessageName">
-        {{snackbarText}}
-
+        v-show="gameState.status === 'Playing' && playerName !== newMessageName"
+        >{{snackbarText}}
         <v-btn text @click="snackbar=false">
           Close
         </v-btn>
@@ -320,6 +319,8 @@ export default {
 
     runsnackbar(name, message) {
       this.newMessageName = name;
+      console.log(this.newMessageName)
+      console.log( this.gameState.current_player != undefined, this.playerName !== this.newMessageName )
       this.snackbarText = name + " says: " + message;
       this.snackbar = true;
     },
