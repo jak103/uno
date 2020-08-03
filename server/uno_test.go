@@ -124,30 +124,70 @@ func TestDrawCard(t *testing.T) {
 
 }
 
-/*func TestPlayCard(t *testing.T) {
+func TestDealCards(t *testing.T) {
 
+	// Test passing in a bogus game id, we should get an error
+	game, err := dealCards("Bogus game id")
+
+	// Assert that we got an actual error
+	assert.NotNil(t, err, "We did not error on a bogus game id")
+
+	// Generate real game in database and real player
 	database, _ := db.GetDb()
-
 	game, player := setupGameWithPlayer(database)
 
-	drawCard(game.ID, player.ID)
+	// Test Drawing a card with a full deck and real player
+	game, err = dealCards(game.ID)
+	player = &game.Players[game.CurrentPlayer] //getting from the game who the current player is
 
-	game, err := playCard(game.ID, player.ID, player.Cards[0])
+	// Assert that no error occured, the player has a new card and the draw pile
+	// has one less card
+	assert.Nil(t, err, "Failed to deal cards.")
+	assert.Equal(t, 7, len(player.Cards))
+	assert.Equal(t, 101, len(game.DrawPile))
+	assert.Equal(t, 1, len(game.DiscardPile))
 
-	if err == nil {
-		player, _ = database.LookupPlayer(player.ID)
-		assert.Equal(t, len(player.Cards), 0)
-		assert.Equal(t, len(game.DrawPile), 108)
-	} else {
-		assert.Fail(t, "Failed to play card.")
+	// Create additional players and add them to the game
+	player2, _ := database.CreatePlayer("Player 2")
+	player3, _ := database.CreatePlayer("Player 3")
+	player4, _ := database.CreatePlayer("Player 4")
+	player5, _ := database.CreatePlayer("Player 5")
+
+	game, _ = database.JoinGame(game.ID, player2.ID)
+	//Have to save in between each player being added or the game state wont recall any but the last
+	database.SaveGame(*game)
+	game, _ = database.JoinGame(game.ID, player3.ID)
+	database.SaveGame(*game)
+	game, _ = database.JoinGame(game.ID, player4.ID)
+	database.SaveGame(*game)
+	game, _ = database.JoinGame(game.ID, player5.ID)
+	database.SaveGame(*game)
+
+	//refresh the drawPile and the discardPile
+	game.DrawPile = generateShuffledDeck()
+	game.DiscardPile = []model.Card{}
+
+	// Test Drawing a card with a full deck and multiple players
+	game, err = dealCards(game.ID)
+	// Assert that no error occured, the player has a new card and the draw pile
+	// has one less card
+	assert.Nil(t, err, "Failed to deal multiple players cards.")
+	for _, player := range game.Players {
+		assert.Equal(t, 7, len(player.Cards))
 	}
-}*/
+	assert.Equal(t, 73, len(game.DrawPile))
+	assert.Equal(t, 1, len(game.DiscardPile))
 
-// func TestCheckForWinner(t *testing.T) {
-// 	players = []string{"player1", "player2"}
-// 	allCards = make(map[string][]model.Card)
-// 	dealCards()
-// 	assert.Equal(t, "", checkForWinner())
-// 	allCards[players[0]] = make([]model.Card, 0)
-// 	assert.Equal(t, "player1", checkForWinner())
-// }
+	//refresh the drawPile and the discardPile
+	game.DrawPile = generateShuffledDeck()
+	game.DiscardPile = []model.Card{}
+	//remove all but the top 5 cards so we will run out for sure part way through dealing
+	game.DrawPile = game.DrawPile[:5]
+	database.SaveGame(*game)
+
+	//run deal cards
+	game, err = dealCards(game.ID)
+	//check if the draw pile refreshed
+	assert.Equal(t, 78, len(game.DrawPile))
+
+}
