@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jak103/uno/model"
@@ -132,6 +133,7 @@ func (db *mockDB) SavePlayer(player model.Player) error {
 // SendMessage add a Message to a game chat.
 func (db *mockDB) AddMessage(id string, username string, message model.Message) (*model.Game, error) {
 	if game, ok := db.games[id]; ok {
+		fmt.Println("Adding a new Message")
 		game.Messages = append(game.Messages, message)
 		return &game, nil
 	} else {

@@ -198,7 +198,7 @@ func (db *mongoDB) SavePlayer(player model.Player) error {
 	return err
 }
 
-func (db *mongoDB) AddMessage(id string, username string, message model.Message) (*model.Game, error) { // (game model.Game, player model.Player, message string) error {
+func (db *mongoDB) AddMessage(id string, username string, message model.Message) (*model.Game, error) {
 	game, gameErr := db.LookupGameByID(id)
 
 	if gameErr != nil {

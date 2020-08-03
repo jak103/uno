@@ -235,13 +235,13 @@ func (db *firestoreDB) SavePlayer(player model.Player) error {
 
 // SendMessage add a Message to a game chat.
 func (db *firestoreDB) AddMessage(id string, username string, message model.Message) (*model.Game, error) {
-
 	game, gameErr := db.LookupGameByID(id)
 
 	if gameErr != nil {
 		return nil, gameErr
 	}
 
+	fmt.Println("Adding a new Message")
 	game.Messages = append(game.Messages, message)
 
 	err := db.SaveGame(*game)
