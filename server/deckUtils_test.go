@@ -23,7 +23,7 @@ func TestGenerateShuffledDeck(t *testing.T) {
 		"blue":   0,
 		"green":  0,
 		"yellow": 0,
-		"wild":   0,
+		"black":  0,
 	}
 
 	for _, card := range deck {
@@ -34,7 +34,7 @@ func TestGenerateShuffledDeck(t *testing.T) {
 	assert.Equal(t, 25, colorCounts["blue"])
 	assert.Equal(t, 25, colorCounts["green"])
 	assert.Equal(t, 25, colorCounts["yellow"])
-	assert.Equal(t, 8, colorCounts["wild"])
+	assert.Equal(t, 8, colorCounts["black"])
 
 	//Check that the deck has the right number of total cards
 	assert.Equal(t, 108, len(deck))
