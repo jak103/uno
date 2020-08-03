@@ -17,6 +17,9 @@
               <p>
                 Your Name: {{ playerName }}
               </p>
+              <p>
+                Cards Remaining in Draw Pile: {{ gameState.draw_pile.length }}
+              </p>
             </v-card>
           </v-row>
 
