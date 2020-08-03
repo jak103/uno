@@ -1,26 +1,38 @@
 package main
 
 import (
-	"testing"
+	//"testing"
 
-	"github.com/stretchr/testify/assert"
+	//"github.com/jak103/uno/db"
+	//"github.com/jak103/uno/model"
 )
 
-// test to make sure the correct colors are being returned from RandColor
-// this test is not super helpful - it is being used to get used to unit testing in golang
-func TestRandColor(t *testing.T) {
-	assert.Equal(t, randColor(0), "red")
-	assert.Equal(t, randColor(1), "blue")
-	assert.Equal(t, randColor(2), "green")
-	assert.Equal(t, randColor(3), "yellow")
-	assert.Equal(t, randColor(4), "")
-}
+// This function is meant to get a game and a player into the data base in a usable state for testing.
+//func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 
-// func TestCheckForWinner(t *testing.T) {
-// 	players = []string{"player1", "player2"}
-// 	allCards = make(map[string][]model.Card)
-// 	dealCards()
-// 	assert.Equal(t, "", checkForWinner())
-// 	allCards[players[0]] = make([]model.Card, 0)
-// 	assert.Equal(t, "player1", checkForWinner())
-// }
+	// game, _ := database.CreateGame()
+
+	// player, _ := database.CreatePlayer("Player 1")
+
+	// database.JoinGame(game.ID, player.ID)
+
+	// game.DrawPile = generateShuffledDeck()
+
+	// database.SaveGame(*game)
+	// return game, player
+//}
+
+//func TestDrawCard(t *testing.T) {
+
+	// database, _ := db.GetDb()
+
+	// game, player := setupGameWithPlayer(database)
+
+	// if drawCard(game.ID, player.ID) {
+	// 	player, _ = database.LookupPlayer(player.ID)
+	// 	assert.Equal(t, len(player.Cards), 1)
+	// 	assert.Equal(t, len(game.DrawPile), 107)
+	// } else {
+	// 	assert.Fail(t, "Failed to draw card.")
+	// }
+//}
