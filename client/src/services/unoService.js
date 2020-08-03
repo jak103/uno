@@ -36,6 +36,10 @@ export default {
   },
   
   async startGame(gameId) {
-      return BaseService.post(`/api/games/${gameId}/start`);
+    return BaseService.post(`/api/games/${gameId}/start`);
   },
+
+  async gotoHelp(tag) {
+    return BaseService.post(`/help${tag}`)
+  }
 }

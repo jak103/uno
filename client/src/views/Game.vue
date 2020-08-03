@@ -1,9 +1,6 @@
 
 <template>
   <div class="mb-0 game-wrapper">
-
-
-
     <v-card 
       class="overflow-hidden"
     >
@@ -77,6 +74,18 @@
               <p>
                 <v-switch v-model="pane_lock" :label="`Unlock Players Pane`"></v-switch>
               </p>
+
+              <!-- Need Help? button -->
+              <v-btn @click.native="helpMenu = !helpMenu" >Need Help?</v-btn>
+              <v-card v-show="helpMenu" class="mt-5 pa-2" outlined tile >                  
+                <router-link to="/help#rules">Rules</router-link> |
+                <router-link to="/help#tutorials">Tutorials</router-link> |
+                <router-link to="/help#cardAbilities">Card Abilities</router-link> |
+
+                <!-- Hint Button -->
+                <v-btn @click.native="hint">Hint</v-btn>
+              </v-card>
+
             </v-card>
           </v-row>
 
@@ -230,7 +239,9 @@ export default {
       sortByColor: false,
       loadingHand: false,
       colors: { 'red': 0, 'blue': 1 , 'green': 2, 'yellow': 3, 'wild': 4},
-      values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13}
+      values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13},
+    
+      helpMenu: false,
     };
   },
 
@@ -252,6 +263,7 @@ export default {
         this.loadingHand = false
       }
     },
+    // Methods for organizing the Cards
     orgOff() {
       if (this.sortByColor == true || this.sortByNum == true) {
         this.loadingHand = true;
@@ -306,8 +318,13 @@ export default {
       if (res.data) {
         this.gameState = res.data;
       }
-    }
-  },
+    },
+    hint(){
+      var color = this.gameState.current_card.color
+      var number = this.gameState.current_card.value
+      alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
+    }, 
+  }, 
   created() {
     this.updateData();
     this.updateInterval = setInterval(() => {
@@ -363,4 +380,29 @@ export default {
   font-weight: bold;
 }
 
+/* CSS for the Help buttons */
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
+  
+  .helpDropBtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+  }
+/* The container <div> - needed to position the dropdown content */
+  .helpDropBtn {
+    position: relative;
+    display: inline-block;
+  }
+/* Dropdown Content (Hidden by Default) */
+  .dropdown_content {
+    display: none;
+    position: absolute;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
 </style>
