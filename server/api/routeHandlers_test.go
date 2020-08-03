@@ -21,7 +21,7 @@ var unitTestGameName = "UNIT_TEST_GAME_NAME"
 func TestGetGames(t *testing.T) {
 	// Setup
 	e := echo.New()
-	setupRoutes(e)
+	SetupRoutes(e)
 	req := httptest.NewRequest(http.MethodGet, "/api/games", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
