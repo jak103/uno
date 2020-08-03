@@ -54,13 +54,25 @@ func (db *mongoDB) HasGameByID(id string) bool {
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *mongoDB) CreateGame() (*model.Game, error) {
-	myGame := model.Game{Password: ""}
+func (db *mongoDB) CreateGame(gameName string, creatorID string) (*model.Game, error) {
+	player, err := db.LookupPlayer(creatorID)
+	if err != nil {
+		return nil, err
+	}
+
+	myGame := model.Game{
+		Password: "12234",
+		Creator:  *player,
+		Name:     gameName,
+		Status:   model.WaitingForPlayers}
+	myGame.Players = append(myGame.Players, *player)
+
 	res, err := db.games.InsertOne(context.Background(), myGame)
 	if err != nil {
 		return nil, err
 	}
 	myGame.ID = res.InsertedID.(primitive.ObjectID).Hex()
+
 	return &myGame, nil
 }
 
@@ -184,6 +196,31 @@ func (db *mongoDB) SavePlayer(player model.Player) error {
 		bson.M{"_id": id},
 		player)
 	return err
+}
+
+func (db *mongoDB) AddMessage(gameID string, playerID string, message model.Message) (*model.Game, error) {
+	game, err := db.LookupGameByID(gameID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	player, err := db.LookupPlayer(playerID)
+	message.Player = *player
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Adding a new Message")
+	game.Messages = append(game.Messages, message)
+	err = db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
 }
 
 // disconnect disconnects from the remote database
