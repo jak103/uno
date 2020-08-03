@@ -27,7 +27,7 @@ func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 func TestDrawCard(t *testing.T) {
 
 	// Test passing in a bogus game id, we should get an error
-	game, err := drawCard("Bogus game id", "Bogus player id")
+	game, err := DrawCard("Bogus game id", "Bogus player id")
 
 	// Assert that we got an actual err
 	assert.NotNil(t, err, "We did not error on a bogus game id")
@@ -37,7 +37,7 @@ func TestDrawCard(t *testing.T) {
 	game, player := setupGameWithPlayer(database)
 
 	// Test Drawing a card with a full deck and real player
-	game, err = drawCard(game.ID, player.ID)
+	game, err = DrawCard(game.ID, player.ID)
 	game, _ = database.LookupGameByID(game.ID)
 	player = &game.Players[game.CurrentPlayer]
 
@@ -55,7 +55,7 @@ func TestDrawCard(t *testing.T) {
 
 	database.SaveGame(*game)
 
-	game, err = drawCard(game.ID, player.ID)
+	game, err = DrawCard(game.ID, player.ID)
 	player = &game.Players[game.CurrentPlayer]
 
 	//Assert no error, player has 2 cards from both draw tests,
@@ -76,7 +76,7 @@ func TestDrawCard(t *testing.T) {
 
 	database.SaveGame(*game)
 
-	game, err = drawCard(game.ID, player.ID)
+	game, err = DrawCard(game.ID, player.ID)
 	player = &game.Players[game.CurrentPlayer]
 
 	// Assert no errors, assert player now has 3 cards
@@ -94,7 +94,7 @@ func TestDrawCard(t *testing.T) {
 	otherPlayer := model.Player{ID: " id 2 ", Name: "Name 2", Cards: []model.Card{}}
 
 	// Simulate a someone trying to participate in a game they are not a part of.
-	_, err = drawCard(game.ID, otherPlayer.ID)
+	_, err = DrawCard(game.ID, otherPlayer.ID)
 
 	// Assert that we got an error from the draw card function as we should have.
 	// Assert that the player didn't get any cards
@@ -112,7 +112,7 @@ func TestDrawCard(t *testing.T) {
 	database.SaveGame(*game)
 
 	//Simulate drawing out of turn
-	_, err = drawCard(game.ID, player2.ID)
+	_, err = DrawCard(game.ID, player2.ID)
 
 	// Assert that we got an error from the draw card function as we should have.
 	// Assert that the player didn't get any cards
@@ -131,7 +131,7 @@ func TestDealCards(t *testing.T) {
 	game, player := setupGameWithPlayer(database)
 
 	// Test Drawing a card with a full deck and real player
-	game, err = dealCards(game)
+	game, err = DealCards(game)
 	player = &game.Players[game.CurrentPlayer] //getting from the game who the current player is
 
 	// Assert that no error occured, the player has a new card and the draw pile
@@ -162,7 +162,7 @@ func TestDealCards(t *testing.T) {
 	game.DiscardPile = []model.Card{}
 
 	// Test Drawing a card with a full deck and multiple players
-	game, err = dealCards(game)
+	game, err = DealCards(game)
 	// Assert that no error occured, the player has a new card and the draw pile
 	// has one less card
 	assert.Nil(t, err, "Failed to deal multiple players cards.")

@@ -152,7 +152,7 @@ func TestJoinExistingGame_error(t *testing.T) {
 func TestStartGame_error(t *testing.T) {
 	// Setup
 	e := echo.New()
-	setupRoutes(e)
+	SetupRoutes(e)
 	req := httptest.NewRequest(http.MethodGet, "/startgame", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	//rec := httptest.NewRecorder()
@@ -165,7 +165,7 @@ func TestStartGame_error(t *testing.T) {
 func TestPlay_error(t *testing.T) {
 	// Setup
 	e := echo.New()
-	setupRoutes(e)
+	SetupRoutes(e)
 	req := httptest.NewRequest(http.MethodGet, "/play", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	// TODO: finish mocking up an auth header here, and in other tests
