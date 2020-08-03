@@ -1,5 +1,9 @@
+
 <template>
   <div class="mb-0 game-wrapper">
+
+
+
     <v-card 
       class="overflow-hidden"
     >
