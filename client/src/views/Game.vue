@@ -67,7 +67,7 @@
               <p>
                 Your Name: {{ playerName }}
               </p>
-              <p>
+              <p v-if="gameState.draw_pile != undefined">
                 Cards Remaining in Draw Pile: {{ gameState.draw_pile.length }}
               </p>
             </v-card>
@@ -327,7 +327,8 @@ export default {
 
 .game-wrapper {
   display: flex; 
-  min-height: 100%
+  min-height: 100%;
+  background-color: black;
 }
 
 .player-drawer-item {
