@@ -19,7 +19,6 @@ func getGameUpdate(gameID string) (*model.Game, error) {
 	}
 
 	gameData, gameErr := database.LookupGameByID(gameID)
-
 	if gameErr != nil {
 		return nil, err
 	}
