@@ -162,16 +162,6 @@
         </v-btn>
       </v-snackbar>
 
-<!-- probably going to want to move this later to make things pretty -->
-      <v-col cols=6>
-        <v-card :class="'ma-3 pa-6'" outlined tile>
-          <v-text-field label="Type a message..." 
-               v-model="newMessage"
-               single-line outlined></v-text-field>
-           <v-btn @click.native="sendMessage">Send Message</v-btn>
-        </v-card>
-      </v-col>
-
     </v-container>
 
     <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
@@ -348,10 +338,6 @@ export default {
       if (res.data) {
         this.gameState = res.data;
       }
-    },
-    sendMessage() {
-      this.snackbarText = this.username + " says: " + this.newMessage;
-      this.snackbar = true;
     },
     async drawCard() {
       let res = await unoService.drawCard(this.$route.params.id);
