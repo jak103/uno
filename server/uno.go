@@ -79,6 +79,28 @@ func joinGame(game string, player *model.Player) (*model.Game, error) {
 	return gameData, nil
 }
 
+func addMessage(gameID string, playerID string, message model.Message) (*model.Game, error) { //*model.Player
+	database, err := db.GetDb()
+
+	if err != nil {
+		return nil, err
+	}
+
+	gameData, err := database.AddMessage(gameID, playerID, message)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = database.SaveGame(*gameData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return gameData, nil
+}
+
 func playCard(game string, playerID string, card model.Card) (*model.Game, error) {
 	database, err := db.GetDb()
 
