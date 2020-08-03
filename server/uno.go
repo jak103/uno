@@ -9,35 +9,44 @@ import (
 )
 
 ////////////////////////////////////////////////////////////
-// Utility functions used in place of firebase
-////////////////////////////////////////////////////////////
-func randColor(i int) string {
-	switch i {
-	case 0:
-		return "red"
-	case 1:
-		return "blue"
-	case 2:
-		return "green"
-	case 3:
-		return "yellow"
-	}
-	return ""
-}
-
-////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
 
-// TODO: make sure this reflects on the front end
-// func checkForWinner(game *model.Game) string {
-// 	for k := range game.Players {
-// 		if len(allCards[players[k]]) == 0 {
-// 			return players[k]
-// 		}
-// 	}
-// 	return ""
-// }
+// A simple helper function to pull a card from a game and put it in the players hand.
+// THis is used in  a lot of places, so this should be  a nice help
+func drawCardHelper(game *model.Game, player *model.Player) {
+	lastIndex := len(game.DrawPile) - 1
+	card := game.DrawPile[lastIndex]
+
+	player.Cards = append(player.Cards, card)
+	game.DrawPile = game.DrawPile[:lastIndex]
+}
+
+// A simpler helper function for getting the player with a matching ID to playerID
+// from the list of players in the game.
+func getPlayer(game *model.Game, playerID string) *model.Player {
+	for _, item := range game.Players {
+		if playerID == item.ID {
+			return &item
+		}
+	}
+	return nil
+}
+
+// given a player and a card look for the card in players hand and return the index
+// If it doesn't exists return -1
+func cardFromPlayer(player *model.Player, card *model.Card) int {
+	// Loop through all cards the player holds
+	for index, item := range player.Cards {
+		// check if current loop item matches card provided
+		if item.Color == card.Color && item.Value == card.Value {
+			// If the card matches return the current index
+			return index
+		}
+	}
+	// If we get to this point the player does not hold the card so we return nil
+	return -1
+}
 
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
@@ -74,24 +83,19 @@ func createPlayer(name string) (*model.Player, error) {
 
 func createNewGame(gameName string, creatorName string) (*model.Game, *model.Player, error) {
 	database, err := db.GetDb()
-	game, err := database.CreateGame()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	creator, e := createPlayer(creatorName)
-
-	if e != nil {
-		return nil, nil, e
-	}
-
-	game, err = database.JoinGame(game.ID, creator.ID)
+	creator, err := database.CreatePlayer(creatorName)
 	if err != nil {
 		return nil, nil, err
 	}
-	game.Name = gameName
-	game.Creator = *creator
-	game.Status = model.WaitingForPlayers
+
+	game, err := database.CreateGame(gameName, creator.ID)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	err = database.SaveGame(*game)
 	if err != nil {
@@ -273,7 +277,7 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	game.CurrentPlayer = rand.Intn(len(game.Players))
 
 	// get a deck
-	game.DrawPile = generateShuffledDeck()
+	game.DrawPile = generateShuffledDeck(len(game.Players))
 
 	// give everyone a hand of seven cards
 	for k := range game.Players {

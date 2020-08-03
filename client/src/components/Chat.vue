@@ -70,21 +70,27 @@ export default {
             this.messages = newVal.messages;
             this.players = newVal.all_players;
 
-            // Assign Message Colors
-            for (var i = 0; i < this.players.length; i++) {
-                for (var j = 0; j < this.messages.length; j++) {
-                    this.messages[j].player.color = this.messageColors[i]
+            // There are .length errors if the messages is null
+            if (this.messages != null) {
+                // Assign Message Colors to the players
+                for (var i = 0; i < this.players.length; i++) {
+                    for (var j = 0; j < this.messages.length; j++) {
+                        this.messages[j].player.color = this.messageColors[i]
+                    }
+                }
+
+                // if I don't need to scroll .. Don't
+                if (newVal.messages.length > 5) {
+                    // If we have a new message scroll down
+                    var len__new = newVal.messages.length - 1;
+                    var len__old = oldVal.messages.length - 1;
+                    if ( len__new !== len__old ) {
+                        this.loop_scroll = true;
+                    }
                 }
             }
             this.info = null;
             this.displayInfo = false;
-
-            // If we have a new message scroll down
-            var len__new = newVal.messages.length - 1;
-            var len__old = oldVal.messages.length - 1;
-            if ( len__new !== len__old ) {
-                this.loop_scroll = true;
-            }
         }
     },
     methods: {
