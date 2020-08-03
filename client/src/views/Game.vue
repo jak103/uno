@@ -157,7 +157,7 @@
 
         <!-- Chat -->
         <v-col v-show="chatOpen" class="float-chat">
-          <Chat :gameState="gameState"/>
+          <Chat @snackbarText="runsnackbar" :gameState="gameState"/>
         </v-col>
       </v-row>
     </v-container>
@@ -209,6 +209,19 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+      <v-snackbar
+        v-model="snackbar"
+        color="info"
+        :timeout='4000'
+        v-show="gameState.status === 'Playing' && gameState.current_player != undefined && playerName === newMessageName">
+        {{snackbarText}}
+
+        <v-btn text @click="snackbar=false">
+          Close
+        </v-btn>
+      </v-snackbar>
+
   </div>
 </template>
 
@@ -242,7 +255,11 @@ export default {
       sortByColor: false,
       loadingHand: false,
       colors: { 'red': 0, 'blue': 1 , 'green': 2, 'yellow': 3, 'wild': 4},
-      values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13}
+      values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13},
+    
+      snackbar: false,
+      snackbarText: "",
+      newMessageName: "",
     };
   },
 
@@ -289,6 +306,12 @@ export default {
       await unoService.startGame(this.$route.params.id);
       // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
       this.updateData(); 
+    },
+
+    runsnackbar(name, message) {
+      this.newMessageName = name;
+      this.snackbarText = name + " says: " + message;
+      this.snackbar = true;
     },
 
     selectWildColor(card)

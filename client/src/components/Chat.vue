@@ -31,7 +31,7 @@
                     </v-card-actions>
                 </div>
             </div>
-            <div v-else class="text-center">
+            <div v-else id="message-info" class="text-center">
                 <p> {{ info }} </p>
             </div>
         </div>
@@ -62,35 +62,42 @@ export default {
             messageColors: ['primary', 'success', 'warning', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan'],
 
             loop_scroll: true,
+            skipfirstGameState: false,
         }
     },
     watch: {
         gameState(newVal, oldVal) {
+            if (this.skipfirstGameState) {
+                this.messages = newVal.messages;
+                this.players = newVal.all_players;
 
-            this.messages = newVal.messages;
-            this.players = newVal.all_players;
-
-            // There are .length errors if the messages is null
-            if (this.messages != null) {
-                // Assign Message Colors to the players
-                for (var i = 0; i < this.players.length; i++) {
-                    for (var j = 0; j < this.messages.length; j++) {
-                        this.messages[j].player.color = this.messageColors[i]
+                // There are .length errors if the messages is null
+                if (this.messages != null) {
+                    // Assign Message Colors to the players
+                    for (var i = 0; i < this.players.length; i++) {
+                        for (var j = 0; j < this.messages.length; j++) {
+                            this.messages[j].player.color = this.messageColors[i]
+                        }
                     }
-                }
 
-                // if I don't need to scroll .. Don't
-                if (newVal.messages.length > 5) {
-                    // If we have a new message scroll down
-                    var len__new = newVal.messages.length - 1;
-                    var len__old = oldVal.messages.length - 1;
+                    let len__new = this.messages.length - 1;
+                    var len__old;
+                    try {
+                        len__old = oldVal.messages.length - 1;
+                    }catch(err){
+                        len__old = len__new
+                    }
+
+                    // If we have a new message scroll down and tell the game
                     if ( len__new !== len__old ) {
                         this.loop_scroll = true;
+                        this.$emit('snackbarText', this.messages[len__new].player.name, this.messages[len__new].message)
                     }
                 }
+                this.info = null;
+                this.displayInfo = false;
             }
-            this.info = null;
-            this.displayInfo = false;
+            this.skipfirstGameState = true;
         }
     },
     methods: {
@@ -162,6 +169,10 @@ export default {
 } 
 
 #message-box {
+    height: 100px;
+}
+
+#message-info {
     height: 100px;
 }
 
