@@ -213,11 +213,6 @@ func dealCards(game *model.Game) (*model.Game, error) {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
 
-			if len(game.DrawPile)-1 < 0 {
-				fmt.Println("Added deck to drawpile")
-				game.DrawPile = append(game.DiscardPile, generateShuffledDeck(1)...)
-			}
-
 			var drawnCard model.Card
 			game, drawnCard = drawTopCard(game)
 			cards = append(cards, drawnCard)
