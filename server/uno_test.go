@@ -24,34 +24,6 @@ func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 	return game, player
 }
 
-// Test that you can get the index for the location of the card that the player holds.
-func TestCardFromPlayer(t *testing.T) {
-
-	card := model.Card{Color: "Red", Value: "One"}
-	player := model.Player{ID: "ID 1", Name: "Player 1", Cards: []model.Card{card}}
-
-	// Test for a card the user is Guarenteed to have.
-	index := cardFromPlayer(&player, &card)
-
-	assert.Equal(t, index, 0)
-
-	//Test a card that the user does not have. Guaranteed this by using invalid values for the card
-	index = cardFromPlayer(&player, &model.Card{Color: "orange", Value: "whoops"})
-
-	assert.Equal(t, index, -1)
-}
-
-func TestDrawCardHelper(t *testing.T) {
-
-	database, _ := db.GetDb()
-
-	game, player := setupGameWithPlayer(database)
-
-	drawCardHelper(game, player)
-
-	assert.Equal(t, len(player.Cards), 1)
-}
-
 func TestDrawCard(t *testing.T) {
 
 	// Test passing in a bogus game id, we should get an error

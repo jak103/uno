@@ -8,55 +8,10 @@ import (
 	"github.com/jak103/uno/model"
 )
 
-//Old Items wont need or use these anymore
-
 ////////////////////////////////////////////////////////////
 // Utility functions
 ////////////////////////////////////////////////////////////
 
-// A simple helper function to pull a card from a game and put it in the players hand.
-// THis is used in  a lot of places, so this should be  a nice help
-// Currently does not check for DrawPile size.
-func drawCardHelper(game *model.Game, player *model.Player) {
-	lastIndex := len(game.DrawPile) - 1
-	card := game.DrawPile[lastIndex]
-
-	player.Cards = append(player.Cards, card)
-	game.DrawPile = game.DrawPile[:lastIndex]
-}
-
-// given a player and a card look for the card in players hand and return the index
-// If it doesn't exists return -1
-func cardFromPlayer(player *model.Player, card *model.Card) int {
-	// Loop through all cards the player holds
-	for index, item := range player.Cards {
-		// check if current loop item matches card provided
-		if item.Color == card.Color && item.Value == card.Value {
-			// If the card matches return the current index
-			return index
-		}
-	}
-	// If we get to this point the player does not hold the card so we return nil
-	return -1
-}
-
-////////////////////////////////////////////////////////////
-// Utility functions
-////////////////////////////////////////////////////////////
-
-// TODO: make sure this reflects on the front end
-// func checkForWinner(game *model.Game) string {
-// 	for k := range game.Players {
-// 		if len(allCards[players[k]]) == 0 {
-// 			return players[k]
-// 		}
-// 	}
-// 	return ""
-// }
-
-////////////////////////////////////////////////////////////
-// These are all of the functions for the game -> essentially public functions
-////////////////////////////////////////////////////////////
 func updateGame(game string, username string) (*model.Game, error) {
 	database, err := db.GetDb()
 
@@ -206,49 +161,45 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 		return nil, dbErr
 	}
 
-	game, gameErr := database.LookupGameByID(gameID)
+	gameData, gameErr := database.LookupGameByID(gameID)
 
 	if gameErr != nil {
 		return nil, gameErr
 	}
 
 	// We get the current player from the game
-	player := &game.Players[game.CurrentPlayer]
+	player := &gameData.Players[gameData.CurrentPlayer]
 	//We then check if the player attempting to play a card is the current player
 	if player.ID == playerID {
 		// We check if the draw pile has available cards
-		if len(game.DrawPile) == 0 {
+		if len(gameData.DrawPile) == 0 {
 			// we check that the discard pile has cards to reshuffle
-			if len(game.DiscardPile) <= 1 {
+			if len(gameData.DiscardPile) <= 1 {
 				// If there are not cards on the table add a new deck
 				// TODO in the future do more complicated logic such as skip the players turn or something like that.
-				game.DrawPile = generateShuffledDeck()
+				gameData.DrawPile = generateShuffledDeck()
 			} else {
-				//Reshuffle all discarded cards except the last one back into the draw pile.
-				oldDiscard := game.DiscardPile[:len(game.DiscardPile)-1]
-				game.DrawPile = shuffleCards(oldDiscard)
-				game.DiscardPile = game.DiscardPile[len(game.DiscardPile)-1:]
+				gameData = reshuffleDiscardPile(gameData)
 			}
 		}
 
-		// Get the index of last card in draw pile, this is the card to be drawn.
-		lastIndex := len(game.DrawPile) - 1
+		// Draw a card off the drawpile
+		_, drawnCard := drawTopCard(gameData)
 
 		// append the card into the players cards from the draw pile
-		player.Cards = append(player.Cards, game.DrawPile[lastIndex])
+		player.Cards = append(player.Cards, drawnCard)
 
-		// Remove the card from the draw pile
-		game.DrawPile = game.DrawPile[:lastIndex]
+		gameData = goToNextPlayer(gameData)
 
 		// Save the game into the database
-		database.SaveGame(*game)
+		database.SaveGame(*gameData)
 
 		// Return a successfully updated game.
-		return game, nil
+		return gameData, nil
 	}
 
 	// Check why they couldn't draw, is it not their turn, or are they not part of this game?
-	for _, item := range game.Players {
+	for _, item := range gameData.Players {
 		if item.ID == playerID {
 			return nil, fmt.Errorf("It is not your turn to play")
 		}
@@ -257,6 +208,28 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 	// TODO Make real error
 	return nil, fmt.Errorf("You cannot participate in a game you do not belong")
 
+}
+
+func goToNextPlayer(gameData *model.Game) *model.Game {
+	if gameData.Direction {
+		gameData.CurrentPlayer++
+		gameData.CurrentPlayer %= len(gameData.Players)
+	} else {
+		gameData.CurrentPlayer--
+		if gameData.CurrentPlayer < 0 {
+			gameData.CurrentPlayer = len(gameData.Players) - 1
+		}
+	}
+
+	return gameData
+}
+
+func reshuffleDiscardPile(gameDate *model.Game) *model.Game {
+	//Reshuffle all discarded cards except the last one back into the draw pile.
+	oldDiscard := gameDate.DiscardPile[:len(gameDate.DiscardPile)-1]
+	gameDate.DrawPile = shuffleCards(oldDiscard)
+	gameDate.DiscardPile = gameDate.DiscardPile[len(gameDate.DiscardPile)-1:]
+	return gameDate
 }
 
 func dealCards(gameID string, username string) (*model.Game, error) {
@@ -291,4 +264,10 @@ func dealCards(gameID string, username string) (*model.Game, error) {
 	game.DiscardPile = append(game.DiscardPile, startCard)
 	game.DrawPile = game.DrawPile[:lastIndex]
 	return game, nil
+}
+
+func drawTopCard(game *model.Game) (*model.Game, model.Card) {
+	drawnCard := game.DrawPile[len(game.DrawPile)-1]
+	game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
+	return game, drawnCard
 }
