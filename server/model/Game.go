@@ -22,6 +22,7 @@ type Game struct {
 	CurrentPlayer int        `bson:"current_player,omitempty" json:"current_player"`
 	Status        GameStatus `bson:"status,omitempty" json:"status"`
 	Direction     bool       `bson:"direction,omitempty" json:"direction"`
+	Messages      []Message  `bson:"messeges,omitempty" json:"messages"`
 }
 
 // GameSummary Provides summary information for the lobby
