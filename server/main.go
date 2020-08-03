@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/jak103/uno/api"
 	"github.com/jak103/uno/db"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -32,7 +33,7 @@ func main() {
 	}))
 
 	// Setup routes
-	setupRoutes(e)
+	api.SetupRoutes(e)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))

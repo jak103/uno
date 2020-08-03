@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"errors"
@@ -9,13 +9,14 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
+	"github.com/jak103/uno/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 var tokenSecret string = "usudevops"
 
-func setupRoutes(e *echo.Echo) {
+func SetupRoutes(e *echo.Echo) {
 	// Routes that don't require a valid JWT
 	e.GET("/api/games", getGames)
 	e.POST("/api/games", newGame)
@@ -81,7 +82,7 @@ func newGame(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Missing game name or creator")
 	}
 
-	game, creator, gameErr := createNewGame(gameName, creatorName)
+	game, creator, gameErr := service.CreateNewGame(gameName, creatorName)
 
 	if gameErr != nil {
 		return gameErr
@@ -112,15 +113,15 @@ func joinExistingGame(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Missing player name")
 	}
 
-	player, _ := createPlayer(playerName)
+	player, _ := service.CreatePlayer(playerName)
 
-	gameExists, err := checkGameExists(gameID)
+	gameExists, err := service.CheckGameExists(gameID)
 
 	if err != nil || !gameExists {
 		return c.JSON(http.StatusBadRequest, "Game with ID '"+gameID+"' does not exist")
 	}
 
-	game, _ := joinGame(gameID, player)
+	game, _ := service.JoinGame(gameID, player)
 
 	token := generateToken(player)
 
@@ -148,7 +149,7 @@ func getGameState(c echo.Context) error {
 	playerID, err := getPlayerFromContext(c)
 	gameID := c.Param("id")
 
-	game, err := getGameUpdate(gameID)
+	game, err := service.GetGameUpdate(gameID)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid game ID")
@@ -210,7 +211,7 @@ func startGame(c echo.Context) error {
 	}
 
 	// get the game state back after dealing cards, etc.
-	game, saveErr := dealCards(game)
+	game, saveErr := service.DealCards(game)
 
 	if saveErr != nil {
 		return c.JSON(http.StatusInternalServerError, "Could not save game state.")
@@ -232,7 +233,7 @@ func play(c echo.Context) error {
 
 	log.Println("Player card", card)
 
-	game, err := playCard(c.Param("id"), playerID, card)
+	game, err := service.PlayCard(c.Param("id"), playerID, card)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Error playing the game card")
@@ -248,7 +249,7 @@ func draw(c echo.Context) error {
 	}
 	gameID := c.Param("id")
 
-	game, err := drawCard(gameID, playerID)
+	game, err := service.DrawCard(gameID, playerID)
 
 	if err != nil {
 		return err

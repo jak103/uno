@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ import (
 
 // A simple helper function to pull a card from a game and put it in the players hand.
 // THis is used in  a lot of places, so this should be  a nice help
-func drawCardHelper(game *model.Game, player *model.Player) {
+func DrawCardHelper(game *model.Game, player *model.Player) {
 	lastIndex := len(game.DrawPile) - 1
 	card := game.DrawPile[lastIndex]
 
@@ -24,7 +24,7 @@ func drawCardHelper(game *model.Game, player *model.Player) {
 
 // A simpler helper function for getting the player with a matching ID to playerID
 // from the list of players in the game.
-func getPlayer(game *model.Game, playerID string) *model.Player {
+func GetPlayer(game *model.Game, playerID string) *model.Player {
 	for _, item := range game.Players {
 		if playerID == item.ID {
 			return &item
@@ -35,7 +35,7 @@ func getPlayer(game *model.Game, playerID string) *model.Player {
 
 // given a player and a card look for the card in players hand and return the index
 // If it doesn't exists return -1
-func cardFromPlayer(player *model.Player, card *model.Card) int {
+func CardFromPlayer(player *model.Player, card *model.Card) int {
 	// Loop through all cards the player holds
 	for index, item := range player.Cards {
 		// check if current loop item matches card provided
@@ -51,7 +51,7 @@ func cardFromPlayer(player *model.Player, card *model.Card) int {
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func getGameUpdate(gameID string) (*model.Game, error) {
+func GetGameUpdate(gameID string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -67,7 +67,7 @@ func getGameUpdate(gameID string) (*model.Game, error) {
 	return gameData, nil
 }
 
-func createPlayer(name string) (*model.Player, error) {
+func CreatePlayer(name string) (*model.Player, error) {
 	database, err := db.GetDb()
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func createPlayer(name string) (*model.Player, error) {
 	return player, nil
 }
 
-func createNewGame(gameName string, creatorName string) (*model.Game, *model.Player, error) {
+func CreateNewGame(gameName string, creatorName string) (*model.Game, *model.Player, error) {
 	database, err := db.GetDb()
 	if err != nil {
 		return nil, nil, err
@@ -105,7 +105,7 @@ func createNewGame(gameName string, creatorName string) (*model.Game, *model.Pla
 	return game, creator, nil
 }
 
-func joinGame(game string, player *model.Player) (*model.Game, error) {
+func JoinGame(game string, player *model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ func joinGame(game string, player *model.Player) (*model.Game, error) {
 	return gameData, nil
 }
 
-func playCard(game string, playerID string, card model.Card) (*model.Game, error) {
+func PlayCard(game string, playerID string, card model.Card) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -135,7 +135,7 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 
 	if gameData.Players[gameData.CurrentPlayer].ID == playerID {
 		hand := gameData.Players[gameData.CurrentPlayer].Cards
-		if checkForCardInHand(card, hand) && (card.Color == gameData.DiscardPile[len(gameData.DiscardPile)-1].Color || card.Value == gameData.DiscardPile[len(gameData.DiscardPile)-1].Value || card.Value == "W4" || card.Value == "W") {
+		if CheckForCardInHand(card, hand) && (card.Color == gameData.DiscardPile[len(gameData.DiscardPile)-1].Color || card.Value == gameData.DiscardPile[len(gameData.DiscardPile)-1].Value || card.Value == "W4" || card.Value == "W") {
 			// Valid card can be played
 
 			gameData.DiscardPile = append(gameData.DiscardPile, card)
@@ -148,24 +148,24 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 			}
 
 			if card.Value == "S" {
-				gameData = goToNextPlayer(gameData)
+				gameData = GoToNextPlayer(gameData)
 			}
 
 			if card.Value == "D2" {
-				gameData = goToNextPlayer(gameData)
-				gameData = drawNCards(gameData, 2)
+				gameData = GoToNextPlayer(gameData)
+				gameData = DrawNCards(gameData, 2)
 			}
 
 			if card.Value == "W4" {
-				gameData = goToNextPlayer(gameData)
-				gameData = drawNCards(gameData, 4)
+				gameData = GoToNextPlayer(gameData)
+				gameData = DrawNCards(gameData, 4)
 			}
 
 			if card.Value == "R" {
 				gameData.Direction = !gameData.Direction
 			}
 
-			gameData = goToNextPlayer(gameData)
+			gameData = GoToNextPlayer(gameData)
 
 		}
 	}
@@ -179,7 +179,7 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 	return gameData, nil
 }
 
-func checkForCardInHand(card model.Card, hand []model.Card) bool {
+func CheckForCardInHand(card model.Card, hand []model.Card) bool {
 	for _, c := range hand {
 		// the wild cards, W4 and W, don't need to match in color; not for the previous card, and not with the hand. The card itself can become any color.
 		if c.Value == card.Value && (c.Color == card.Color || card.Value == "W4" || card.Value == "W") {
@@ -190,7 +190,7 @@ func checkForCardInHand(card model.Card, hand []model.Card) bool {
 }
 
 // TODO: Keep track of current card that is top of the deck
-func drawCard(gameID, playerID string) (*model.Game, error) {
+func DrawCard(gameID, playerID string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -208,17 +208,17 @@ func drawCard(gameID, playerID string) (*model.Game, error) {
 	}
 
 	var drawnCard model.Card
-	gameData, drawnCard = drawTopCard(gameData)
+	gameData, drawnCard = DrawTopCard(gameData)
 	gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
 
-	gameData = goToNextPlayer(gameData)
+	gameData = GoToNextPlayer(gameData)
 
 	database.SaveGame(*gameData)
 
 	return gameData, nil
 }
 
-func goToNextPlayer(gameData *model.Game) *model.Game {
+func GoToNextPlayer(gameData *model.Game) *model.Game {
 	if gameData.Direction {
 		gameData.CurrentPlayer++
 		gameData.CurrentPlayer %= len(gameData.Players)
@@ -232,17 +232,17 @@ func goToNextPlayer(gameData *model.Game) *model.Game {
 	return gameData
 }
 
-func drawNCards(gameData *model.Game, nCards uint) *model.Game {
+func DrawNCards(gameData *model.Game, nCards uint) *model.Game {
 	for i := uint(0); i < nCards; i++ {
 		var drawnCard model.Card
-		gameData, drawnCard = drawTopCard(gameData)
+		gameData, drawnCard = DrawTopCard(gameData)
 		gameData.Players[gameData.CurrentPlayer].Cards = append(gameData.Players[gameData.CurrentPlayer].Cards, drawnCard)
 	}
 	return gameData
 }
 
 // TODO: need to deal the actual cards, not just random numbers
-func dealCards(game *model.Game) (*model.Game, error) {
+func DealCards(game *model.Game) (*model.Game, error) {
 
 	// pick a starting player
 	game.CurrentPlayer = rand.Intn(len(game.Players))
@@ -255,7 +255,7 @@ func dealCards(game *model.Game) (*model.Game, error) {
 		cards := []model.Card{}
 		for i := 0; i < 7; i++ {
 			var drawnCard model.Card
-			game, drawnCard = drawTopCard(game)
+			game, drawnCard = DrawTopCard(game)
 			cards = append(cards, drawnCard)
 		}
 		game.Players[k].Cards = cards
@@ -263,7 +263,7 @@ func dealCards(game *model.Game) (*model.Game, error) {
 
 	// draw a card for the discard
 	var drawnCard model.Card
-	game, drawnCard = drawTopCard(game)
+	game, drawnCard = DrawTopCard(game)
 	game.DiscardPile = append(game.DiscardPile, drawnCard)
 
 	game.Status = "Playing"
@@ -280,13 +280,13 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	return game, err
 }
 
-func drawTopCard(game *model.Game) (*model.Game, model.Card) {
+func DrawTopCard(game *model.Game) (*model.Game, model.Card) {
 	drawnCard := game.DrawPile[len(game.DrawPile)-1]
 	game.DrawPile = game.DrawPile[:len(game.DrawPile)-1]
 	return game, drawnCard
 }
 
-func checkGameExists(gameID string) (bool, error) {
+func CheckGameExists(gameID string) (bool, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
