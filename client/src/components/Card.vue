@@ -1,34 +1,34 @@
 <template>
-  <div v-if="typeof number === 'number'" :class="card_classes">
+  <div v-if="!isNaN(number)" :class="card_classes">
     <span class="inner">
       <span class="mark">{{ number }}</span>
     </span>
   </div>
-  <div v-else-if="number === 'skip'" :class="card_classes">
+  <div v-else-if="number === 'S'" :class="card_classes">
     <span class="inner">
       <span class="mark">S</span>
     </span>
   </div>
-  <div v-else-if="number === 'draw_two'" :class="card_classes">
+  <div v-else-if="number === 'D2'" :class="card_classes">
     <span class="inner">
       <span class="mark">D</span>
     </span>
   </div>
-  <div v-else-if="number === 'wild_draw_four'" :class="card_classes">
+  <div v-else-if="number === 'W4'" :class="card_classes">
     <span class="inner">
       <span class="mark">4</span>
     </span>
   </div>
-  <div v-else-if="number === 'wild'" :class="card_classes">
+  <div v-else-if="number === 'W'" :class="card_classes">
     <span class="inner">
       <span class="mark">w</span>
     </span>
   </div>
-  <div v-else-if="number === 'reverse'" :class="card_classes">
+  <div v-else-if="number === 'R'" :class="card_classes">
     <span class="inner">
 
-      <div class="reverse-mini reverse-mini-top">
-        <div class="reverse-symbol shadow-mini">
+      <div class="r-mini r-mini-top">
+        <div class="r-symbol shadow-mini">
           <div class="shadow-container">
             <div class="arrow-right">
               <div class="arrow-right-tail shadow"></div>
@@ -40,7 +40,7 @@
             </div>
           </div>
         </div>
-        <div class="reverse-symbol">
+        <div class="r-symbol">
           <div class="arrow-right">
             <div class="arrow-right-tail white"></div>
             <div class="arrow-right-head white"></div>
@@ -52,8 +52,8 @@
         </div>
       </div>
 
-      <div class="reverse-mini reverse-mini-bottom">
-        <div class="reverse-symbol shadow-mini">
+      <div class="r-mini r-mini-bottom">
+        <div class="r-symbol shadow-mini">
           <div class="shadow-container">
             <div class="arrow-right">
               <div class="arrow-right-tail shadow"></div>
@@ -65,7 +65,7 @@
             </div>
           </div>
         </div>
-        <div class="reverse-symbol">
+        <div class="r-symbol">
           <div class="arrow-right">
             <div class="arrow-right-tail white"></div>
             <div class="arrow-right-head white"></div>
@@ -78,8 +78,8 @@
       </div>
 
       <span class="mark">
-        <div class="reverse">
-          <div class="reverse-symbol shadow">
+        <div class="r">
+          <div class="r-symbol shadow">
             <div class="shadow-container">
               <div class="arrow-right">
                 <div class="arrow-right-tail shadow"></div>
@@ -91,7 +91,7 @@
               </div>
             </div>
           </div>
-          <div class="reverse-symbol">
+          <div class="r-symbol">
             <div class="arrow-right">
               <div class="arrow-right-tail" :class="this.color.toLowerCase()"></div>
               <div class="arrow-right-head" :class="this.color.toLowerCase()"></div>
@@ -104,6 +104,11 @@
         </div>
         
       </span>
+    </span>
+  </div>
+  <div v-else :class="card_classes">
+    <span class="inner">
+      <span class="mark">E{{number}}</span>
     </span>
   </div>
 </template>
@@ -122,7 +127,7 @@ export default {
   },
   computed: {
     card_classes: function() {
-      if(typeof this.number === 'number')
+      if(!isNaN(this.number))
         return `card num-${this.number} ${this.color.toLowerCase()}`;
       else
         return `card ${this.number.toLowerCase()} ${this.color.toLowerCase()}`;
@@ -304,27 +309,27 @@ export default {
   background: #e6ca1e;
 }
 /* Start Reverse Arrow CSS */
-.reverse{
+.r{
   display: flex;
   align-items: center;
   justify-content: center;
   height: 140px;
   width: 60px;
 }
-.reverse-mini {
+.r-mini {
   position: absolute;
   transform: scale(0.2);
 }
-.reverse-mini-top{
+.r-mini-top{
   top: -10px;
   left: -33px;
 }
-.reverse-mini-bottom{
+.r-mini-bottom{
   bottom: -10px;
   right: -33px;
   /* transform: rotate(180deg); */
 }
-.reverse-symbol {
+.r-symbol {
   width: 100px;
   height: 55px;
   display: flex;
@@ -373,13 +378,13 @@ export default {
   border-bottom: 20px solid transparent;
 }   
 
-.reverse-symbol.shadow {
+.r-symbol.shadow {
   margin-right: -100px;
 }
 .shadow-container {
   padding: 5px 0 5px 0;
 }
-.reverse-symbol.shadow-mini {
+.r-symbol.shadow-mini {
   margin-right: -95px;
   margin-bottom: -57px;
 }
@@ -464,35 +469,35 @@ export default {
 /* End Reverse Arrow CSS */
 
 /* Start Skip CSS */
-.skip:before,
-.skip:after {
-  content: "skip";
+.s:before,
+.s:after {
+  content: "s";
 }
 /* End Skip CSS */
 
 /* Start Draw 2 CSS */
-.draw_two:before,
+.d2:before,
 .draw_two:after {
   content: "draw 2";
 }
 /* End Draw 2 CSS */
 
 /* Start Wild CSS */
-.wild:before,
-.wild:after {
-  content: "wild";
+.w:before,
+.w:after {
+  content: "w";
 }
-.mark.wild-mark {
+.mark.w-mark {
   background-image: linear-gradient(to left, red, yellow, green, blue) !important;
 }
 /* End Wild CSS */
 
 /* Start Draw 4 CSS */
-.wild_draw_four:before,
-.wild_draw_four:after {
+.w4:before,
+.w4:after {
   content: "draw 4";
 }
-.mark.wild_draw_four-mark {
+.mark.w4-mark {
   background-image: linear-gradient(to left, red, yellow, green, blue) !important;
 }
 /* End Draw 4 CSS */
