@@ -11,7 +11,9 @@
   </div>
   <div v-else-if="number === 'D2'" :class="card_classes">
     <span class="inner">
-      <span class="mark">D</span>
+      <span class="mark">
+        <img class="d2-inner" :src="symbol_path">
+      </span>
     </span>
   </div>
   <div v-else-if="number === 'W4'" :class="card_classes">
@@ -26,84 +28,7 @@
   </div>
   <div v-else-if="number === 'R'" :class="card_classes">
     <span class="inner">
-
-      <div class="r-mini r-mini-top">
-        <div class="r-symbol shadow-mini">
-          <div class="shadow-container">
-            <div class="arrow-right">
-              <div class="arrow-right-tail shadow"></div>
-              <div class="arrow-right-head shadow"></div>
-            </div>
-            <div class="arrow-left">
-              <div class="arrow-left-head shadow"></div>
-              <div class="arrow-left-tail shadow"></div>
-            </div>
-          </div>
-        </div>
-        <div class="r-symbol">
-          <div class="arrow-right">
-            <div class="arrow-right-tail white"></div>
-            <div class="arrow-right-head white"></div>
-          </div>
-          <div class="arrow-left">
-            <div class="arrow-left-head white"></div>
-            <div class="arrow-left-tail white"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="r-mini r-mini-bottom">
-        <div class="r-symbol shadow-mini">
-          <div class="shadow-container">
-            <div class="arrow-right">
-              <div class="arrow-right-tail shadow"></div>
-              <div class="arrow-right-head shadow"></div>
-            </div>
-            <div class="arrow-left">
-              <div class="arrow-left-head shadow"></div>
-              <div class="arrow-left-tail shadow"></div>
-            </div>
-          </div>
-        </div>
-        <div class="r-symbol">
-          <div class="arrow-right">
-            <div class="arrow-right-tail white"></div>
-            <div class="arrow-right-head white"></div>
-          </div>
-          <div class="arrow-left">
-            <div class="arrow-left-head white"></div>
-            <div class="arrow-left-tail white"></div>
-          </div>
-        </div>
-      </div>
-
-      <span class="mark">
-        <div class="r">
-          <div class="r-symbol shadow">
-            <div class="shadow-container">
-              <div class="arrow-right">
-                <div class="arrow-right-tail shadow"></div>
-                <div class="arrow-right-head shadow"></div>
-              </div>
-              <div class="arrow-left">
-                <div class="arrow-left-head shadow"></div>
-                <div class="arrow-left-tail shadow"></div>
-              </div>
-            </div>
-          </div>
-          <div class="r-symbol">
-            <div class="arrow-right">
-              <div class="arrow-right-tail" :class="this.color.toLowerCase()"></div>
-              <div class="arrow-right-head" :class="this.color.toLowerCase()"></div>
-            </div>
-            <div class="arrow-left">
-              <div class="arrow-left-head" :class="this.color.toLowerCase()"></div>
-              <div class="arrow-left-tail" :class="this.color.toLowerCase()"></div>
-            </div>
-          </div>
-        </div>
-        
-      </span>
+      <span class="mark">R</span>
     </span>
   </div>
   <div v-else :class="card_classes">
@@ -131,7 +56,13 @@ export default {
         return `card num-${this.number} ${this.color.toLowerCase()}`;
       else
         return `card ${this.number.toLowerCase()} ${this.color.toLowerCase()}`;
-    }
+    },
+    symbol_path: function() {
+      return `@/assets/card_symbols/${this.number.toLowerCase()}-${this.color.toLowerCase()}.svg`;
+    },
+    symbols () {
+      return require(`../assets/card_symbols/${this.id}.svg`)
+    },
   }
 };
 </script>
@@ -309,163 +240,10 @@ export default {
   background: #e6ca1e;
 }
 /* Start Reverse Arrow CSS */
-.r{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 140px;
-  width: 60px;
+.r:before,
+.r:after {
+  content: "R";
 }
-.r-mini {
-  position: absolute;
-  transform: scale(0.2);
-}
-.r-mini-top{
-  top: -10px;
-  left: -33px;
-}
-.r-mini-bottom{
-  bottom: -10px;
-  right: -33px;
-  /* transform: rotate(180deg); */
-}
-.r-symbol {
-  width: 100px;
-  height: 55px;
-  display: flex;
-  flex-direction: column;
-  transform: rotate(-45deg);
-}
-.arrow-right {
-  margin-left: 30px;
-  display: flex;
-  align-items: center;
-  width: 70px;
-  height: 30px;
-}
-.arrow-right-tail{
-  width: 60px;
-  height: 15px;
-  background: #0063b3;
-  border-radius: 15px 0 0 0
-}
-.arrow-right-head{
-  width: 0;
-  height: 0;
-  border-top: 20px solid transparent;
-  border-left-width: 25px;
-  border-left-style: solid;
-  border-bottom: 20px solid transparent;
-}
-.arrow-left {
-  margin-top: -13px;
-  display: flex;
-  align-items: center;
-  width: 70px;
-  height: 30px;
-}
-.arrow-left-tail{
-  width: 60px;
-  height: 15px;
-  border-radius: 0 0 15px 0
-}
-.arrow-left-head{
-  width: 0;
-  height: 0;
-  border-top: 20px solid transparent;
-  border-right-width: 25px;
-  border-right-style: solid;
-  border-bottom: 20px solid transparent;
-}   
-
-.r-symbol.shadow {
-  margin-right: -100px;
-}
-.shadow-container {
-  padding: 5px 0 5px 0;
-}
-.r-symbol.shadow-mini {
-  margin-right: -95px;
-  margin-bottom: -57px;
-}
-
-.arrow-right-tail.shadow{
-  background: black;
-}
-.arrow-right-head.shadow{
-  border-left-color: black;
-}
-.arrow-left-tail.shadow{
-  background: black;
-}
-.arrow-left-head.shadow{
-  border-right-color: black;
-}   
-
-.arrow-right-tail.white{
-  background: white;
-}
-.arrow-right-head.white{
-  border-left-color: white;
-}
-.arrow-left-tail.white{
-  background: white;
-}
-.arrow-left-head.white{
-  border-right-color: white;
-}   
-
-.arrow-right-tail.blue{
-  background: #0063b3;
-}
-.arrow-right-head.blue{
-  border-left-color: #0063b3;
-}
-.arrow-left-tail.blue{
-  background: #0063b3;
-}
-.arrow-left-head.blue{
-  border-right-color: #0063b3;
-}   
-
-.arrow-right-tail.green{
-  background: #18a849;
-}
-.arrow-right-head.green{
-  border-left-color: #18a849;
-}
-.arrow-left-tail.green{
-  background: #18a849;
-}
-.arrow-left-head.green{
-  border-right-color: #18a849;
-}   
-
-.arrow-right-tail.red{
-  background: #c72a18;
-}
-.arrow-right-head.red{
-  border-left-color: #c72a18;
-}
-.arrow-left-tail.red{
-  background: #c72a18;
-}
-.arrow-left-head.red{
-  border-right-color: #c72a18;
-}   
-
-.arrow-right-tail.yellow{
-  background: #e6ca1e;
-}
-.arrow-right-head.yellow{
-  border-left-color: #e6ca1e;
-}
-.arrow-left-tail.yellow{
-  background: #e6ca1e;
-}
-.arrow-left-head.yellow{
-  border-right-color: #e6ca1e;
-}   
 /* End Reverse Arrow CSS */
 
 /* Start Skip CSS */
@@ -479,6 +257,11 @@ export default {
 .d2:before,
 .draw_two:after {
   content: "draw 2";
+}
+
+.d2-inner {
+  height: 100%;
+  width: 100%;
 }
 /* End Draw 2 CSS */
 
