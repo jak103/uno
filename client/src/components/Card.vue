@@ -261,10 +261,6 @@ export default {
   margin-bottom: -10%;
 }
 /* End Reverse Arrow CSS */
-.r:before,
-.r:after {
-  content: "R";
-}
 /* Start Skip CSS */
 .s:before,
 .s:after {
