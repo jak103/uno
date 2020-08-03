@@ -210,10 +210,12 @@ func TestJoinGame(t *testing.T){
 	// create a new player
 	newPlayer, err := createPlayer("joinGamePlayer")
 	assert.Nil(t, err, "could not create new player")
-	// lookup game from database 
-	game, _ = database.LookupGameByID(game.ID)
 	// attempt to join game
-	game, _ = joinGame(game.ID, newPlayer)
+	game, err = joinGame(game.ID, newPlayer)
+	assert.Nil(t, err, "could not join game with new player")
+	// lookup game from database 
+	game, err = database.LookupGameByID(game.ID)
+	assert.Nil(t, err, "could not find game in database")
 	// test to see if the new Player is in the game
-	assert.Equal(t, &game.Players[1], newPlayer)
+	assert.Contains(t, game.Players, *newPlayer)
 }
