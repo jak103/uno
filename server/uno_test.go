@@ -173,3 +173,16 @@ func TestDealCards(t *testing.T) {
 	assert.Equal(t, 1, len(game.DiscardPile))
 
 }
+
+func TestCheckForCardInHand(t *testing.T){
+	//Created two cards One will be in the hand and the other won't
+	validCard := model.Card{"red", "1"}
+	falseCard := model.Card{"blue", "4"}
+	//Created a hand with the valid card in it
+	hand := []model.Card{validCard}
+	
+	//Testing to see if the function returns True for a card that is 
+	//present and False for a card that isn't present
+	assert.True(t, checkForCardInHand(validCard, hand))
+	assert.False(t, checkForCardInHand(falseCard, hand))
+}
