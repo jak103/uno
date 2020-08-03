@@ -279,8 +279,8 @@ export default {
       this.sortByColor = false;
     },
     orgByColor() {
-      this.gameState.player_cards.sort((a, b) => (this.values[a.value] > this.values[b.value]) ? 1 : -1 );
-      this.gameState.player_cards.sort((a, b) => (this.colors[a.color] > this.colors[b.color]) ? 1 : -1 );
+      this.gameState.player_cards.sort((a, b) => (this.values[a.value] < this.values[b.value]) ? 1 : -1 );
+      this.gameState.player_cards.sort((a, b) => (this.colors[a.color] < this.colors[b.color]) ? 1 : -1 );
 
       this.sortByNum = false;
       this.sortByColor = true;

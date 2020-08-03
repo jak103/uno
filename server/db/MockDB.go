@@ -131,11 +131,26 @@ func (db *mockDB) SavePlayer(player model.Player) error {
 }
 
 // SendMessage add a Message to a game chat.
-func (db *mockDB) AddMessage(id string, username string, message model.Message) (*model.Game, error) {
-	if game, ok := db.games[id]; ok {
+func (db *mockDB) AddMessage(gameID string, playerID string, message model.Message) (*model.Game, error) {
+
+	if game, ok := db.games[gameID]; ok {
+
+		player, err := db.LookupPlayer(playerID)
+		message.Player = *player
+
+		if err != nil {
+			return nil, errors.New("mockdb: player not found")
+		}
+
 		fmt.Println("Adding a new Message")
 		game.Messages = append(game.Messages, message)
+
+		if err != nil {
+			return nil, errors.New("mockdb: game not Saved")
+		}
+
 		return &game, nil
+
 	} else {
 		return nil, errors.New("mockdb: game not found")
 	}
