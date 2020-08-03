@@ -150,6 +150,7 @@
           <Chat @snackbarText="runsnackbar" :gameState="gameState"/>
         </v-col>
       </v-row>
+
     </v-container>
 
     <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
@@ -203,9 +204,8 @@
         v-model="snackbar"
         color="info"
         :timeout='4000'
-        v-show="gameState.status === 'Playing' && gameState.current_player != undefined && playerName !== newMessageName">
-        {{snackbarText}}
-
+        v-show="gameState.status === 'Playing' && playerName !== newMessageName"
+        >{{snackbarText}}
         <v-btn text @click="snackbar=false">
           Close
         </v-btn>
@@ -327,7 +327,10 @@ export default {
         this.gameState = res.data;
       }
     },
-
+    sendMessage() {
+      this.snackbarText = this.username + " says: " + this.newMessage;
+      this.snackbar = true;
+    },
     async drawCard() {
       let res = await unoService.drawCard(this.$route.params.id);
       
@@ -355,7 +358,7 @@ export default {
     if(this.updateInterval){
       clearInterval(this.updateInterval);
     }
-  }
+  },
 };
 </script>
 
