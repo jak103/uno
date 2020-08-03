@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jak103/uno/model"
@@ -37,10 +38,18 @@ func (db *mockDB) HasGameByID(id string) bool {
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *mockDB) CreateGame() (*model.Game, error) {
-	myGame := model.Game{ID: uuid.New().String(), Password: "12234"}
+func (db *mockDB) CreateGame(gameName string, creatorID string) (*model.Game, error) {
+	player, _ := db.LookupPlayer(creatorID)
+	myGame := model.Game{
+		ID:       uuid.New().String(),
+		Password: "12234",
+		Creator:  *player,
+		Name:     gameName,
+		Status:   model.WaitingForPlayers}
 	db.games[myGame.ID] = myGame
 	db.gamePasswords[myGame.Password] = myGame
+
+	db.JoinGame(myGame.ID, player.ID)
 	return &myGame, nil
 }
 
@@ -119,6 +128,32 @@ func (db *mockDB) SaveGame(game model.Game) error {
 func (db *mockDB) SavePlayer(player model.Player) error {
 	db.players[player.ID] = player
 	return nil
+}
+
+// SendMessage add a Message to a game chat.
+func (db *mockDB) AddMessage(gameID string, playerID string, message model.Message) (*model.Game, error) {
+
+	if game, ok := db.games[gameID]; ok {
+
+		player, err := db.LookupPlayer(playerID)
+		message.Player = *player
+
+		if err != nil {
+			return nil, errors.New("mockdb: player not found")
+		}
+
+		fmt.Println("Adding a new Message")
+		game.Messages = append(game.Messages, message)
+
+		if err != nil {
+			return nil, errors.New("mockdb: game not Saved")
+		}
+
+		return &game, nil
+
+	} else {
+		return nil, errors.New("mockdb: game not found")
+	}
 }
 
 // Disconnect disconnects from the remote database

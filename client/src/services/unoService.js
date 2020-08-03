@@ -17,6 +17,15 @@ export default {
     return BaseService.get(`/api/games/${gameId}`);
   },
 
+  async getPlayerNameFromToken() {
+    let token = localStorage.getItem('token')
+    if (token) {
+      return BaseService.get(`/api/players/token/${token}`);
+    }else {
+      return ""
+    }
+  },
+
   async drawCard(gameId) {
     return BaseService.post(`/api/games/${gameId}/draw`);
   },
@@ -27,6 +36,11 @@ export default {
   },
   
   async startGame(gameId) {
-      return BaseService.post(`/api/games/${gameId}/start`);
+    return BaseService.post(`/api/games/${gameId}/start`);
   },
+
+  async sendMessage(gameId, playerId, message) {
+    return BaseService.post(`/api/chat/${gameId}/add`, { player: playerId, message: message});
+  },
+
 }
