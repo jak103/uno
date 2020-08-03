@@ -2,7 +2,6 @@ package main
 
 import (
 	"testing"
-
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
@@ -199,4 +198,22 @@ func TestCreatePlayer(t *testing.T){
 	assert.Nil(t, err, "could not find player")
 	// Test to see if the database player and the created player are the same
 	assert.Equal(t, player, databasePlayer)
+}
+
+func TestJoinGame(t *testing.T){
+	// get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// create a new game with one player
+	game, _, err := createNewGame("testGame", "testPlayer")
+	assert.Nil(t, err, "could not create game")
+	// create a new player
+	newPlayer, err := createPlayer("joinGamePlayer")
+	assert.Nil(t, err, "could not create new player")
+	// lookup game from database 
+	game, _ = database.LookupGameByID(game.ID)
+	// attempt to join game
+	game, _ = joinGame(game.ID, newPlayer)
+	// test to see if the new Player is in the game
+	assert.Equal(t, &game.Players[1], newPlayer)
 }
