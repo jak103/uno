@@ -33,7 +33,9 @@
   </div>
   <div v-else-if="number === 'W'" :class="card_classes">
     <span class="inner">
-      <span class="mark">w</span>
+      <span class="mark">
+        <img class="w-inner" src="@/assets/card_symbols/w.svg">
+      </span>
     </span>
   </div>
   <div v-else-if="number === 'R'" :class="card_classes">
@@ -289,10 +291,14 @@ export default {
 /* Start Wild CSS */
 .w:before,
 .w:after {
-  content: "w";
+  content: "wild";
 }
-.mark.w-mark {
-  background-image: linear-gradient(to left, red, yellow, green, blue) !important;
+.w-inner {
+  height: 125%;
+  width: 125%;
+  margin-left: -63%;
+  margin-top: -104%;
+  position: absolute;
 }
 /* End Wild CSS */
 
