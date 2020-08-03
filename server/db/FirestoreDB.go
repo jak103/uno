@@ -17,6 +17,29 @@ type firestoreDB struct {
 	players *firestore.CollectionRef
 }
 
+func (db *firestoreDB) GetAllGames() (*[]model.Game, error) {
+	games := make([]model.Game, 0)
+
+	documents := db.games.DocumentRefs(context.Background())
+	for {
+		docRef, docRefErr := documents.Next()
+
+		if docRefErr == iterator.Done {
+			break
+		}
+
+		var game model.Game
+
+		if docSnapshot, _ := docRef.Get(context.Background()); docSnapshot != nil {
+			_ = docSnapshot.DataTo(&game)
+		}
+
+		games = append(games, game)
+	}
+
+	return &games, nil
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *firestoreDB) HasGameByPassword(password string) bool {
 	game, err := db.LookupGameByPassword(password)
@@ -154,7 +177,27 @@ func (db *firestoreDB) LookupPlayer(id string) (*model.Player, error) {
 
 // JoinGame join a player to a game.
 func (db *firestoreDB) JoinGame(id string, username string) (*model.Game, error) {
-	return nil, nil
+	game, gameErr := db.LookupGameByID(id)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	player, playerErr := db.LookupPlayer(username)
+
+	if playerErr != nil {
+		return nil, playerErr
+	}
+
+	game.Players = append(game.Players, *player)
+
+	err := db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
 }
 
 // SaveGame saves the game
