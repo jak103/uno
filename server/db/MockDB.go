@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jak103/uno/model"
@@ -127,6 +128,32 @@ func (db *mockDB) SaveGame(game model.Game) error {
 func (db *mockDB) SavePlayer(player model.Player) error {
 	db.players[player.ID] = player
 	return nil
+}
+
+// SendMessage add a Message to a game chat.
+func (db *mockDB) AddMessage(gameID string, playerID string, message model.Message) (*model.Game, error) {
+
+	if game, ok := db.games[gameID]; ok {
+
+		player, err := db.LookupPlayer(playerID)
+		message.Player = *player
+
+		if err != nil {
+			return nil, errors.New("mockdb: player not found")
+		}
+
+		fmt.Println("Adding a new Message")
+		game.Messages = append(game.Messages, message)
+
+		if err != nil {
+			return nil, errors.New("mockdb: game not Saved")
+		}
+
+		return &game, nil
+
+	} else {
+		return nil, errors.New("mockdb: game not found")
+	}
 }
 
 // Disconnect disconnects from the remote database
