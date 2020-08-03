@@ -30,7 +30,7 @@ jobs:
     - name: genearte-coverage-file
       working-directory: server
       run: |
-        go test -race -covermode atomic -coverprofile=server-coverage.cov ./... 
+        export DB_TYPE="MOCK" ; go test -race -covermode atomic -coverprofile=server-coverage.cov ./... 
   
     # Runs code coverage in the server directory
     - name: actions-goveralls  
