@@ -26,12 +26,27 @@ type Game struct {
 
 // GameSummary Provides summary information for the lobby
 type GameSummary struct {
-	ID      string     `json:"id"`
-	Name    string     `json:"name"`
-	Creator string     `json:"creator"`
-	Players []string   `json:"players"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Creator string `json:"creator"`
+	// Players []string `json:"players"`
+	Players []Player   `json:"players"`
 	Status  GameStatus `json:"status"`
 }
+
+// GameToSummary Converts a Game to a GameSummary
+// func GameToSummary(g Game) (summary GameSummary) {
+// 	summary.ID = g.ID
+// 	summary.Name = g.Name
+// 	summary.Creator = g.Creator.Name
+// 	summary.Status = g.Status
+
+// 	for _, p := range g.Players {
+// 		summary.Players = append(summary.Players, p.Name)
+// 	}
+
+// 	return summary
+// }
 
 // GameToSummary Converts a Game to a GameSummary
 func GameToSummary(g Game) (summary GameSummary) {
@@ -39,10 +54,9 @@ func GameToSummary(g Game) (summary GameSummary) {
 	summary.Name = g.Name
 	summary.Creator = g.Creator.Name
 	summary.Status = g.Status
-
-	for _, p := range g.Players {
-		summary.Players = append(summary.Players, p.Name)
-	}
+	// Instead of just using the players Name I need the Id so I made it give us all of it
+	// I don't know if this shows other players what other peoples cards are
+	summary.Players = g.Players
 
 	return summary
 }
