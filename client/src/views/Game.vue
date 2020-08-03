@@ -5,7 +5,7 @@
     >
       <!-- Game Players Drawer -->
       <v-navigation-drawer
-          :expand-on-hover="true"
+          :expand-on-hover="switch1"
       >
       <v-list
         nav
@@ -58,6 +58,9 @@
           <!-- Game stats -->
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
+              <p>
+              <v-switch v-model="switch1" :label="`Minimize Players`"></v-switch>
+              </p>
               <p>
                 Current Game id: {{ gameState.game_id }}
               </p>
@@ -209,6 +212,7 @@ export default {
   },
   data() {
     return {
+      switch1: true,
       gameState: {},
       cards: [],
       playerName: "",
