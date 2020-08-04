@@ -276,13 +276,19 @@ func checkForCardInHand(card model.Card, hand []model.Card) bool {
 }
 
 func goToNextPlayer(gameData *model.Game) *model.Game {
-	if gameData.Direction {
-		gameData.CurrentPlayer++
-		gameData.CurrentPlayer %= len(gameData.Players)
+	//check for winner
+	if len(gameData.Players[gameData.CurrentPlayer].Cards) == 0 {
+		gameData.GameOver = gameData.Players[gameData.CurrentPlayer].Name
+		gameData.Status = model.Finished
 	} else {
-		gameData.CurrentPlayer--
-		if gameData.CurrentPlayer < 0 {
-			gameData.CurrentPlayer = len(gameData.Players) - 1
+		if gameData.Direction {
+			gameData.CurrentPlayer++
+			gameData.CurrentPlayer %= len(gameData.Players)
+		} else {
+			gameData.CurrentPlayer--
+			if gameData.CurrentPlayer < 0 {
+				gameData.CurrentPlayer = len(gameData.Players) - 1
+			}
 		}
 	}
 
@@ -313,14 +319,14 @@ func drawTopCard(game *model.Game) (*model.Game, model.Card) {
 }
 
 // TODO: make sure this reflects on the front end
-func checkForWinner() string {
-	for k := range players {
-		if len(allCards[players[k]]) == 0 {
-			return players[k]
-		}
-	}
-	return ""
-}
+// func checkForWinner() string {
+// 	for k := range players {
+// 		if len(allCards[players[k]]) == 0 {
+// 			return players[k]
+// 		}
+// 	}
+// 	return ""
+// }
 
 func checkGameExists(gameID string) (bool, error) {
 	database, err := db.GetDb()
