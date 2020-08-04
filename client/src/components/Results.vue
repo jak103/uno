@@ -1,16 +1,15 @@
 <template>
   <div v-if="players.winner === players.curPlayer">
+    <p style="font-size: 36px; text-align:center">
     WINNER
-    <p> 1 {{players.winner}} 
-      
     </p>
-    <p>2
-      {{players.curPlayer}}
+    <p style="font-size: 24px;text-align:center"> 
+      {{players.winner}} 
     </p>
     <!-- <button v-on:click="counter += 1">Add 1</button> -->
     <div id = "buttonContainer">
-    <div id="playAgain">
-      <button id = "buttons" v-on:click="redirectCall()"> Play Again?</button>
+    <div style="text-align:center" id="playAgain">
+      <button style="width:150px" id = "buttons" v-on:click="redirectCall()"> Play Again?</button>
     </div>
   </div>
   </div>
@@ -51,7 +50,7 @@ export default {
     margin: 0 auto;
   }
   #playAgain{
-    padding-left: 150px;
+    margin-left:250px;
     font-size: 150%;
   }
   #buttons{
