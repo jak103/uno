@@ -244,6 +244,17 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	// draw a card for the discard
 	var drawnCard model.Card
 	game, drawnCard = drawTopCard(game)
+	
+	// ensure that this first card is a number card 
+	for !isNumberCard(drawnCard) {
+		// if not, add it back to the draw pile
+		game.DrawPile = append(game.DrawPile, drawnCard)
+		// reshuffle cards so the same card is not drawn again
+		game.DrawPile = shuffleCards(game.DrawPile)
+		// draw a new card
+		game, drawnCard = drawTopCard(game)
+	}
+
 	game.DiscardPile = append(game.DiscardPile, drawnCard)
 
 	game.Status = "Playing"
