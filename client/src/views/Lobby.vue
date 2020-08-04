@@ -29,12 +29,33 @@
             >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              @click="deleteItems"
+            >
+              <small>Delete Selected Items</small>
+            </v-btn>
           </v-card-title>
+
+          <!-- Data Table -->
           <v-data-table
             :headers="headers"
             :items="games"
             :search="search"
+            dense
           >
+
+            <!-- CheckBox -->
+            <template v-slot:item.check="{item}">
+                <v-checkbox
+                  class="mt-n1"
+                  v-model="item.selected"
+                  primary
+                  hide-details
+                ></v-checkbox>
+            </template>
+
+            <!-- Watch or Join Button -->
             <template v-slot:item.action="{item}">
               <v-btn
                 text
@@ -45,6 +66,7 @@
               </v-btn>
             </template>
           </v-data-table>
+
         </v-card>
       </v-row>
     </v-container>
@@ -138,6 +160,7 @@ export default {
     return {
       search: "",
       headers:[
+        { text: "Check", value: "check" },
         { text: "Name", value: "name" },
         { text: "Creator", value: "creator" },
         { text: "# of Players", value: "players.length" },
@@ -224,7 +247,21 @@ export default {
       } else {
         alert ("Failed to create & join game");
       }
-    }
+    },
+    deleteItems () {
+      let plural = (this.games.length > 1) ? 'these items' : 'this item';
+      if ( confirm(`Are you sure you want to delete ${plural}?`) ) {
+        for ( var i = this.games.length - 1; i >= 0; i--) {
+
+          if (this.games[i].selected) {         
+            console.log(i, this.games[i].name)   
+            unoService.deleteGame(this.games[i].id)
+            this.games.splice(i, 1);
+
+          }
+        }
+      }
+    },
   },
 
   mounted() {

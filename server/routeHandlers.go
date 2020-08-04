@@ -20,6 +20,7 @@ func setupRoutes(e *echo.Echo) {
 	e.GET("/api/games", getGames)
 	e.POST("/api/games", newGame)
 	e.POST("/api/games/:id/join", joinExistingGame)
+	e.GET("/api/games/:id/delete", deleteGame)
 
 	// Create a group that requires a valid JWT
 	group := e.Group("/api")
@@ -94,6 +95,18 @@ func newGame(c echo.Context) error {
 	token := generateToken(creator)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, creator.ID)})
+}
+
+func deleteGame(c echo.Context) error {
+	gameID := c.Param("id")
+	err := deleteOldGame(gameID)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Unable to Delete Game")
+	}
+
+	return c.JSON(http.StatusOK, "Successfully Deleted Game")
+
 }
 
 func joinExistingGame(c echo.Context) error {

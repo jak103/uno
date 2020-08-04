@@ -64,6 +64,20 @@ func createNewGame(gameName string, creatorName string) (*model.Game, *model.Pla
 	return game, creator, nil
 }
 
+func deleteOldGame(gameID string) error {
+	database, err := db.GetDb()
+	if err != nil {
+		return err
+	}
+
+	err = database.DeleteGame(gameID)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func joinGame(game string, player *model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 	if err != nil {
@@ -129,11 +143,11 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 			}
 
 			// Update who plays next, taking into account reverse card and skip card
-			if (card.Value == "R") {
+			if card.Value == "R" {
 				gameData.Direction = !gameData.Direction
 			}
 
-			if (card.Value == "S") {
+			if card.Value == "S" {
 				gameData = goToNextPlayer(gameData)
 			}
 
@@ -244,8 +258,8 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	// draw a card for the discard
 	var drawnCard model.Card
 	game, drawnCard = drawTopCard(game)
-	
-	// ensure that this first card is a number card 
+
+	// ensure that this first card is a number card
 	for !isNumberCard(drawnCard) {
 		// if not, add it back to the draw pile
 		game.DrawPile = append(game.DrawPile, drawnCard)
