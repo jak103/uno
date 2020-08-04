@@ -61,10 +61,11 @@ func (db *mongoDB) CreateGame(gameName string, creatorID string) (*model.Game, e
 	}
 
 	myGame := model.Game{
-		Password: "12234",
-		Creator:  *player,
-		Name:     gameName,
-		Status:   model.WaitingForPlayers}
+		Password:  "12234",
+		Creator:   *player,
+		Name:      gameName,
+		Status:    model.WaitingForPlayers,
+		Direction: true}
 	myGame.Players = append(myGame.Players, *player)
 
 	res, err := db.games.InsertOne(context.Background(), myGame)
