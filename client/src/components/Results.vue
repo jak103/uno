@@ -1,9 +1,11 @@
 <template>
   <div >
-    You lost! But do you know who didn't lose? asdfasdf
-    <p>1 {{gameState.GameOver}} 
-      asdf
-      2 {{curPlayer}}
+    You lost! But do you know who didn't lose? 
+    <p> 1 {{players.winner}} 
+      
+    </p>
+    <p>2
+      {{players.curPlayer}}
     </p>
     <!-- <button v-on:click="counter += 1">Add 1</button> -->
     <div id = "buttonContainer">
@@ -17,7 +19,12 @@
 <script>
 export default {
   name: "Results",
-  // props: ["winner", "curPlayer"],
+  props: {
+    players: {
+      winner: "winner", 
+      curPlayer: "curPlayer"
+      }
+  },
   methods: {
     redirectCall() {
       this.$router.push({ name: 'Lobby'});

@@ -195,7 +195,10 @@
       </v-card>
     </v-dialog>
     <div v-if="gameState.status === 'Finished'">
-      <Results />
+      <Results v-bind:players="{
+          winner: 'Veronica',
+          curPlayer: 'Veridian Dynamics'
+          }"/>
     </div>
 
       <v-snackbar
