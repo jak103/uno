@@ -262,19 +262,24 @@ func TestGoToNextPlayer(t *testing.T) {
 	database.SaveGame(*game)
 	game , err  = joinGame(game.ID, player2)
 	database.SaveGame(*game)
+	// Testing a situation where the players have no cards to trigger winning condition if statement.  
+	game.CurrentPlayer = 0
 	game = goToNextPlayer(game)
-	assert.Equal(t,0,game.CurrentPlayer)
+	// When winning condition is present goToNextPlayer will not change the current player
+	assert.Equal(t, 0, game.CurrentPlayer)
 	// Dealing cards to players
 	game, err = dealCards(game)
+	game.CurrentPlayer = 1
 	assert.Nil(t, err, "MockDB: Could not deal cards")
 	// Testing one direction
 	game = goToNextPlayer(game)
-	assert.Equal(t,1,game.CurrentPlayer)
+	assert.Equal(t,0,game.CurrentPlayer)
 	// Swapping direction
-	game.Direction = false
+	game.Direction = !game.Direction
 	// Testing the other direction 
 	game = goToNextPlayer(game)
-	assert.Equal(t,0,game.CurrentPlayer)
-	game = goToNextPlayer(game)
 	assert.Equal(t,1,game.CurrentPlayer)
+	game = goToNextPlayer(game)
+	assert.Equal(t,0,game.CurrentPlayer)
+	database.DeleteGame(game.ID)
 }
