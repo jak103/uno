@@ -21,12 +21,26 @@ const routes = [
     // This is what you should always do except for '/' => 'Home'
     component: () => import(/* webpackChunkName: "about" */ '../views/Game.vue'),
     props: true
+  },
+  {
+    path: '/help',
+    name: 'Help',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Help.vue'),
+    // props: true
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  // for anchor scrolling
+  scrollBehavior (to) {
+    if (to.hash) {
+        return {selector: to.hash}
+    } else {
+        return { x: 0, y: 0 }
+    }
+  },
   routes
 })
 
