@@ -17,7 +17,8 @@
     <v-card id='message-box' outlined tile>
         <div class="container">
             <div v-if="!displayInfo" class="row">
-                <div class="col-9">
+                <div class="col-9" @keypress.enter="sendMessage">
+                    <!-- <v-on  -->
                     <v-text-field
                         @keydown.enter="sendMessage"
                         autofocus
@@ -26,6 +27,7 @@
                         clearable
                         v-model="newMessage"
                     > </v-text-field>
+                    <!-- </v-on> -->
                 </div>
                 <div class="col-3">
                     <v-card-actions>

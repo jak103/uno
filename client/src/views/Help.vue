@@ -1,5 +1,5 @@
 <template class="Scroll">
-
+    
     <div class="Scroll">
         <v-container>
             <section id="rules">
@@ -66,6 +66,7 @@
 
 <script>
  import Card from "../components/Card";
+ 
  export default {
     components: {
     Card
