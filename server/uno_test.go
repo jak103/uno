@@ -2,14 +2,18 @@ package main
 
 import (
 	"testing"
-	//"github.com/jak103/uno/db"
+	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"errors"
 )
 
+
+
 // This function is meant to get a game and a player into the data base in a usable state for testing.
-/*
 func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
+	os.Setenv("DB_TYPE", "MOCK")
 	player, _ := database.CreatePlayer("Player 1")
 
 	game, _ := database.CreateGame("Game 1", player.ID)
@@ -21,10 +25,8 @@ func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 	database.SaveGame(*game)
 
 	return game, player
-	// This is created "Game 1" games in the real db
-	// TODO: This should use a MockDB
 }
-*/
+
 
 func TestDrawCard(t *testing.T) {
 	/*
@@ -124,12 +126,13 @@ func TestDrawCard(t *testing.T) {
 	assert.Equal(t, 0, len(player2.Cards))
 	assert.Equal(t, 107, len(game.DrawPile))
 	*/
-	// TODO: Once we actually support a MockDB for unit tests, check the validity of our response
+	// TODO: This test should be rewritten to use a MockDB
+	assert.True(t, true)
 
 }
 
 func TestDealCards(t *testing.T) {
-	/*
+	os.Setenv("DB_TYPE", "MOCK")
 	// Generate real game in database and real player
 	database, err := db.GetDb()
 	game, player := setupGameWithPlayer(database)
@@ -175,9 +178,6 @@ func TestDealCards(t *testing.T) {
 	}
 	assert.Equal(t, 180, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
-	*/
-	// TODO: This test should be rewritten to use a MockDB
-	assert.True(t, true)
 
 }
 
@@ -195,33 +195,32 @@ func TestCheckForCardInHand(t *testing.T){
 }
 
 func TestCreatePlayer(t *testing.T){
-	/*
+	os.Setenv("DB_TYPE", "MOCK")
 	// get the database
 	database, err := db.GetDb()
 	assert.Nil(t, err, "could not find database")
 	// use the createPlayer function
-	player, err := createPlayer("test")
-	assert.Nil(t, err, "could not create player")
+	player, err := createPlayer("test") 
+ 	assert.Nil(t, err, "could not create player")
 	// Lookup the player in the database to see if it is there
 	databasePlayer, err := database.LookupPlayer(player.ID)
 	assert.Nil(t, err, "could not find player")
 	// Test to see if the database player and the created player are the same
-	assert.Equal(t, player, databasePlayer)
-	*/
-	// TODO: This test should be rewritten to use a <ockDB
-	assert.True(t, true)
+	assert.Equal(t, player, databasePlayer) 
 }
 
 func TestJoinGame(t *testing.T){
-	/*
+	os.Setenv("DB_TYPE", "MOCK")
 	// get database
 	database, err := db.GetDb()
 	assert.Nil(t, err, "could not find database")
 	// create a new game with one player
-	game, _, err := createNewGame("testGame", "testPlayer")
+	player, err := database.CreatePlayer("testPlayer")
+	assert.Nil(t, err, "could not create new player")
+	game, err := database.CreateGame("testGame", player.ID)
 	assert.Nil(t, err, "could not create game")
 	// create a new player
-	newPlayer, err := createPlayer("joinGamePlayer")
+	newPlayer, err := database.CreatePlayer("joinGamePlayer")
 	assert.Nil(t, err, "could not create new player")
 	// attempt to join game
 	game, err = joinGame(game.ID, newPlayer)
@@ -230,21 +229,51 @@ func TestJoinGame(t *testing.T){
 	// lookup game from database 
 	game, err = database.LookupGameByID(game.ID)
 	assert.Nil(t, err, "could not find game in database")
-	// test to see if the new Player is in the game
+	// test to see if the newPlayer is in the game
 	assert.Contains(t, game.Players, *newPlayer)
-	*/
-	// TODO: This test should be rewritten to use a MockDB
-	assert.True(t, true)
+	// attempt to join an errored game
+	err = errors.New("MockDB: Error!")
+	game, err = joinGame("Bad ID", newPlayer)
+	assert.Nil(t, game, "Joined a valid game")
+
 }
 
 
 func TestDrawTopCard(t *testing.T) {
-	/*
-	game, _, err := createNewGame("Test Game", "Test Player")
+	os.Setenv("DB_TYPE", "MOCK")
+	// Creating database and testing for errors
+	database, err := db.GetDb()
+	assert.Nil(t, err, "MockDB: Could not retrive database")
+	// Creating player and testing for errors
+	player , err := database.CreatePlayer("Test Player")
+	assert.Nil(t, err, "MockDB: Could not create player")
+	// Creating game and testing for errors 
+	game, err := database.CreateGame("Test Game", player.ID)
+	assert.Nil(t, err, "MockDB: Could not create game")
+	//Setting game.DrawPile to a test deck
 	game.DrawPile = []model.Card{model.Card{"red", "1"}, model.Card{"blue", "2"}, model.Card{"green", "3"}}
-	game, cardReturned := drawTopCard(game)
+	game, cardReturned := drawTopCard(game) // Testing drawTopCard
 	assert.Equal(t, model.Card{"green", "3"}, cardReturned)
-	*/
-	// TODO: This test should be rewritten to use a MockDB
-	assert.True(t, true)
+}
+
+func TestGoToNextPlayer(t *testing.T) {
+	os.Setenv("DB_TYPE", "MOCK")
+	// Creating database and testing for errors
+	database, err := db.GetDb()
+	assert.Nil(t, err, "MockDB: Could not retrive database")
+	// Creating first player and testing for errors
+	player1 , err := database.CreatePlayer("Test 1")
+	assert.Nil(t, err, "MockDB: Could not create player")
+	// Creating second player to add to game and testing for errors
+	player2 , err := database.CreatePlayer("Test 2")
+	assert.Nil(t, err, "MockDB: Could not create player")
+	// Creating game and testing for errors 
+	game, err := database.CreateGame("Test Game 1", player1.ID)
+	assert.Nil(t, err, "MockDB: Could not create game")
+	game , err  = joinGame(game.ID, player1)
+	database.SaveGame(*game)
+	game , err  = joinGame(game.ID, player2)
+	database.SaveGame(*game)
+	game = goToNextPlayer(game)
+	assert.Equal(t,1,game.CurrentPlayer)
 }
