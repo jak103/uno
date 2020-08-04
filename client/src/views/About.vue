@@ -53,8 +53,6 @@
             Click to play a card from your hand or
             <v-btn v-if="username == current_player" @click.native="drawCard">Draw from deck</v-btn>
           </v-card>
-          <v-card v-else-if="game_over != ''">{{ gameOver() }}</v-card>
-
           <v-card v-else :class="'ma-3 pa-6'" outlined tile>Waiting for {{ current_player }}</v-card>
           <Card
             v-for="(card, i) in cards"
@@ -99,9 +97,6 @@ export default {
     Card
   },
   methods: {
-    gameOver() {
-      this.$router.push({ name: 'GameOver', params:{curPlayer: this.username, winner: this.game_over}});
-    },
     updateData() {
       unoService.update(this.game_id, this.username).then(res => {
         if (res.data.valid) {

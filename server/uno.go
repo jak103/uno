@@ -232,7 +232,7 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	//For each player currently in the game, give everyone 7 cards
 	for k := range game.Players {
 		cards := []model.Card{}
-		for i := 0; i < 7; i++ {
+		for i := 0; i < 1; i++ {
 
 			var drawnCard model.Card
 			game, drawnCard = drawTopCard(game)

@@ -1,31 +1,32 @@
 <template>
-  <div id="gameOver">
-    <div id='displayMessage'> 
-      <h1>Game Over</h1>
-      <p>Thank-You For Playing Uno!</p>
-    </div>
+  <div >
+    You lost! But do you know who didn't lose? asdfasdf
+    <p>1 {{gameState.GameOver}} 
+      asdf
+      2 {{curPlayer}}
+    </p>
+    <!-- <button v-on:click="counter += 1">Add 1</button> -->
     <div id = "buttonContainer">
-      <div id="playAgain">
-        <button id = "buttons" v-on:click="redirectCall"> Play Again?</button>
-      </div>
+    <div id="playAgain">
+      <button id = "buttons" v-on:click="home"> Play Again?</button>
     </div>
   </div>
+  </div> 
 </template>
 
 <script>
 export default {
-  name: "Winner",
+  name: "Results",
+  // props: ["winner", "curPlayer"],
   methods: {
     redirectCall() {
-      this.$router.push({ name: 'Login'});
+      this.$router.push({ name: 'Lobby'});
     }
  }
-};
-
+}
 </script>
 
 <style scoped>
-
   #displayMessage{
     text-align: center;
     font-size: 300%;
@@ -55,5 +56,4 @@ export default {
     padding-left: 50px;
     font-size: 150%;
   }
-
 </style>

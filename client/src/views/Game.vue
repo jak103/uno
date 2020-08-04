@@ -113,10 +113,6 @@
             <v-card-text v-else-if="gameState.status === 'Playing'">
               Waiting for {{ gameState.current_player.name }}
             </v-card-text>
-            
-            <v-card-text v-else-if="gameState.status === 'Finished'">
-              The game is finished!
-            </v-card-text>
           </v-card>
 
           <div v-if="gameState.status === 'Playing'" >
@@ -198,6 +194,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <div v-if="gameState.status === 'Finished'">
+      <Results />
+    </div>
 
       <v-snackbar
         v-model="snackbar"
@@ -218,12 +217,14 @@
 import unoService from "../services/unoService";
 import Card from "../components/Card";
 import Chat from "../components/Chat";
+import Results from "../components/Results";
 
 export default {
   name: "Game",
   components: {
     Card,
     Chat,
+    Results,
   },
   data() {
     return {
@@ -269,6 +270,9 @@ export default {
       }else{
         this.loadingHand = false
       }
+    },
+    gameOver() {
+      this.$router.push({ name: 'GameOver', params:{curPlayer: this.gameState.current_player.name, winner: this.gameState.winner}});
     },
     orgOff() {
       if (this.sortByColor == true || this.sortByNum == true) {

@@ -19,13 +19,8 @@ const routes = [
     // which is lazy-loaded when the route is visited.
 
     // This is what you should always do except for '/' => 'Home'
-    component: () => import(/* webpackChunkName: "about" */ '../views/Game.vue'),
+    component: () => import(/* webpackChunkName: "Game" */ '../views/Game.vue'),
     props: true
-  },
-  {
-    path: '/GameOver',
-    name: 'GameOver',
-    component: () => import('../views/GameOver.vue')
   }
 ]
 
