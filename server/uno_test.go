@@ -23,35 +23,6 @@ func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 	return game, player
 }
 
-<<<<<<< HEAD
-func TestContains(t *testing.T) {
-	// setup test data
-	var data []string = []string{}
-	data = append(data, "Test")
-
-	// check to see if "Test" is found in the correct index
-	index, found := contains(data, "Test")
-	assert.Equal(t, index, 0)
-	assert.Equal(t, found, true)
-
-	// make sure a missing string is not found at any index
-	index, found = contains(data, "Invalid entry")
-	assert.Equal(t, index, -1)
-	assert.Equal(t, found, false)
-}
-
-func TestCheckForWinner(t *testing.T) {
-	players = []string{"player1", "player2"}
-	allCards = make(map[string][]model.Card)
-	assert.Equal(t, "player1", checkForWinner())
-	dealCards()
-	assert.Equal(t, "", checkForWinner())
-	allCards[players[0]] = make([]model.Card, 0)
-	assert.Equal(t, "player1", checkForWinner())
-	allCards[players[0]] = make([]model.Card, 5)
-	allCards[players[1]] = make([]model.Card, 0)
-	assert.Equal(t, "player2", checkForWinner())
-=======
 func TestDrawCard(t *testing.T) {
 
 	// Test passing in a bogus game id, we should get an error
@@ -200,7 +171,6 @@ func TestDealCards(t *testing.T) {
 	assert.Equal(t, 180, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
 
->>>>>>> dev
 }
 
 func TestCheckForCardInHand(t *testing.T){
