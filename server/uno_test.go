@@ -128,7 +128,6 @@ func TestDrawCard(t *testing.T) {
 	*/
 	// TODO: This test should be rewritten to use a MockDB
 	assert.True(t, true)
-
 }
 
 func TestDealCards(t *testing.T) {
@@ -178,7 +177,6 @@ func TestDealCards(t *testing.T) {
 	}
 	assert.Equal(t, 180, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
-
 }
 
 func TestCheckForCardInHand(t *testing.T){
@@ -238,7 +236,6 @@ func TestJoinGame(t *testing.T){
 
 }
 
-
 func TestDrawTopCard(t *testing.T) {
 	os.Setenv("DB_TYPE", "MOCK")
 	// Creating database and testing for errors
@@ -252,7 +249,8 @@ func TestDrawTopCard(t *testing.T) {
 	assert.Nil(t, err, "MockDB: Could not create game")
 	//Setting game.DrawPile to a test deck
 	game.DrawPile = []model.Card{model.Card{"red", "1"}, model.Card{"blue", "2"}, model.Card{"green", "3"}}
-	game, cardReturned := drawTopCard(game) // Testing drawTopCard
+	// Testing drawTopCard
+	game, cardReturned := drawTopCard(game) 
 	assert.Equal(t, model.Card{"green", "3"}, cardReturned)
 }
 
@@ -270,10 +268,17 @@ func TestGoToNextPlayer(t *testing.T) {
 	// Creating game and testing for errors 
 	game, err := database.CreateGame("Test Game 1", player1.ID)
 	assert.Nil(t, err, "MockDB: Could not create game")
+	// Adding players
 	game , err  = joinGame(game.ID, player1)
 	database.SaveGame(*game)
 	game , err  = joinGame(game.ID, player2)
 	database.SaveGame(*game)
+	// Testing one direction
 	game = goToNextPlayer(game)
 	assert.Equal(t,1,game.CurrentPlayer)
+	// Swapping direction
+	game.Direction = true
+	// Testing the other direction 
+	game = goToNextPlayer(game)
+	assert.Equal(t,0,game.CurrentPlayer)
 }
