@@ -177,8 +177,11 @@
 
     </v-container>
 
-    <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
-      Chat
+    <div 
+      v-if="gameState.status === 'Playing' && gameState.current_player != undefined" 
+      @click="chatOpen = !chatOpen"
+      class="float-button">
+        Chat
     </div>
     <v-dialog
       v-model="chooseColorDialog.visible"
