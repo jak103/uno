@@ -22,6 +22,15 @@
           <v-list-item-content>
             <v-list-item-title>Players</v-list-item-title>
           </v-list-item-content>
+
+          <v-list-item-icon>
+            <v-icon class="pt-3" v-if="gameState.direction === true">
+            mdi-arrow-down-bold
+            </v-icon>
+            <v-icon class="pt-3" v-else>
+            mdi-arrow-up-bold
+            </v-icon>
+          </v-list-item-icon>
         </v-list-item>
 
         <v-divider></v-divider>
