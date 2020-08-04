@@ -278,7 +278,14 @@ export default {
         this.gameState = res.data;
       }
       this.decideSort()
+    },  
+    async startGame() {
+      await unoService.startGame(this.$route.params.id);
+      // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
+      this.updateData(); 
     },
+
+    // Methods for organizing the Cards, added by Andrew McMullin for the organize-cards issue
     decideSort() {
       if (this.sortByColor) {
         this.orgByColor()
@@ -288,7 +295,6 @@ export default {
         this.loadingHand = false
       }
     },
-    // Methods for organizing the Cards
     orgOff() {
       if (this.sortByColor == true || this.sortByNum == true) {
         this.loadingHand = true;
@@ -313,11 +319,6 @@ export default {
 
       this.sortByNum = false;
       this.sortByColor = true;
-    },
-    async startGame() {
-      await unoService.startGame(this.$route.params.id);
-      // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
-      this.updateData(); 
     },
 
     runsnackbar(name, message) {
@@ -357,12 +358,15 @@ export default {
         this.gameState = res.data;
       }
     },
+
+    // Getting a hint, added by the creator of the Help Button
     hint(){
       var color = this.gameState.current_card.color
       var number = this.gameState.current_card.value
       alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
     }, 
   }, 
+
   created() {
     this.updateData();
     this.updateInterval = setInterval(() => {
@@ -370,6 +374,8 @@ export default {
     }, 2000);
   },
   mounted() {
+    this.$emit('sendGameID', this.$route.params.id)
+
     unoService.getPlayerNameFromToken()
     .then( resp => {
         this.playerName = resp?.data?.name
