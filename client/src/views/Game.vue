@@ -139,6 +139,12 @@
               @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
             ></Card>
           </div>
+          <div v-if="gameState.status === 'Finished'">
+            <Results v-bind:players="{
+                winner: gameState.gameOver,
+                curPlayer: playerName 
+                }"/>
+          </div>
         </v-col>
 
         <!-- Chat -->
@@ -194,12 +200,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <div v-if="gameState.status === 'Finished'">
-      <Results v-bind:players="{
-          winner: gameState.gameOver,
-          curPlayer: playerName 
-          }"/>
-    </div>
 
       <v-snackbar
         v-model="snackbar"

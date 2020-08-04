@@ -1,6 +1,6 @@
 <template>
-  <div >
-    You lost! But do you know who didn't lose? 
+  <div v-if="players.winner === players.curPlayer">
+    WINNER
     <p> 1 {{players.winner}} 
       
     </p>
@@ -10,10 +10,13 @@
     <!-- <button v-on:click="counter += 1">Add 1</button> -->
     <div id = "buttonContainer">
     <div id="playAgain">
-      <button id = "buttons" v-on:click="home"> Play Again?</button>
+      <button id = "buttons" v-on:click="redirectCall()"> Play Again?</button>
     </div>
   </div>
-  </div> 
+  </div>
+  <div v-else>
+    You lost! But do you know who didn't lose? 
+  </div>
 </template>
 
 <script>
