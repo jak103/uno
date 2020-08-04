@@ -128,26 +128,25 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 				}
 			}
 
-			if card.Value == "S" {
-				gameData = goToNextPlayer(gameData)
-			}
-
-			if card.Value == "D2" {
-				gameData = goToNextPlayer(gameData)
-				gameData = drawNCards(gameData, 2)
-			}
-
-			if card.Value == "W4" {
-				gameData = goToNextPlayer(gameData)
-				gameData = drawNCards(gameData, 4)
-			}
-
-			if card.Value == "R" {
+			// Update who plays next, taking into account reverse card and skip card
+			if (card.Value == "R") {
 				gameData.Direction = !gameData.Direction
+			}
+
+			if (card.Value == "S") {
+				gameData = goToNextPlayer(gameData)
 			}
 
 			gameData = goToNextPlayer(gameData)
 
+			// take into account cards that force the next player to draw
+			if card.Value == "D2" {
+				gameData = drawNCards(gameData, 2)
+			}
+
+			if card.Value == "W4" {
+				gameData = drawNCards(gameData, 4)
+			}
 		}
 	}
 
@@ -245,6 +244,17 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	// draw a card for the discard
 	var drawnCard model.Card
 	game, drawnCard = drawTopCard(game)
+	
+	// ensure that this first card is a number card 
+	for !isNumberCard(drawnCard) {
+		// if not, add it back to the draw pile
+		game.DrawPile = append(game.DrawPile, drawnCard)
+		// reshuffle cards so the same card is not drawn again
+		game.DrawPile = shuffleCards(game.DrawPile)
+		// draw a new card
+		game, drawnCard = drawTopCard(game)
+	}
+
 	game.DiscardPile = append(game.DiscardPile, drawnCard)
 
 	game.Status = "Playing"
@@ -276,13 +286,19 @@ func checkForCardInHand(card model.Card, hand []model.Card) bool {
 }
 
 func goToNextPlayer(gameData *model.Game) *model.Game {
-	if gameData.Direction {
-		gameData.CurrentPlayer++
-		gameData.CurrentPlayer %= len(gameData.Players)
+	//check for winner
+	if len(gameData.Players[gameData.CurrentPlayer].Cards) == 0 {
+		gameData.GameOver = gameData.Players[gameData.CurrentPlayer].Name
+		gameData.Status = model.Finished
 	} else {
-		gameData.CurrentPlayer--
-		if gameData.CurrentPlayer < 0 {
-			gameData.CurrentPlayer = len(gameData.Players) - 1
+		if gameData.Direction {
+			gameData.CurrentPlayer++
+			gameData.CurrentPlayer %= len(gameData.Players)
+		} else {
+			gameData.CurrentPlayer--
+			if gameData.CurrentPlayer < 0 {
+				gameData.CurrentPlayer = len(gameData.Players) - 1
+			}
 		}
 	}
 
