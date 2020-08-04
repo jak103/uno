@@ -6,7 +6,7 @@
         <div class="col">
             <div v-for="(message) in messages" 
                 :key="message.id"
-                :class="[message.player.id === gameState.player_id ? 'from-me' : 'from-them', 'message']">
+                :class="[message.player.id === player.id ? 'from-me' : 'from-them', 'message']">
                 <div class="message-author"><small>{{ message.player.name }}</small><small v-show="message.player.color === undefined"> ... ( watching )</small></div>
                 <div :class="[message.player.color != undefined ? message.player.color : '', 'message-content']">{{ message.message }}</div>
             </div>

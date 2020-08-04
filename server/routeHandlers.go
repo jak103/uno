@@ -200,7 +200,12 @@ func getPlayerFromToken(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Unexpected ID returned on lookup. You can only look up player data for yourself.")
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"name": player.Name, "id": player.ID})
+	cards := player.Cards
+	if cards == nil {
+		cards = make([]model.Card, 0)
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"name": player.Name, "id": player.ID, "cards": cards})
 }
 
 func startGame(c echo.Context) error {
@@ -234,6 +239,11 @@ func startGame(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Could not save game state.")
 	}
 
+	// update players state in the db
+	for _, player := range game.Players {
+		database.SavePlayer(player)
+	}
+
 	gameState := buildGameState(game, playerID)
 
 	return c.JSON(http.StatusOK, gameState)
@@ -256,6 +266,17 @@ func play(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Error playing the game card")
 	}
 
+	// update the current player's state in the db
+	database, err := db.GetDb()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not connect to database.")
+	}
+	for _, player := range game.Players {
+		if player.ID == playerID {
+			database.SavePlayer(player)
+		}
+	}
+
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
@@ -272,6 +293,17 @@ func draw(c echo.Context) error {
 		return err
 	}
 
+	// update the current player's state in the db
+	database, err := db.GetDb()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not connect to database.")
+	}
+	for _, player := range game.Players {
+		if player.ID == playerID {
+			database.SavePlayer(player)
+		}
+	}
+
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
@@ -285,24 +317,12 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["game_id"] = game.ID
 	gameState["status"] = game.Status
 	gameState["name"] = game.Name
-	gameState["player_id"] = playerID
 	gameState["messages"] = game.Messages
 
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[len(game.DiscardPile)-1]
 	} else {
 		gameState["current_card"] = model.Card{}
-	}
-
-	for _, player := range game.Players {
-		if player.ID != playerID {
-			for _, card := range player.Cards {
-				card.Color = "Blank"
-				card.Value = "Blank"
-			}
-		} else {
-			gameState["player_cards"] = player.Cards
-		}
 	}
 
 	gameState["all_players"] = game.Players

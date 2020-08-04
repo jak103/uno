@@ -17,7 +17,7 @@ export default {
     return BaseService.get(`/api/games/${gameId}`);
   },
 
-  async getPlayerNameFromToken() {
+  async getPlayerFromToken() {
     let token = localStorage.getItem('token')
     if (token) {
       return BaseService.get(`/api/players/token/${token}`);

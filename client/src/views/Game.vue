@@ -65,7 +65,7 @@
                 Status: {{ gameState.status }}
               </p>
               <p>
-                Your Name: {{ playerName }}
+                Your Name: {{ player.name }}
               </p>
               <p v-if="gameState.draw_pile != undefined">
                 Cards Remaining in Draw Pile: {{ gameState.draw_pile.length }}
@@ -98,7 +98,7 @@
             tile
           >
             <v-card-text v-if="gameState.status === 'Waiting For Players'">
-              <v-row v-if="gameState.creator != undefined && gameState.creator.id == gameState.player_id">
+              <v-row v-if="gameState.creator != undefined && gameState.creator.id == player.id">
                 You are the creator of the game. When you are ready: <v-btn @click.native="startGame">Start Game</v-btn>
               </v-row>
               <v-row v-else>
@@ -106,7 +106,7 @@
               </v-row>
             </v-card-text>
 
-            <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
+            <v-card-text v-if="gameState.status === 'Playing' && player.id === gameState.current_player.id">
               Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
             </v-card-text>
 
@@ -136,7 +136,7 @@
             </v-card>
 
             <Card
-              v-for="(card, i) in gameState.player_cards"
+              v-for="(card, i) in player.cards"
               :key="i"
               :number="card.value"
               :color="card.color"
@@ -147,7 +147,9 @@
 
         <!-- Chat -->
         <v-col v-show="chatOpen" class="float-chat">
-          <Chat @snackbarText="runsnackbar" :gameState="gameState"/>
+          <Chat @snackbarText="runsnackbar" 
+          :gameState="gameState"
+          :player="player"/>
         </v-col>
       </v-row>
 
@@ -204,7 +206,7 @@
         v-model="snackbar"
         color="info"
         :timeout='4000'
-        v-show="gameState.status === 'Playing' && playerName !== newMessageName"
+        v-show="gameState.status === 'Playing' && player.name !== newMessageName"
         >{{snackbarText}}
         <v-btn text @click="snackbar=false">
           Close
@@ -233,7 +235,7 @@ export default {
 
       chatOpen: false,
       
-      playerName: "",
+      player: {},
       chooseColorDialog: {
         visible: false,
         card: {},
@@ -259,6 +261,12 @@ export default {
       if (res.data != null) {
         this.gameState = res.data;
       }
+
+       // update player data
+      let playerRes = await unoService.getPlayerFromToken();
+      if (playerRes.data) {
+        this.player = {name: playerRes?.data?.name, id:playerRes?.data?.id, cards: playerRes?.data?.cards};
+      }
       this.decideSort()
     },
     decideSort() {
@@ -278,18 +286,18 @@ export default {
       this.sortByColor = false;
     },
     orgByNum() {
-      if (this.gameState.player_cards != undefined) {
-        this.gameState.player_cards.sort((a, b) => (this.colors[a.color] > this.colors[b.color]) ? 1 : -1 );
-        this.gameState.player_cards.sort((a, b) => (this.values[a.value] > this.values[b.value]) ? 1 : -1 );
+      if (this.player.cards != undefined) {
+        this.player.cards.sort((a, b) => (this.colors[a.color] > this.colors[b.color]) ? 1 : -1 );
+        this.player.cards.sort((a, b) => (this.values[a.value] > this.values[b.value]) ? 1 : -1 );
       }
 
       this.sortByNum = true;
       this.sortByColor = false;
     },
     orgByColor() {
-      if (this.gameState.player_cards != undefined) {
-        this.gameState.player_cards.sort((a, b) => (this.values[a.value] < this.values[b.value]) ? 1 : -1 );
-        this.gameState.player_cards.sort((a, b) => (this.colors[a.color] < this.colors[b.color]) ? 1 : -1 );
+      if (this.player.cards != undefined) {
+        this.player.cards.sort((a, b) => (this.values[a.value] < this.values[b.value]) ? 1 : -1 );
+        this.player.cards.sort((a, b) => (this.colors[a.color] < this.colors[b.color]) ? 1 : -1 );
       }
 
       this.sortByNum = false;
@@ -326,6 +334,12 @@ export default {
       if (res.data) {
         this.gameState = res.data;
       }
+
+      // update player data
+      let playerRes = await unoService.getPlayerFromToken();
+      if (playerRes.data) {
+        this.player = {name: playerRes?.data?.name, id:playerRes?.data?.id, cards: playerRes?.data?.cards};
+      }
     },
     sendMessage() {
       this.snackbarText = this.username + " says: " + this.newMessage;
@@ -337,6 +351,12 @@ export default {
       if (res.data) {
         this.gameState = res.data;
       }
+     
+      // update player data
+      let playerRes = await unoService.getPlayerFromToken();
+      if (playerRes.data) {
+        this.player = {name: playerRes?.data?.name, id:playerRes?.data?.id, cards: playerRes?.data?.cards};
+      }
     }
   },
   created() {
@@ -346,12 +366,12 @@ export default {
     }, 2000);
   },
   mounted() {
-    unoService.getPlayerNameFromToken()
+    unoService.getPlayerFromToken()
     .then( resp => {
-        this.playerName = resp?.data?.name
+        this.player = {name: resp?.data?.name, id:resp?.data?.id, cards: resp?.data?.cards};
     })
     .catch(err => {
-      console.err("Could not get player name from assigned token\n", err)
+      console.error("Could not get player name from assigned token\n", err)
     })
   },
   beforeDestroy (){
