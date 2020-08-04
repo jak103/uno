@@ -212,6 +212,7 @@ func TestJoinGame(t *testing.T){
 	assert.Nil(t, err, "could not create new player")
 	// attempt to join game
 	game, err = joinGame(game.ID, newPlayer)
+	database.SaveGame(*game)
 	assert.Nil(t, err, "could not join game with new player")
 	// lookup game from database 
 	game, err = database.LookupGameByID(game.ID)
