@@ -5,7 +5,6 @@ import (
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"errors"
 )
 
@@ -201,25 +200,25 @@ func TestCreatePlayer(t *testing.T){
 }
 
 func TestJoinGame(t *testing.T){
-	// get database
+	// Get database
 	database, err := db.GetDb()
 	assert.Nil(t, err, "could not find database")
-	// create a new game with one player
+	// Create a new game with one player
 	player, err := database.CreatePlayer("testPlayer")
 	assert.Nil(t, err, "could not create new player")
 	game, err := database.CreateGame("testGame", player.ID)
 	assert.Nil(t, err, "could not create game")
-	// create a new player
+	// Create a new player
 	newPlayer, err := database.CreatePlayer("joinGamePlayer")
 	assert.Nil(t, err, "could not create new player")
-	// attempt to join game
+	// Attempt to join game
 	game, err = joinGame(game.ID, newPlayer)
 	database.SaveGame(*game)
 	assert.Nil(t, err, "could not join game with new player")
-	// lookup game from database 
+	// Lookup game from database 
 	game, err = database.LookupGameByID(game.ID)
 	assert.Nil(t, err, "could not find game in database")
-	// test to see if the newPlayer is in the game
+	// Test to see if the newPlayer is in the game
 	assert.Contains(t, game.Players, *newPlayer)
 	// attempt to join an errored game
 	err = errors.New("MockDB: Error!")
@@ -238,7 +237,7 @@ func TestDrawTopCard(t *testing.T) {
 	// Creating game and testing for errors 
 	game, err := database.CreateGame("Test Game", player.ID)
 	assert.Nil(t, err, "MockDB: Could not create game")
-	//Setting game.DrawPile to a test deck
+	// Setting game.DrawPile to a test deck
 	game.DrawPile = []model.Card{model.Card{"red", "1"}, model.Card{"blue", "2"}, model.Card{"green", "3"}}
 	// Testing drawTopCard
 	game, cardReturned := drawTopCard(game) 
@@ -263,14 +262,19 @@ func TestGoToNextPlayer(t *testing.T) {
 	database.SaveGame(*game)
 	game , err  = joinGame(game.ID, player2)
 	database.SaveGame(*game)
+	game = goToNextPlayer(game)
+	assert.Equal(t,0,game.CurrentPlayer)
+	// Dealing cards to players
 	game, err = dealCards(game)
 	assert.Nil(t, err, "MockDB: Could not deal cards")
 	// Testing one direction
 	game = goToNextPlayer(game)
-	assert.Equal(t,0,game.CurrentPlayer)
+	assert.Equal(t,1,game.CurrentPlayer)
 	// Swapping direction
 	game.Direction = false
 	// Testing the other direction 
+	game = goToNextPlayer(game)
+	assert.Equal(t,0,game.CurrentPlayer)
 	game = goToNextPlayer(game)
 	assert.Equal(t,1,game.CurrentPlayer)
 }
