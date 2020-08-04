@@ -27,7 +27,7 @@
 // import axios from 'axios';
 export default {
   name: "App",
-
+  title: "Uno",
   components: {},
   data: () => ({
     //
