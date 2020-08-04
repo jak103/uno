@@ -163,6 +163,7 @@
           <Chat @snackbarText="runsnackbar" :gameState="gameState"/>
         </v-col>
       </v-row>
+
     </v-container>
 
     <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
@@ -232,12 +233,15 @@ import Card from "../components/Card";
 import Chat from "../components/Chat";
 
 export default {
+  
   name: "Game",
+  title:"Greatest Uno",
   components: {
     Card,
     Chat,
   },
   data() {
+    
     return {
       pane_lock: true,
       gameState: {},
@@ -319,8 +323,6 @@ export default {
 
     runsnackbar(name, message) {
       this.newMessageName = name;
-      console.log(this.newMessageName)
-      console.log( this.gameState.current_player != undefined, this.playerName !== this.newMessageName )
       this.snackbarText = name + " says: " + message;
       this.snackbar = true;
     },
@@ -345,7 +347,10 @@ export default {
         this.gameState = res.data;
       }
     },
-
+    sendMessage() {
+      this.snackbarText = this.username + " says: " + this.newMessage;
+      this.snackbar = true;
+    },
     async drawCard() {
       let res = await unoService.drawCard(this.$route.params.id);
       
@@ -383,7 +388,7 @@ export default {
     if(this.updateInterval){
       clearInterval(this.updateInterval);
     }
-  }
+  },
 };
 </script>
 
