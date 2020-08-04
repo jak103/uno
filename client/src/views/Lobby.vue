@@ -200,6 +200,7 @@ export default {
         this.$router.push({path: `/game/${res.data.game.game_id}`});
       } else {
         alert ("Failed to create & join game");
+        //snackService.notifyOne("failed to create");
       }
     },
 

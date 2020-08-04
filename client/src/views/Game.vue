@@ -151,17 +151,6 @@
         </v-col>
       </v-row>
 
-      <v-snackbar 
-        v-model="snackbar"
-        color="info"
-        :timeout='0'>
-        {{snackbarText}}
-
-        <v-btn text @click="snackbar=false">
-          Close
-        </v-btn>
-      </v-snackbar>
-
     </v-container>
 
     <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
@@ -211,18 +200,6 @@
       </v-card>
     </v-dialog>
 
-      <v-snackbar
-        v-model="snackbar"
-        color="info"
-        :timeout='4000'
-        v-show="gameState.status === 'Playing' && gameState.current_player != undefined && playerName !== newMessageName">
-        {{snackbarText}}
-
-        <v-btn text @click="snackbar=false">
-          Close
-        </v-btn>
-      </v-snackbar>
-
   </div>
 </template>
 
@@ -230,6 +207,7 @@
 import unoService from "../services/unoService";
 import Card from "../components/Card";
 import Chat from "../components/Chat";
+//import AppVue from '../App.vue';
 
 export default {
   name: "Game",
@@ -258,8 +236,6 @@ export default {
       colors: { 'red': 0, 'blue': 1 , 'green': 2, 'yellow': 3, 'wild': 4},
       values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13},
     
-      snackbar: false,
-      snackbarText: "",
       newMessageName: "",
     };
   },
@@ -315,9 +291,10 @@ export default {
 
     runsnackbar(name, message) {
       this.newMessageName = name;
-      this.snackbarText = name + " says: " + message;
-      this.snackbar = true;
+      var newMessage = name + " says: " + message;
+      this.$root.$emit('updateSnack', newMessage);
     },
+
 
     selectWildColor(card)
     {

@@ -17,7 +17,16 @@
       </v-app-bar>
       
       <router-view />
-    
+      <v-snackbar
+        v-model="snackbar"
+        color="info"
+        :timeout='0'>
+        {{snackbarText}}
+
+        <v-btn text @click="snackbar=false">
+          Close
+        </v-btn>
+      </v-snackbar>
     </v-content>
   </v-app>
 </template>
@@ -25,15 +34,26 @@
 <script>
 // import HelloWorld from './components/HelloWorld';
 // import axios from 'axios';
+
 export default {
   name: "App",
 
   components: {},
   data: () => ({
+    snackbar: false,
+    snackbarText: "",
     //
   }),
+  mounted() {
+    this.$root.$on('updateSnack', (message) => {
+      this.snackbarText=message;
+      this.snackbar=true;
+      console.log("you called me!!!!!!!");
+    }); 
+  },
   methods: {
     //
+    
   },
 };
 </script>
