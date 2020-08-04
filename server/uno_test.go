@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
@@ -18,9 +19,329 @@ func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 
 	game.DrawPile = generateShuffledDeck(1)
 
+	game.CurrentPlayer = 0
+
 	database.SaveGame(*game)
 
 	return game, player
+}
+
+func TestPlayCard(t *testing.T) {
+
+	database, err := db.GetDb()
+
+	player1, _ := database.CreatePlayer("Player 1")
+
+	//Set up real game with 4 players and 7 known cards in each hand
+	game, _ := database.CreateGame("Game 1", player1.ID)
+	gameID := game.ID
+	game, _ = database.JoinGame(game.ID, player1.ID)
+	database.SaveGame(*game)
+
+	player2, _ := database.CreatePlayer("Player 2")
+	game, _ = database.JoinGame(game.ID, player2.ID)
+	database.SaveGame(*game)
+
+	player3, _ := database.CreatePlayer("Player 3")
+	game, _ = database.JoinGame(game.ID, player3.ID)
+	database.SaveGame(*game)
+
+	player4, _ := database.CreatePlayer("Player 4")
+	game, _ = database.JoinGame(game.ID, player4.ID)
+	database.SaveGame(*game)
+
+	game.DrawPile = generateShuffledDeck(1)
+	game.CurrentPlayer = 0
+	game.DiscardPile = []model.Card{model.Card{Color: "red", Value: "0"}}
+	game.Direction = true
+
+	game.Players[0].Cards = []model.Card{
+		model.Card{Color: "red", Value: "2"},
+		model.Card{Color: "red", Value: "3"},
+		model.Card{Color: "red", Value: "D2"},
+		model.Card{Color: "Black", Value: "W"},
+		model.Card{Color: "blue", Value: "6"},
+		model.Card{Color: "blue", Value: "7"},
+		model.Card{Color: "yellow", Value: "8"},
+	}
+
+	game.Players[1].Cards = []model.Card{
+		model.Card{Color: "red", Value: "S"},
+		model.Card{Color: "red", Value: "R"},
+		model.Card{Color: "green", Value: "6"},
+		model.Card{Color: "green", Value: "4"},
+		model.Card{Color: "blue", Value: "3"},
+		model.Card{Color: "blue", Value: "2"},
+		model.Card{Color: "blue", Value: "8"},
+	}
+
+	game.Players[2].Cards = []model.Card{
+		model.Card{Color: "red", Value: "D2"},
+		model.Card{Color: "red", Value: "2"},
+		model.Card{Color: "blue", Value: "9"},
+		model.Card{Color: "blue", Value: "5"},
+		model.Card{Color: "blue", Value: "6"},
+		model.Card{Color: "blue", Value: "7"},
+		model.Card{Color: "green", Value: "8"},
+	}
+
+	game.Players[3].Cards = []model.Card{
+		model.Card{Color: "black", Value: "W4"},
+		model.Card{Color: "red", Value: "3"},
+		model.Card{Color: "red", Value: "D2"},
+		model.Card{Color: "green", Value: "5"},
+		model.Card{Color: "blue", Value: "6"},
+		model.Card{Color: "blue", Value: "7"},
+		model.Card{Color: "yellow", Value: "8"},
+	}
+
+	database.SaveGame(*game)
+
+	//Make sure game is up to date with database
+	game, _ = database.LookupGameByID(game.ID)
+
+	// Starting by passing in bogus information to make sure we get proper errors.
+	// Bogus game.
+	game, err = playCard("Bogus Game ID", "Bogus Player ID", model.Card{Color: "Bogus Color", Value: "Bogus Value"})
+
+	//Assert that the error is not nil, that it was returned
+	// Assert we didn't get a real game back from the bogus id
+	assert.NotNil(t, err)
+	assert.Nil(t, game)
+
+	// Get game back after set to nil
+	game, _ = database.LookupGameByID(gameID)
+
+	//Real game, bogus player
+	game, err = playCard(game.ID, "Bogus Player ID", model.Card{Color: "Bogus Color", Value: "Bogus Value"})
+
+	// Assert there was an error, that the error is what we expect,
+	// Assert we didn't get a game back.
+	assert.NotNil(t, err)
+	assert.Equal(t, "You cannot participate in a game you do not belong", err.Error())
+	assert.Nil(t, game)
+
+	//Pull game from database to do checks that it wasn't affected.
+	game, _ = database.LookupGameByID(gameID)
+
+	// Assert that the discard pile does not have a new card on it.
+	// Assert that the two players still have all their cards.
+	// Assert that the player turn did not change
+	assert.Equal(t, 1, len(game.DiscardPile))
+	assert.Equal(t, 7, len(game.Players[0].Cards))
+	assert.Equal(t, 7, len(game.Players[1].Cards))
+	assert.Equal(t, 7, len(game.Players[2].Cards))
+	assert.Equal(t, 7, len(game.Players[3].Cards))
+	assert.Equal(t, 0, game.CurrentPlayer)
+
+	// Test with real game, real player but bogus card not in players hand
+	game, err = playCard(game.ID, player1.ID, model.Card{Color: "Bogus Color", Value: "Bogus Value"})
+
+	// Assert error was returned
+	// Assert proper error was returned
+	// Assert game was not returned
+	assert.NotNil(t, err)
+	assert.Equal(t, "You cannot play a card that you do not own", err.Error())
+	assert.Nil(t, game)
+
+	//Pull game from database to do checks that it wasn't affected.
+	game, _ = database.LookupGameByID(gameID)
+
+	// Assert that the discard pile does not have a new card on it.
+	// Assert that the two players still have all their cards.
+	// Assert that the player turn did not change
+	assert.Equal(t, 1, len(game.DiscardPile))
+	assert.Equal(t, 7, len(game.Players[0].Cards))
+	assert.Equal(t, 7, len(game.Players[1].Cards))
+	assert.Equal(t, 7, len(game.Players[2].Cards))
+	assert.Equal(t, 7, len(game.Players[3].Cards))
+	assert.Equal(t, 0, game.CurrentPlayer)
+
+	//Set top of discard to a known card
+	game.DiscardPile[0] = model.Card{Color: "red", Value: "1"}
+
+	//Set card to play that exists in player1 hand
+	cardToPlay := model.Card{Color: "red", Value: "2"}
+	oldCurrentPlayer := game.CurrentPlayer
+
+	// Play with real game, real player, and real regular
+	game, err = playCard(game.ID, player1.ID, cardToPlay)
+
+	// Assert we did not get an error.
+	// Assert discard pile has a new card
+	// Assert top card is card played
+	// Assert player1 has 1 less card
+	// Assert current player was shifted
+	// Assert proper card was removed from players hand
+	assert.Nil(t, err)
+	assert.Equal(t, 2, len(game.DiscardPile))
+	assert.Equal(t, cardToPlay.Color, game.DiscardPile[len(game.DiscardPile)-1].Color)
+	assert.Equal(t, cardToPlay.Value, game.DiscardPile[len(game.DiscardPile)-1].Value)
+	assert.Equal(t, 6, len(game.Players[oldCurrentPlayer].Cards))
+	assert.Equal(t, 1, game.CurrentPlayer)
+	for _, card := range game.Players[oldCurrentPlayer].Cards {
+		if card.Color == cardToPlay.Color && card.Value == cardToPlay.Value {
+			assert.Fail(t, "Wrong card was removed from the players hand.")
+		}
+	}
+
+	//Set card to play that exists in player2 hand
+	cardToPlay = model.Card{Color: "red", Value: "S"}
+	oldCurrentPlayer = game.CurrentPlayer
+
+	// Play a skip card
+	game, err = playCard(game.ID, player2.ID, cardToPlay)
+
+	// Assert we did not get an error.
+	// Assert discard pile has a new card
+	// Assert top card is card played
+	// Assert player2 has 1 less card
+	// Assert current player was shifted by two, so it should be player4 turn
+	// Assert proper card was removed from players hand
+	assert.Nil(t, err)
+	assert.Equal(t, 3, len(game.DiscardPile))
+	assert.Equal(t, cardToPlay.Color, game.DiscardPile[len(game.DiscardPile)-1].Color)
+	assert.Equal(t, cardToPlay.Value, game.DiscardPile[len(game.DiscardPile)-1].Value)
+	assert.Equal(t, 6, len(game.Players[oldCurrentPlayer].Cards))
+	assert.Equal(t, 3, game.CurrentPlayer)
+	for _, card := range game.Players[oldCurrentPlayer].Cards {
+		if card.Color == cardToPlay.Color && card.Value == cardToPlay.Value {
+			assert.Fail(t, "Wrong card was removed from the players hand.")
+		}
+	}
+
+	oldCurrentPlayer = game.CurrentPlayer
+	oldDrawPileSize := len(game.DrawPile)
+
+	// Play a Draw Two from player4 hand
+	cardToPlay = model.Card{Color: "red", Value: "D2"}
+	game, err = playCard(game.ID, player4.ID, cardToPlay)
+
+	// Assert we did not get an error.
+	// Assert discard pile has a new card
+	// Assert top card is card played
+	// Assert player4 has 1 less card
+	// Assert current player was shifted by two, so it should be player1 turn
+	// Assert proper card was removed from players hand
+	// Assert Player1 received two cards
+	// Assert Draw pile lost 2 cards
+	assert.Nil(t, err)
+	assert.Equal(t, 4, len(game.DiscardPile))
+	assert.Equal(t, cardToPlay.Color, game.DiscardPile[len(game.DiscardPile)-1].Color)
+	assert.Equal(t, cardToPlay.Value, game.DiscardPile[len(game.DiscardPile)-1].Value)
+	assert.Equal(t, 6, len(game.Players[oldCurrentPlayer].Cards))
+	assert.Equal(t, 1, game.CurrentPlayer)
+	for _, card := range game.Players[oldCurrentPlayer].Cards {
+		if card.Color == cardToPlay.Color && card.Value == cardToPlay.Value {
+			assert.Fail(t, "Wrong card was removed from the players hand.")
+		}
+	}
+	assert.Equal(t, 8, len(game.Players[0].Cards))
+	assert.Equal(t, oldDrawPileSize-2, len(game.DrawPile))
+
+	//Set card to play that exists in player2 hand
+	cardToPlay = model.Card{Color: "red", Value: "R"}
+	oldGameDirection := game.Direction
+
+	// Play a reverse card
+	game, err = playCard(game.ID, player2.ID, cardToPlay)
+
+	// Assert we did not get an error.
+	// Assert discard pile has a new card
+	// Assert top card is card played
+	// Assert player2 has 1 less card
+	// Assert current player was shifted backwards by one
+	// Assert proper card was removed from players hand
+	// Assert Game Direction is not the same
+	assert.Nil(t, err)
+	assert.Equal(t, 5, len(game.DiscardPile))
+	assert.Equal(t, cardToPlay.Color, game.DiscardPile[len(game.DiscardPile)-1].Color)
+	assert.Equal(t, cardToPlay.Value, game.DiscardPile[len(game.DiscardPile)-1].Value)
+	assert.Equal(t, 6, len(game.Players[oldCurrentPlayer].Cards))
+	assert.Equal(t, 0, game.CurrentPlayer)
+	for _, card := range game.Players[oldCurrentPlayer].Cards {
+		if card.Color == cardToPlay.Color && card.Value == cardToPlay.Value {
+			assert.Fail(t, "Wrong card was removed from the players hand.")
+		}
+	}
+	assert.NotEqual(t, oldGameDirection, game.Direction)
+
+	//Set card to play that exists in player1 hand
+	cardToPlay = model.Card{Color: "blue", Value: "W"}
+
+	// Play a wild card  setting it to blue
+	game, err = playCard(game.ID, player1.ID, cardToPlay)
+
+	// Assert we did not get an error.
+	// Assert discard pile has a new card
+	// Assert top card is card played
+	// Assert player1 has 1 less card
+	// Assert current player was shifted backwards by one
+	// Assert proper card was removed from players hand
+	assert.Nil(t, err)
+	assert.Equal(t, 6, len(game.DiscardPile))
+	assert.Equal(t, cardToPlay.Color, game.DiscardPile[len(game.DiscardPile)-1].Color)
+	assert.Equal(t, cardToPlay.Value, game.DiscardPile[len(game.DiscardPile)-1].Value)
+	assert.Equal(t, 6, len(game.Players[oldCurrentPlayer].Cards))
+	assert.Equal(t, 3, game.CurrentPlayer)
+	for _, card := range game.Players[oldCurrentPlayer].Cards {
+		if card.Color == cardToPlay.Color && card.Value == cardToPlay.Value {
+			assert.Fail(t, "Wrong card was removed from the players hand.")
+		}
+	}
+
+	//Set card to play that exists in player4 hand
+	cardToPlay = model.Card{Color: "green", Value: "W4"}
+	oldPlayer3CardCount := len(game.Players[2].Cards)
+	// Play a wild draw 4 setting it to green
+	game, err = playCard(game.ID, player4.ID, cardToPlay)
+
+	// Assert we did not get an error.
+	// Assert discard pile has a new card
+	// Assert top card is card played
+	// Assert player4 has 1 less card
+	// Assert current player was shifted backwards by two
+	// Assert proper card was removed from players hand
+	// Assert Player 3 got 4 extra cards
+	assert.Nil(t, err)
+	assert.Equal(t, 7, len(game.DiscardPile))
+	assert.Equal(t, cardToPlay.Color, game.DiscardPile[len(game.DiscardPile)-1].Color)
+	assert.Equal(t, cardToPlay.Value, game.DiscardPile[len(game.DiscardPile)-1].Value)
+	assert.Equal(t, 5, len(game.Players[oldCurrentPlayer].Cards))
+	assert.Equal(t, 1, game.CurrentPlayer)
+	for _, card := range game.Players[oldCurrentPlayer].Cards {
+		if card.Color == cardToPlay.Color && card.Value == cardToPlay.Value {
+			assert.Fail(t, "Wrong card was removed from the players hand.")
+		}
+	}
+	assert.Equal(t, oldPlayer3CardCount+4, len(game.Players[2].Cards))
+
+	// Set up for playing same value, but not same number
+	game.DiscardPile[len(game.DiscardPile)-1] = model.Card{Color: "green", Value: "2"}
+	// Card known in player2 hand
+	cardToPlay = model.Card{Color: "blue", Value: "2"}
+
+	// Play card with same value as top card but not same color
+	game, err = playCard(game.ID, player2.ID, cardToPlay)
+
+	// Assert we did not get an error.
+	// Assert discard pile has a new card
+	// Assert top card is card played
+	// Assert player2 has 1 less card
+	// Assert current player was shifted backwards by one
+	// Assert proper card was removed from players hand
+	assert.Nil(t, err)
+	assert.Equal(t, 8, len(game.DiscardPile))
+	assert.Equal(t, cardToPlay.Color, game.DiscardPile[len(game.DiscardPile)-1].Color)
+	assert.Equal(t, cardToPlay.Value, game.DiscardPile[len(game.DiscardPile)-1].Value)
+	assert.Equal(t, 5, len(game.Players[oldCurrentPlayer].Cards))
+	assert.Equal(t, 0, game.CurrentPlayer)
+	for _, card := range game.Players[oldCurrentPlayer].Cards {
+		if card.Color == cardToPlay.Color && card.Value == cardToPlay.Value {
+			assert.Fail(t, "Wrong card was removed from the players hand.")
+		}
+	}
+
 }
 
 func TestDrawCard(t *testing.T) {
@@ -173,20 +494,20 @@ func TestDealCards(t *testing.T) {
 
 }
 
-func TestCheckForCardInHand(t *testing.T){
+func TestCheckForCardInHand(t *testing.T) {
 	//Created two cards One will be in the hand and the other won't
-	validCard := model.Card{"red", "1"}
-	falseCard := model.Card{"blue", "4"}
+	validCard := model.Card{Color: "red", Value: "1"}
+	falseCard := model.Card{Color: "blue", Value: "4"}
 	//Created a hand with the valid card in it
 	hand := []model.Card{validCard}
-	
-	//Testing to see if the function returns True for a card that is 
+
+	//Testing to see if the function returns True for a card that is
 	//present and False for a card that isn't present
 	assert.True(t, checkForCardInHand(validCard, hand))
 	assert.False(t, checkForCardInHand(falseCard, hand))
 }
 
-func TestCreatePlayer(t *testing.T){
+func TestCreatePlayer(t *testing.T) {
 	// get the database
 	database, err := db.GetDb()
 	assert.Nil(t, err, "could not find database")
@@ -200,7 +521,7 @@ func TestCreatePlayer(t *testing.T){
 	assert.Equal(t, player, databasePlayer)
 }
 
-func TestJoinGame(t *testing.T){
+func TestJoinGame(t *testing.T) {
 	// get database
 	database, err := db.GetDb()
 	assert.Nil(t, err, "could not find database")
@@ -214,7 +535,7 @@ func TestJoinGame(t *testing.T){
 	game, err = joinGame(game.ID, newPlayer)
 	database.SaveGame(*game)
 	assert.Nil(t, err, "could not join game with new player")
-	// lookup game from database 
+	// lookup game from database
 	game, err = database.LookupGameByID(game.ID)
 	assert.Nil(t, err, "could not find game in database")
 	// test to see if the new Player is in the game

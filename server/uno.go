@@ -111,44 +111,65 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 	gameData, gameErr := database.LookupGameByID(game)
 
 	if gameErr != nil {
-		return nil, err
+		return nil, gameErr
 	}
 
-	if gameData.Players[gameData.CurrentPlayer].ID == playerID {
-		hand := gameData.Players[gameData.CurrentPlayer].Cards
-		if checkForCardInHand(card, hand) && (card.Color == gameData.DiscardPile[len(gameData.DiscardPile)-1].Color || card.Value == gameData.DiscardPile[len(gameData.DiscardPile)-1].Value || card.Value == "W4" || card.Value == "W") {
-			// Valid card can be played
-
-			gameData.DiscardPile = append(gameData.DiscardPile, card)
-
-			for index, item := range hand {
-				if item == card || (item.Value == "W" && card.Value == "W") || (item.Value == "W4" && card.Value == "W4") {
-					gameData.Players[gameData.CurrentPlayer].Cards = append(hand[:index], hand[index+1:]...)
-					break
-				}
+	//Check if player trying to play is the current player
+	if gameData.Players[gameData.CurrentPlayer].ID != playerID {
+		// They were not the current player
+		// Check why they couldn't play, is it not their turn, or are they not part of this game?
+		for _, item := range gameData.Players {
+			if item.ID == playerID {
+				return nil, fmt.Errorf("It is not your turn to play")
 			}
-
-			if card.Value == "S" {
-				gameData = goToNextPlayer(gameData)
-			}
-
-			if card.Value == "D2" {
-				gameData = goToNextPlayer(gameData)
-				gameData = drawNCards(gameData, 2)
-			}
-
-			if card.Value == "W4" {
-				gameData = goToNextPlayer(gameData)
-				gameData = drawNCards(gameData, 4)
-			}
-
-			if card.Value == "R" {
-				gameData.Direction = !gameData.Direction
-			}
-
-			gameData = goToNextPlayer(gameData)
-
 		}
+
+		// They are not part of this game.
+		return nil, fmt.Errorf("You cannot participate in a game you do not belong")
+	}
+
+	hand := gameData.Players[gameData.CurrentPlayer].Cards
+	// Check that the card exists in their hand.
+	if !checkForCardInHand(card, hand) {
+		return nil, fmt.Errorf("You cannot play a card that you do not own")
+	}
+
+	// Check card for its color and value, do either match the top of discard, else check for if its a wild.
+	if card.Color == gameData.DiscardPile[len(gameData.DiscardPile)-1].Color || card.Value == gameData.DiscardPile[len(gameData.DiscardPile)-1].Value || card.Value == "W4" || card.Value == "W" {
+		// Valid card can be played
+
+		gameData.DiscardPile = append(gameData.DiscardPile, card)
+
+		for index, item := range hand {
+			if item == card || (item.Value == "W" && card.Value == "W") || (item.Value == "W4" && card.Value == "W4") {
+				gameData.Players[gameData.CurrentPlayer].Cards = append(hand[:index], hand[index+1:]...)
+				break
+			}
+		}
+
+		if card.Value == "S" {
+			gameData = goToNextPlayer(gameData)
+		}
+
+		if card.Value == "D2" {
+			gameData = goToNextPlayer(gameData)
+			gameData = drawNCards(gameData, 2)
+		}
+
+		if card.Value == "W4" {
+			gameData = goToNextPlayer(gameData)
+			gameData = drawNCards(gameData, 4)
+		}
+
+		if card.Value == "R" {
+			gameData.Direction = !gameData.Direction
+		}
+
+		gameData = goToNextPlayer(gameData)
+
+	} else {
+		// The card provided was not playable
+		return nil, fmt.Errorf("Your card must be either the same color or the same value as the top of the dicard pile or a wild")
 	}
 
 	err = database.SaveGame(*gameData)
@@ -212,7 +233,7 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 		}
 	}
 
-	// TODO Make real error
+	// They are not part of this game.
 	return nil, fmt.Errorf("You cannot participate in a game you do not belong")
 
 }
