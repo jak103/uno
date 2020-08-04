@@ -19,6 +19,8 @@
             <div v-if="!displayInfo" class="row">
                 <div class="col-9">
                     <v-text-field
+                        @keydown.enter="sendMessage"
+                        autofocus
                         label="Message"
                         outlined
                         clearable

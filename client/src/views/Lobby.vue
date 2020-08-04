@@ -103,6 +103,7 @@
         <v-card-text>          
           <v-text-field
             @keydown.enter="createGame"
+            autofocus
             label="Game name"
             outlined
             v-model="createDialog.name"
