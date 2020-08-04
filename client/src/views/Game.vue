@@ -289,13 +289,7 @@ export default {
         this.loadingHand = false
       }
     },
-<<<<<<< HEAD
-    gameOver() {
-      this.$router.push({ name: 'GameOver', params:{curPlayer: this.gameState.current_player.name, winner: this.gameState.winner}});
-    },
-=======
     // Methods for organizing the Cards
->>>>>>> dev
     orgOff() {
       if (this.sortByColor == true || this.sortByNum == true) {
         this.loadingHand = true;
