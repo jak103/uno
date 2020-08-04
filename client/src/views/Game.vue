@@ -233,12 +233,15 @@ import Card from "../components/Card";
 import Chat from "../components/Chat";
 
 export default {
+  
   name: "Game",
+  title:"Greatest Uno",
   components: {
     Card,
     Chat,
   },
   data() {
+    
     return {
       pane_lock: true,
       gameState: {},
