@@ -328,16 +328,6 @@ func drawTopCard(game *model.Game) (*model.Game, model.Card) {
 	return game, drawnCard
 }
 
-// TODO: make sure this reflects on the front end
-// func checkForWinner() string {
-// 	for k := range players {
-// 		if len(allCards[players[k]]) == 0 {
-// 			return players[k]
-// 		}
-// 	}
-// 	return ""
-// }
-
 func checkGameExists(gameID string) (bool, error) {
 	database, err := db.GetDb()
 
