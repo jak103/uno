@@ -25,6 +25,12 @@
             <v-spacer></v-spacer>
             <v-btn
               icon
+              @click="getAllGames()"
+            >
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+            <v-btn
+              icon
               @click="createDialog.visible = true"
             >
               <v-icon>mdi-plus</v-icon>
