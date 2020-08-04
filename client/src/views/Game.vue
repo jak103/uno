@@ -135,10 +135,6 @@
             <v-card-text v-else-if="gameState.status === 'Playing'">
               Waiting for {{ gameState.current_player.name }}
             </v-card-text>
-            
-            <v-card-text v-else-if="gameState.status === 'Finished'">
-              The game is finished!
-            </v-card-text>
           </v-card>
 
           <div v-if="gameState.status === 'Playing'" >
@@ -164,6 +160,12 @@
               :color="card.color"
               @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
             ></Card>
+          </div>
+          <div v-if="gameState.status === 'Finished'">
+            <Results v-bind:players="{
+                winner: gameState.gameOver,
+                curPlayer: playerName 
+                }"/>
           </div>
         </v-col>
 
@@ -240,6 +242,7 @@
 import unoService from "../services/unoService";
 import Card from "../components/Card";
 import Chat from "../components/Chat";
+import Results from "../components/Results";
 
 export default {
   
@@ -248,6 +251,7 @@ export default {
   components: {
     Card,
     Chat,
+    Results,
   },
   data() {
     
