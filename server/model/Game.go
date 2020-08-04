@@ -36,27 +36,11 @@ type GameSummary struct {
 }
 
 // GameToSummary Converts a Game to a GameSummary
-// func GameToSummary(g Game) (summary GameSummary) {
-// 	summary.ID = g.ID
-// 	summary.Name = g.Name
-// 	summary.Creator = g.Creator.Name
-// 	summary.Status = g.Status
-
-// 	for _, p := range g.Players {
-// 		summary.Players = append(summary.Players, p.Name)
-// 	}
-
-// 	return summary
-// }
-
-// GameToSummary Converts a Game to a GameSummary
 func GameToSummary(g Game) (summary GameSummary) {
 	summary.ID = g.ID
 	summary.Name = g.Name
 	summary.Creator = g.Creator.Name
 	summary.Status = g.Status
-	// Instead of just using the players Name I need the Id so I made it give us all of it
-	// I don't know if this shows other players what other peoples cards are
 	summary.Players = g.Players
 
 	return summary
