@@ -53,7 +53,6 @@ export default {
   },
   methods: {
     //
-    
   },
 };
 </script>

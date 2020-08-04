@@ -199,21 +199,21 @@ export default {
         localStorage.set('token', res.data.token);
         this.$router.push({path: `/game/${res.data.game.game_id}`});
       } else {
-        alert ("Failed to create & join game");
-        //snackService.notifyOne("failed to create");
+        //show the snack with your error message (just local)
+        this.$root.$emit('updateSnack', "Failed to create & join game");
       }
     },
 
     async createGame() { 
       if (!this.createDialog.name || this.createDialog.name == "") {
-        // invalid game name -- TODO use a snack bar for this
-        alert("Undefined Game Name");
+        //show the snack with your error message (just local)
+        this.$root.$emit('updateSnack', "Undefined Game name");
         return;
       }
      
       if (!this.createDialog.creator || this.createDialog.creator == "") {
-        // invalid creator name -- TODO use a snack bar for this
-        alert("Undefined Creator Name");
+        //show the snack with your error message (just local)
+        this.$root.$emit('updateSnack', "Undefined Creator Name");
         return;
       }
 
@@ -223,7 +223,8 @@ export default {
         localStorage.set('token', res.data.token);
         this.$router.push({path: `/game/${res.data.game.game_id}`});
       } else {
-        alert ("Failed to create & join game");
+        //show the snack with your error message (just local)
+        this.$root.$emit('updateSnack', "Failed to create & join game");
       }
     }
   },
