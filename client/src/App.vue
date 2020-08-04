@@ -25,7 +25,7 @@
 <script>
 export default {
   name: "App",
-  title: "Uno",
+ 
   components: {},
   data: () => ({
     gameID: null,
