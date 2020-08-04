@@ -88,3 +88,12 @@ func generateShuffledDeck(numPlayers int) []model.Card {
 
 	return shuffleCards(deck)
 }
+
+// Returns true if a card is a number card
+func isNumberCard(card model.Card) bool {
+	if card.Value == "W" || card.Value == "W4" || card.Value == "S" || card.Value == "D2" || card.Value == "R" {
+		return false
+	}
+
+	return true
+}
