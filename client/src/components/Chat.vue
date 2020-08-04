@@ -20,6 +20,8 @@
                 <div class="col-9" @keypress.enter="sendMessage">
                     <!-- <v-on  -->
                     <v-text-field
+                        @keydown.enter="sendMessage"
+                        autofocus
                         label="Message"
                         outlined
                         clearable
