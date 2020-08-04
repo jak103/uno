@@ -22,32 +22,35 @@ func printCards(cards []model.Card) {
 	}
 }
 
-// Returns the standard card colors, standard card counts, and wild card counts
-// It would be awesome to have this be customizable from the front-end
-// so you can play with 15 reverse cards if you want
-// or with 6 colors or something
-func getDeckConfig() ([4]string, map[string]int, map[string]int) {
+// Get's the number of decks to use based on the number of players
+func numDecksToUse(numPlayers int) int {
+	return numPlayers/5 + 1
+}
+
+// Returns the card colors, card counts, and wild card counts based
+// on the number of players in the game
+func getDeckConfigByPlayerSize(numDecks int) ([4]string, map[string]int, map[string]int) {
 	colors := [4]string{"red", "blue", "green", "yellow"}
 
 	standardCardCounts := map[string]int{
-		"zero":     1,
-		"one":      2,
-		"two":      2,
-		"three":    2,
-		"four":     2,
-		"five":     2,
-		"six":      2,
-		"seven":    2,
-		"eight":    2,
-		"nine":     2,
-		"skip":     2,
-		"draw_two": 2,
-		"reverse":  2,
+		"0":  1 * numDecks,
+		"1":  2 * numDecks,
+		"2":  2 * numDecks,
+		"3":  2 * numDecks,
+		"4":  2 * numDecks,
+		"5":  2 * numDecks,
+		"6":  2 * numDecks,
+		"7":  2 * numDecks,
+		"8":  2 * numDecks,
+		"9":  2 * numDecks,
+		"S":  2 * numDecks,
+		"D2": 2 * numDecks,
+		"R":  2 * numDecks,
 	}
 
 	wildCardCounts := map[string]int{
-		"wild":           4,
-		"wild_draw_four": 4,
+		"W":  4 * numDecks,
+		"W4": 4 * numDecks,
 	}
 
 	return colors, standardCardCounts, wildCardCounts
@@ -65,8 +68,9 @@ func shuffleCards(a []model.Card) []model.Card {
 // and with wild card values and counts as well.
 // Shuffles the deck before returning it.
 // This function is not necessarily efficient - feel free to optimize.
-func generateShuffledDeck() []model.Card {
-	colors, standardCardCounts, wildCardCounts := getDeckConfig()
+func generateShuffledDeck(numPlayers int) []model.Card {
+	numDecks := numDecksToUse(numPlayers)
+	colors, standardCardCounts, wildCardCounts := getDeckConfigByPlayerSize(numDecks)
 	deck := []model.Card{}
 	for cardValue, count := range standardCardCounts {
 		for i := 0; i < count; i++ {
@@ -78,7 +82,7 @@ func generateShuffledDeck() []model.Card {
 
 	for cardValue, count := range wildCardCounts {
 		for i := 0; i < count; i++ {
-			deck = append(deck, model.Card{"wild", cardValue})
+			deck = append(deck, model.Card{"black", cardValue})
 		}
 	}
 
