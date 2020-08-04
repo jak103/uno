@@ -35,11 +35,18 @@
             class="pa-3 player-drawer-item"
             two-line
           >
-            <v-list-item-icon>
-              <v-icon class="pt-3">
-              mdi-account
-              </v-icon>
-            </v-list-item-icon>
+          
+            <div class="col">
+              <v-list-item-icon class="ml-n4">
+                <v-icon class="pt-3">
+                mdi-account
+                </v-icon>
+              </v-list-item-icon>
+              
+              <!-- Number under the icon when pane is collapsed -->
+              <div v-if="player.cards != undefined" class="row ml-n3">{{ player.cards.length }}</div>
+            </div>
+
             <v-list-item-content>
               {{ player.name }}
               <ul class="hand ma-0 pa-0">
