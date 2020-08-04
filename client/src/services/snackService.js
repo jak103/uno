@@ -1,8 +1,8 @@
 import BaseService from "./baseService";
 
 export default {
-    async sendMessage(gameID, message, showSnack) {
-        //console.log('snack status:', showSnack);
-        return BaseService.post(`/api/games/${gameID}/sendMessage`, {value: message, showSnack});
+    async notifyAll(gameID, notification) {
+        console.log('the notification: ', notification);
+        return BaseService.post(`/api/snack/${gameID}/notify`, {notification: notification});
     }
 }

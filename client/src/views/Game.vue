@@ -205,9 +205,10 @@
 
 <script>
 import unoService from "../services/unoService";
-//import snackService from "../services/snackService";
+import snackService from "../services/snackService";
 import Card from "../components/Card";
 import Chat from "../components/Chat";
+import bus from "../helpers/bus";
 //import AppVue from '../App.vue';
 
 export default {
@@ -222,6 +223,7 @@ export default {
       gameState: {},
       cards: [],
 
+      notification: "Default",
       chatOpen: false,
       
       playerName: "",
@@ -240,7 +242,16 @@ export default {
       newMessageName: "",
     };
   },
-
+  watch: {
+    gamestate: {
+      handler: function(newGame, oldGame) {
+        if(newGame.notification && newGame.notification !== oldGame.notification){
+          bus.$emit('updateSnack', newGame.notification)
+        } 
+      },
+      deep: true
+    }
+  }, 
   methods: {
     async updateData() {
       let res = await unoService.getGameState(this.$route.params.id);
@@ -293,7 +304,7 @@ export default {
     runsnackbar(name, message) {
       this.newMessageName = name;
       var newMessage = name + " says: " + message;
-      this.$root.$emit('updateSnack', newMessage);
+      bus.$emit('updateSnack', newMessage);
     },
 
 
@@ -318,6 +329,7 @@ export default {
       }
     },
     async drawCard() {
+      snackService.notifyAll(this.$route.params.id, "I am a notification");
       let res = await unoService.drawCard(this.$route.params.id);
       
       if (res.data) {

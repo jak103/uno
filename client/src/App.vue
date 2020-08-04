@@ -34,7 +34,7 @@
 <script>
 // import HelloWorld from './components/HelloWorld';
 // import axios from 'axios';
-
+import bus from "./helpers/bus"
 export default {
   name: "App",
 
@@ -45,7 +45,7 @@ export default {
     //
   }),
   mounted() {
-    this.$root.$on('updateSnack', (message) => {
+    bus.$on('updateSnack', (message) => {
       this.snackbarText=message;
       this.snackbar=true;
       console.log("you called me!!!!!!!");

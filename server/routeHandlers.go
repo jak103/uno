@@ -32,6 +32,9 @@ func setupRoutes(e *echo.Echo) {
 	// Add Message to the Chat
 	group.POST("/chat/:id/add", addNewMessage) // Andrew McMullin
 
+	// get notification to snackbars
+	group.POST("/snack/:id/notify", notify)
+
 	group.POST("/games/:id/start", startGame)
 	group.POST("/games/:id/play", play) // Ryan Johnson
 	group.POST("/games/:id/draw", draw) // Brady Svedin
@@ -143,6 +146,15 @@ func addNewMessage(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
+}
+
+func notify(c echo.Context) error {
+	notification := c.Get("notification")
+	// var notification string
+	// c.Bind(&notification)
+	log.Println(notification)
+	log.Println("we are here in the notify")
+	return nil
 }
 
 func generateToken(p *model.Player) string {
@@ -287,6 +299,7 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["name"] = game.Name
 	gameState["player_id"] = playerID
 	gameState["messages"] = game.Messages
+	//gameState["notification"] = game.notification
 
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[len(game.DiscardPile)-1]
