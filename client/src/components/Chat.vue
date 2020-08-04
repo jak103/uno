@@ -206,5 +206,6 @@ export default {
 .from-them > .message-content{
 	background:#E5E5EA;
 	color:black;
+    float: left;
 }
 </style>
