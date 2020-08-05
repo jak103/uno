@@ -21,6 +21,7 @@
 
           <v-list-item-content>
             <v-list-item-title>Players</v-list-item-title>
+
           </v-list-item-content>
 
           <v-list-item-icon>
@@ -494,4 +495,12 @@ export default {
   }
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
+
+  .v-list
+  {
+    height: 100%;
+    margin-bottom:20%;
+    overflow-y: scroll;
+  }
+  
 </style>
