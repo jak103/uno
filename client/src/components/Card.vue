@@ -128,8 +128,6 @@ export default {
 
   methods: {
     async playWildCard(color) {
-      this.showColorDialog = false;
-      this.color = color;
       this.$emit("playWild", color);
     }
   }
