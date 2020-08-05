@@ -298,7 +298,7 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["status"] = game.Status
 	gameState["name"] = game.Name
 	gameState["player_id"] = playerID
-	gameState["messages"] = game.Message
+	gameState["messages"] = game.Messages
 	gameState["gameOver"] = game.GameOver
   //gameState["notification"] = game.notification
   
