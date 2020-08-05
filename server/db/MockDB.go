@@ -41,11 +41,12 @@ func (db *mockDB) HasGameByID(id string) bool {
 func (db *mockDB) CreateGame(gameName string, creatorID string) (*model.Game, error) {
 	player, _ := db.LookupPlayer(creatorID)
 	myGame := model.Game{
-		ID:       uuid.New().String(),
-		Password: "12234",
-		Creator:  *player,
-		Name:     gameName,
-		Status:   model.WaitingForPlayers}
+		ID:        uuid.New().String(),
+		Password:  "12234",
+		Creator:   *player,
+		Name:      gameName,
+		Status:    model.WaitingForPlayers,
+		Direction: true}
 	db.games[myGame.ID] = myGame
 	db.gamePasswords[myGame.Password] = myGame
 
