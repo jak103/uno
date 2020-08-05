@@ -69,6 +69,9 @@
           <!-- Game stats -->
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
+              <h2>
+                Game Information
+              </h2>
               <p>
                 Current Game id: {{ gameState.game_id }}
               </p>
@@ -99,10 +102,13 @@
             </v-card>
           </v-row>
 
-          <!-- Current Card and actions -->
+          <!-- Discard Pile and actions -->
           <v-col cols="12" v-if="gameState.status === 'Playing'">
             <v-row v-if="gameState.current_card != undefined">
               <v-card class="center-text ma-3 pa-6" outlined tile>
+                <h2>
+                  Discard Pile
+                </h2>
                 <Card
                   :number="gameState.current_card.value"
                   :key="gameState.current_card.color"
@@ -120,6 +126,7 @@
             outlined
             tile
           >
+            <h2>How To Play</h2>
             <v-card-text v-if="gameState.status === 'Waiting For Players'">
               <v-row v-if="gameState.creator != undefined && gameState.creator.id == gameState.player_id">
                 You are the creator of the game. When you are ready: <v-btn @click.native="startGame">Start Game</v-btn>
