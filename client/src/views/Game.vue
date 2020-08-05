@@ -237,7 +237,7 @@
         v-model="snackbar"
         color="info"
         :timeout='4000'
-        v-show="gameState.status === 'Playing' && playerName !== newMessageName"
+        v-show="playerName !== newMessageName"
         >{{snackbarText}}
         <v-btn text @click="snackbar=false">
           Close
@@ -308,13 +308,19 @@ export default {
     },
     
     invite(){
-        // sourced https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard
-        // to know how to work with clipboard
-        navigator.clipboard.writeText(window.location.origin + "#" + this.$route.params.id).then(function() {
-          /* clipboard successfully set */
-        }, function() {
-          /* clipboard write failed */
-        });
+      // sourced https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard
+      // to know how to work with clipboard
+      navigator.clipboard.writeText(window.location.origin + "#" + this.$route.params.id).then(() => {
+        /* clipboard successfully set */
+        this.newMessageName = this.playerName + "copy";
+        this.snackbarText = "Invite URL copied to clipboard. Share it with a friend!";
+        this.snackbar = true;
+      }, () => {
+        /* clipboard write failed */
+        this.newMessageName = this.playerName + "copy";
+        this.snackbarText = "Error getting invite link.";
+        this.snackbar = true;
+      });
     },
     
     // Methods for organizing the Cards, added by Andrew McMullin for the organize-cards issue
