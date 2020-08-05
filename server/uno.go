@@ -160,7 +160,7 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 }
 
 
-func logicCallUno(gameID string, callingUser player, userButtonPressed player) (*model.Game, error){
+func logicCallUno(gameID string, callingUser string, userButtonPressed string) (*model.Game, error){
 	database, dbErr := db.GetDb()
 
 	if dbErr != nil {
@@ -172,21 +172,31 @@ func logicCallUno(gameID string, callingUser player, userButtonPressed player) (
 	if gameErr != nil {
 		return nil, gameErr
 	}
-
-	if len(userButtonPressed.Cards) == 1{
-		if userButtonPressed.Protection == 0{
-			if userButtonPressed.ID == callingUser.ID{
-				userButtonPressed.Protection = 1
+	
+	for i := 0; i < len(gameData.Players); i++{
+		userID := gameData.Players[i].ID
+		if userID == callingUser {
+			callingPlayer := &gameData.Players[i]
+		}
+		if userID == userButtonPressed {
+			userBeingCalled := &gameData.Players[i]
+		}
+	}
+	
+	if len(userBeingCalled.Cards) == 1 {
+		if userBeingCalled.Protection == false{
+			if userBeingCalled.ID == callingPlayer.ID{
+				userBeingCalled.Protection = true
 			}else{
 				_, drawnCard := drawTopCard(gameData)
 
-				userButtonPressed.Cards = append(userButtonPressed.Cards, drawnCard)
+				userBeingCalled.Cards = append(userBeingCalled.Cards, drawnCard)
 			}
 		}
 	} else {
 		_, drawnCard := drawTopCard(gameData)
 
-		callingUser.Cards = append(callingUser.Cards, drawnCard)
+		callingPlayer.Cards = append(callingPlayer.Cards, drawnCard)
 	}
 
 	database.SaveGame(*gameData)

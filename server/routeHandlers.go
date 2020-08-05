@@ -284,7 +284,6 @@ func callUno(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
 	}
 	gameID := c.Param("id")
-	userCalling, err := getPlayerFromId()
 
 	game, err := logicCallUno(gameID, playerID, userButtonPressed)
 

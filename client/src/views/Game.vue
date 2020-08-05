@@ -375,10 +375,10 @@ export default {
         this.gameState = res.data;
       }
     },
-	async callUno() {
-		unoService.callUno(this.gameState.game_id, this.gameState.player_id, this.player.name)
-			.then(this.updateData());
-	},
+    async callUno() {
+      unoService.callUno(this.gameState.game_id, this.player.name)
+        .then(this.updateData());
+    },
 
     // Getting a hint, added by the creator of the Help Button
     hint(){

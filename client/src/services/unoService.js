@@ -46,8 +46,8 @@ export default {
   async sendMessage(gameId, playerId, message) {
     return BaseService.post(`/api/chat/${gameId}/add`, { player: playerId, message: message});
   },
-  async callUno(gameId, callingUser, userButtonPressed) {
-	return BaseService.post(`/api/games/${gameId}/call`, {player: callingUser, playerID: userButtonPressed});
+  async callUno(gameId, userButtonPressed) {
+	return BaseService.post(`/api/games/${gameId}/call`, {player: userButtonPressed});
   },
 
 }
