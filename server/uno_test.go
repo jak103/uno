@@ -220,3 +220,21 @@ func TestJoinGame(t *testing.T){
 	// test to see if the new Player is in the game
 	assert.Contains(t, game.Players, *newPlayer)
 }
+
+func TestCheckGameExists(t *testing.T){
+	// Get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// Create Player
+	player, err := database.CreatePlayer("testPlayer")
+	assert.Nil(t, err, "could not create player")
+	// Create Game
+	game, err := database.CreateGame("testGame", player.ID)
+	assert.Nil(t, err, "could not create game")
+	// Check to see if the function detects the created game
+	validGame, err := checkGameExists(game.ID)
+	assert.True(t, validGame)
+	// Check to see if the function does not detect a game that does not exist
+	fakeGame, err := checkGameExists("fakeGame")
+	assert.False(t, fakeGame)
+}
