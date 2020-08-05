@@ -4,6 +4,10 @@ export default {
   async getAllGames() {
     return BaseService.get(`/api/games`);
   },
+  
+  async getGameSummary(gameId) {
+    return BaseService.get(`/api/games/summary/${gameId}`);
+  },
 
   async newGame(gameName, creatorName) {
     return BaseService.post(`/api/games`, {name: gameName, creator: creatorName});

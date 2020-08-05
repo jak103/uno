@@ -127,7 +127,12 @@
                 Please wait for the creator to start the game.
               </v-row>
             </v-card-text>
-
+            
+            <!-- Invite Button -->
+            <v-card-text v-if="gameState.status === 'Waiting For Players'">
+                Feel free to invite a friend! Click to copy a link to send to a friend. <v-btn @click.native="invite">Invite a friend</v-btn>
+            </v-card-text>
+            
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
               Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
             </v-card-text>
@@ -300,7 +305,17 @@ export default {
       // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
       this.updateData(); 
     },
-
+    
+    invite(){
+        // sourced https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard
+        // to know how to work with clipboard
+        navigator.clipboard.writeText(window.location.origin + "#" + this.$route.params.id).then(function() {
+          /* clipboard successfully set */
+        }, function() {
+          /* clipboard write failed */
+        });
+    },
+    
     // Methods for organizing the Cards, added by Andrew McMullin for the organize-cards issue
     decideSort() {
       if (this.sortByColor) {
