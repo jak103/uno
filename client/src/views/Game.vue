@@ -137,7 +137,12 @@
             </v-card-text>
 
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
-              Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
+              <div>
+                <p>Click to play a card from your hand or draw a card</p>
+              </div>
+              <div>
+                <v-btn @click.native="drawCard">Draw from deck</v-btn>
+              </div>
             </v-card-text>
 
             <v-card-text v-else-if="gameState.status === 'Playing'">
@@ -154,13 +159,16 @@
               </v-row>
 
               <v-row v-else class="pl-3">
-                Organize Cards
-                <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
-                <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
-                <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
+                <h2>Organize Cards</h2>
+                  <div>
+                    <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
+                    <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
+                    <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
+                  </div>
               </v-row>
             </v-card>
 
+            <h2>Your Cards</h2>
             <Card
               v-for="(card, i) in gameState.player_cards"
               :key="i"
