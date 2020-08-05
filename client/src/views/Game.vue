@@ -349,7 +349,8 @@ export default {
     hint(){
       var color = this.gameState.current_card.color
       var number = this.gameState.current_card.value
-      alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
+      this.snackbarText = "Play a card with the number " + number + " or a card that is the color " + color + ".";
+      this.snackbar = true;
     }, 
   }, 
 

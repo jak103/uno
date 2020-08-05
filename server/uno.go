@@ -116,7 +116,7 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 
 	if gameData.Players[gameData.CurrentPlayer].ID == playerID {
 		hand := gameData.Players[gameData.CurrentPlayer].Cards
-		if checkForCardInHand(card, hand) && (card.Color == gameData.DiscardPile[len(gameData.DiscardPile)-1].Color || card.Value == gameData.DiscardPile[len(gameData.DiscardPile)-1].Value || card.Value == "W4" || card.Value == "W") {
+		if checkForCardInHand(card, hand) && isCardPlayable(card, gameData.DiscardPile) {
 			// Valid card can be played
 
 			gameData.DiscardPile = append(gameData.DiscardPile, card)
@@ -254,7 +254,10 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 		// append the card into the players cards from the draw pile
 		player.Cards = append(player.Cards, drawnCard)
 
-		gameData = goToNextPlayer(gameData)
+		// if the card cannot be played, advance to the next player
+		if !isCardPlayable(drawnCard, gameData.DiscardPile) {
+			gameData = goToNextPlayer(gameData)
+		}
 
 		// Save the game into the database
 		database.SaveGame(*gameData)
@@ -333,6 +336,22 @@ func dealCards(game *model.Game) (*model.Game, error) {
 ////////////////////////////////////////////////////////////
 // Utility Functions
 ////////////////////////////////////////////////////////////
+
+// Checks if a card is playable
+// Card is playable if it is wild or matches the card on top of the discard pile
+// Does not check that the card is in the player's hand
+// Use checkForCardInHand for that
+func isCardPlayable(card model.Card, discardPile []model.Card) bool {
+	isWild := card.Value == "W4" || card.Value == "W"
+
+	cardOnDiscardPile := discardPile[len(discardPile)-1]
+
+	if (card.Color == cardOnDiscardPile.Color || card.Value == cardOnDiscardPile.Value || isWild) {
+		return true
+	}
+
+	return false
+}
 
 func checkForCardInHand(card model.Card, hand []model.Card) bool {
 	for _, c := range hand {
