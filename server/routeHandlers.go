@@ -298,9 +298,10 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["status"] = game.Status
 	gameState["name"] = game.Name
 	gameState["player_id"] = playerID
-	gameState["messages"] = game.Messages
-	//gameState["notification"] = game.notification
-
+	gameState["messages"] = game.Message
+	gameState["gameOver"] = game.GameOver
+  //gameState["notification"] = game.notification
+  
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[len(game.DiscardPile)-1]
 	} else {
