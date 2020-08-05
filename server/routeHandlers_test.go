@@ -10,183 +10,133 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO: It will be far easier and cleaner to write these tests when we support a MockDB and JWT authentication in unit tests
-// For now, I will not run tests that will polute users local databases or require authentication,
-// Tests will also not deeply check data that is returned from users local databases.
-// TLDR: These tests aren't great, but at least they aren't breaking the build :^)
-
 var unitTestUserName = "UNIT_TEST_USER"
 var unitTestGameName = "UNIT_TEST_GAME_NAME"
 
-func TestGetGames(t *testing.T) {
+func TestTotalGamePlayAuth(t *testing.T) {
 	// Setup
 	e := echo.New()
 	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodGet, "/api/games", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
 
-	// Assertions
-	if assert.NoError(t, getGames(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
+	// Create an joinable game
+	createRec := httptest.NewRecorder()
+	createReq := httptest.NewRequest(http.MethodPost, "/api/games?name=game_name&creator=creator_name", nil)
+	e.ServeHTTP(createRec, createReq)
 
-		var recData map[string]interface{}
-		json.Unmarshal([]byte(rec.Body.String()), &recData)
-		// TODO: Once we actually support a MockDB for unit tests, check the validity of our response
-		assert.True(t, true)
-	}
-}
+	createRsp := make(map[string]interface{})
+	json.Unmarshal([]byte(createRec.Body.String()), &createRsp)
 
-func TestNewGame(t *testing.T) {
-	/*
-		assert.True(t, true)
-		// Setup
-		e := echo.New()
-		setupRoutes(e)
-		var postPayload = `{ "name" : "` + unitTestGameName + `", "creator" : "` + unitTestUserName + `" }`
-		req := httptest.NewRequest(http.MethodPost, "/api/games", strings.NewReader(postPayload))
-		req.Header.Set("Content-Type", "application/json")
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
+	// Create Game Assertions
+	assert.NotEqual(t, createRsp["token"], nil)
+	assert.NotEqual(t, createRsp["game"], nil)
+	game, _ := createRsp["game"].(map[string]interface{})
 
-		// Assertions
-		if assert.NoError(t, newGame(c)) {
-			assert.Equal(t, http.StatusOK, rec.Code)
+	// fmt.Println(reflect.TypeOf(game).String())
+	// for k, v := range game {
+	// 	fmt.Println("k:", k, "v:", v)
+	// }
 
-			var recData map[string]interface{}
-			json.Unmarshal([]byte(rec.Body.String()), &recData)
-			// TODO: Once we actually support a MockDB for unit tests, check the validity of our response
-			assert.True(t, true)
-		}
-	*/
-	assert.True(t, true)
-}
+	assert.NotEqual(t, game, nil)
+	assert.Equal(t, game["name"], "game_name")
+	assert.Equal(t, http.StatusOK, createRec.Code)
 
-func TestJoinExistingGame(t *testing.T) {
-	/*
-		// Setup
-		e := echo.New()
-		setupRoutes(e)
-		var postPayload = `{ "playerName" : "` + unitTestUserName + `" }`
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(postPayload))
-		req.Header.Set("Content-Type", "application/json")
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
-		c.SetPath("/api/games/:id/join")
+	gameID := game["game_id"]
 
-		// This test will create a game and then join the game
-		game, _, gameErr := createNewGame(unitTestGameName, unitTestUserName)
-		if assert.NoError(t, gameErr) {
-			c.SetParamNames("id")
-			c.SetParamValues(game.ID)
-		}
+	// fmt.Println("Game ID")
+	// fmt.Println(gameID)
 
-		// Assertions
-		if assert.NoError(t, joinExistingGame(c)) {
-			assert.Equal(t, http.StatusOK, rec.Code)
+	// Test Get Games - all lobby games
+	getRec := httptest.NewRecorder()
+	getReq := httptest.NewRequest(http.MethodGet, "/api/games", nil)
+	e.ServeHTTP(getRec, getReq)
 
-			var recData map[string]interface{}
-			json.Unmarshal([]byte(rec.Body.String()), &recData)
-			// TODO: Once we actually support a MockDB for unit tests, check the validity of our response
-			assert.True(t, true)
-		}
-	*/
-	assert.True(t, true)
-}
+	getRsp := make(map[string]interface{})
+	json.Unmarshal([]byte(getRec.Body.String()), &getRsp)
 
-func TestStartGame(t *testing.T) {
-	/*
-		// TODO: We need to find a solution to add jwt to context for this to work
-		// Setup
-		e := echo.New()
-		setupRoutes(e)
-		var postPayload = `{ "playerName" : "` + unitTestUserName + `" }`
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(postPayload))
-		req.Header.Set("Content-Type", "application/json")
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
-		c.SetPath("/games/:id/start")
-		game, creator, gameErr := createNewGame(unitTestGameName, unitTestUserName)
-		if assert.NoError(t, gameErr) {
-			token := generateToken(creator)
-			c.SetParamNames("id")
-			c.SetParamValues(game.ID)
-			req.Header.Set(echo.HeaderAuthorization, "Bearer "+token)
-			if assert.NoError(t, startGame(c)) {
-				assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, http.StatusOK, getRec.Code)
 
-				var recData map[string]interface{}
-				json.Unmarshal([]byte(rec.Body.String()), &recData)
-				// TODO: Once we actually support a MockDB for unit tests, check the validity of our response
-				assert.True(t, true)
-			}
-		}
-	*/
-	assert.True(t, true)
-}
+	// fmt.Println()
+	// fmt.Println()
 
-func TestPlay(t *testing.T) {
-	assert.True(t, true)
-}
+	// auth
+	// config.headers.Authorization = `Token ${token}`;
+	// drawReq.Header.Set("Authorization", "Bearer "+loginRes.Payload["JWT"].(string))
 
-func TestDraw(t *testing.T) {
-	assert.True(t, true)
-}
+	// Test Start Game
+	startRec := httptest.NewRecorder()
+	startReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID.(string)+"/start", nil)
+	startReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
 
-func TestGetGameState(t *testing.T) {
-	assert.True(t, true)
-}
+	e.ServeHTTP(startRec, startReq)
 
-func TestGetGames_error(t *testing.T) {
-	assert.True(t, true)
-}
+	startRsp := make(map[string]interface{})
+	json.Unmarshal([]byte(startRec.Body.String()), &startRsp)
 
-func TestNewGame_error(t *testing.T) {
-	assert.True(t, true)
-}
+	assert.Equal(t, startRsp["name"], "game_name")
+	assert.Equal(t, http.StatusOK, startRec.Code)
 
-func TestJoinExistingGame_error(t *testing.T) {
-	assert.True(t, true)
-}
+	// Draw
+	drawRec := httptest.NewRecorder()
+	drawReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID.(string)+"/draw", nil)
+	drawReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
 
-func TestStartGame_error(t *testing.T) {
-	// Setup
-	e := echo.New()
-	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodGet, "/startgame", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	//rec := httptest.NewRecorder()
-	//c := e.NewContext(req, rec)
+	e.ServeHTTP(drawRec, drawReq)
 
-	// Assertions
-	//assert.Error(t, login(c)) // This should error because no game was created
-}
+	drawRsp := make(map[string]interface{})
+	json.Unmarshal([]byte(drawRec.Body.String()), &drawRsp)
 
-func TestPlay_error(t *testing.T) {
-	// Setup
-	e := echo.New()
-	setupRoutes(e)
-	req := httptest.NewRequest(http.MethodGet, "/play", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	// TODO: finish mocking up an auth header here, and in other tests
-	/*isHost := true
-	  encodedJWT, err := newJWT("Thomas", "userid", "gameid", isHost, []byte(signKey))
+	assert.Equal(t, drawRsp["name"], "game_name")
+	assert.Equal(t, http.StatusOK, drawRec.Code)
 
-	  assert.Equal(t, nil, err)
+	// Play
+	playRec := httptest.NewRecorder()
+	playReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID.(string)+"/draw", nil)
+	playReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
 
-	  req.Header.Set(echo.HeaderAuthorization, "bearer" + encodedJWT)*/
+	e.ServeHTTP(playRec, playReq)
 
-	//rec := httptest.NewRecorder()
-	//c := e.NewContext(req, rec)
+	playRsp := make(map[string]interface{})
+	json.Unmarshal([]byte(playRec.Body.String()), &playRsp)
 
-	// Assertions
-	//assert.Error(t, login(c)) // This should error because no game was created
-}
+	assert.Equal(t, playRsp["name"], "game_name")
+	assert.Equal(t, http.StatusOK, playRec.Code)
 
-func TestDraw_error(t *testing.T) {
-	assert.True(t, true)
-}
+	// Chat
+	chatRec := httptest.NewRecorder()
+	chatReq := httptest.NewRequest(http.MethodPost, "/api/chat/"+gameID.(string)+"/add?message=hello_world", nil)
+	chatReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
 
-func TestGetGameState_error(t *testing.T) {
-	assert.True(t, true)
+	e.ServeHTTP(chatRec, chatReq)
+
+	chatRsp := make(map[string]interface{})
+	json.Unmarshal([]byte(chatRec.Body.String()), &chatRsp)
+
+	assert.Equal(t, chatRsp["name"], "game_name")
+	assert.Equal(t, http.StatusOK, chatRec.Code)
+
+	// Get game state
+	stateRec := httptest.NewRecorder()
+	stateReq := httptest.NewRequest(http.MethodGet, "/api/games/"+gameID.(string), nil)
+	stateReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
+
+	e.ServeHTTP(stateRec, stateReq)
+
+	stateRsp := make(map[string]interface{})
+	json.Unmarshal([]byte(stateRec.Body.String()), &stateRsp)
+
+	assert.Equal(t, stateRsp["name"], "game_name")
+	assert.Equal(t, http.StatusOK, stateRec.Code)
+
+	// Test Join Game
+	joinRec := httptest.NewRecorder()
+	joinReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID.(string)+"/join?playerName=player_name", nil)
+
+	e.ServeHTTP(joinRec, joinReq)
+
+	joinRsp := make(map[string]interface{})
+	json.Unmarshal([]byte(joinRec.Body.String()), &joinRsp)
+
+	assert.NotEqual(t, joinRsp["token"], nil)
+	assert.NotEqual(t, joinRsp["game"], nil)
+	assert.Equal(t, http.StatusOK, joinRec.Code)
 }
