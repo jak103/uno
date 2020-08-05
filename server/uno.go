@@ -195,7 +195,10 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 		// append the card into the players cards from the draw pile
 		player.Cards = append(player.Cards, drawnCard)
 
-		gameData = goToNextPlayer(gameData)
+		// if the card cannot be played, advance to the next player
+		if !isCardPlayable(drawnCard, gameData.DiscardPile) {
+			gameData = goToNextPlayer(gameData)
+		}
 
 		// Save the game into the database
 		database.SaveGame(*gameData)
