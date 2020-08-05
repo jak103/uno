@@ -275,9 +275,8 @@ export default {
     };
   },
   watch: {
-    gamestate: {
+    gameState: {
       handler: function(newGame, oldGame) {
-        console.log("gamestate is diff")
         if(newGame.notification && newGame.notification !== oldGame.notification){
           bus.$emit('updateSnack', newGame.notification)
         } 
@@ -350,6 +349,8 @@ export default {
     },
 
     async playWildCard(color) {
+      snackService.notifyAll(this.$route.params.id, "Wild Played!!");
+      
       this.chooseColorDialog.visible = false;
       this.chooseColorDialog.card.color = color;
       this.playCard(this.chooseColorDialog.card);
@@ -364,9 +365,7 @@ export default {
       }
     },
     async drawCard() {
-      snackService.notifyAll(this.$route.params.id, "I am a notification");
       let res = await unoService.drawCard(this.$route.params.id);
-      
       if (res.data) {
         this.gameState = res.data;
       }

@@ -260,7 +260,7 @@ func (db *firestoreDB) AddMessage(gameID string, playerID string, message model.
 	return game, nil
 }
 
-func (db *firestoreDB) UpdateNotification(gameID string, notification string) (*model.Game, error) {
+func (db *firestoreDB) UpdateNotification(gameID string, notification model.Notification) (*model.Game, error) {
 	game, err := db.LookupGameByID(gameID)
 
 	if err != nil {
@@ -268,7 +268,7 @@ func (db *firestoreDB) UpdateNotification(gameID string, notification string) (*
 	}
 	
 	//fmt.Println("Updating Notification")
-	game.Notification = notification //update(game.Notification, notification)
+	game.Notification = notification.Value //update(game.Notification, notification)
 	err = db.SaveGame(*game)
 
 	if err != nil {

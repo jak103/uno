@@ -151,7 +151,10 @@ func addNewMessage(c echo.Context) error {
 func notify(c echo.Context) error {
 	playerID, err := getPlayerFromContext(c)
 	gameID := c.Param("id")
-	var notification = "grep"
+
+	var notification model.Notification
+	c.Bind(&notification)
+
 	game, err := updateNotification(gameID, notification)
 
 	if err != nil {
@@ -303,7 +306,7 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["player_id"] = playerID
 	gameState["messages"] = game.Messages
 	gameState["gameOver"] = game.GameOver
-    gameState["notification"] = game.notification
+    gameState["notification"] = game.Notification
 
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[len(game.DiscardPile)-1]

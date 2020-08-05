@@ -101,7 +101,7 @@ func addMessage(gameID string, playerID string, message model.Message) (*model.G
 	return gameData, nil
 }
 
-func updateNotification(gameID string, notification string) (*model.Game, error) {
+func updateNotification(gameID string, notification model.Notification) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
