@@ -128,12 +128,15 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 				}
 			}
 
+			// Reset Uno calling protection after every card is played
+			gameData.Players[gameData.CurrentPlayer].Protection = false
+
 			// Update who plays next, taking into account reverse card and skip card
-			if (card.Value == "R") {
+			if card.Value == "R" {
 				gameData.Direction = !gameData.Direction
 			}
 
-			if (card.Value == "S") {
+			if card.Value == "S" {
 				gameData = goToNextPlayer(gameData)
 			}
 
@@ -159,8 +162,7 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 	return gameData, nil
 }
 
-
-func logicCallUno(gameID string, callingUser string, userButtonPressed string) (*model.Game, error){
+func logicCallUno(gameID string, callingPlayerID string, calledOnPlayerID string) (*model.Game, error) {
 	database, dbErr := db.GetDb()
 
 	if dbErr != nil {
@@ -172,29 +174,33 @@ func logicCallUno(gameID string, callingUser string, userButtonPressed string) (
 	if gameErr != nil {
 		return nil, gameErr
 	}
-	
-	for i := 0; i < len(gameData.Players); i++{
-		userID := gameData.Players[i].ID
-		if userID == callingUser {
-			callingPlayer := &gameData.Players[i]
+
+	var callingPlayer, calledOnPlayer *model.Player
+	for i := range gameData.Players {
+		if gameData.Players[i].ID == callingPlayerID {
+			callingPlayer = &gameData.Players[i]
 		}
-		if userID == userButtonPressed {
-			userBeingCalled := &gameData.Players[i]
+
+		if gameData.Players[i].ID == calledOnPlayerID {
+			calledOnPlayer = &gameData.Players[i]
 		}
 	}
-	
-	if len(userBeingCalled.Cards) == 1 {
-		if userBeingCalled.Protection == false{
-			if userBeingCalled.ID == callingPlayer.ID{
-				userBeingCalled.Protection = true
-			}else{
-				_, drawnCard := drawTopCard(gameData)
 
-				userBeingCalled.Cards = append(userBeingCalled.Cards, drawnCard)
+	var drawnCard model.Card
+	if len(calledOnPlayer.Cards) == 1 {
+		if calledOnPlayer.Protection == false {
+			if calledOnPlayer.ID == callingPlayer.ID {
+				calledOnPlayer.Protection = true
+			} else {
+				for i := 0; i < 4; i++ {
+					gameData, drawnCard = drawTopCard(gameData)
+
+					calledOnPlayer.Cards = append(calledOnPlayer.Cards, drawnCard)
+				}
 			}
 		}
 	} else {
-		_, drawnCard := drawTopCard(gameData)
+		gameData, drawnCard = drawTopCard(gameData)
 
 		callingPlayer.Cards = append(callingPlayer.Cards, drawnCard)
 	}
@@ -203,7 +209,6 @@ func logicCallUno(gameID string, callingUser string, userButtonPressed string) (
 
 	return gameData, nil
 }
-
 
 func drawCard(gameID string, playerID string) (*model.Game, error) {
 	// These lines are simply getting the database and game and handling any error that could occur
@@ -214,6 +219,9 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 	}
 
 	gameData, gameErr := database.LookupGameByID(gameID)
+
+	// Reset Uno calling protection after a card is drawn
+	gameData.Players[gameData.CurrentPlayer].Protection = false
 
 	if gameErr != nil {
 		return nil, gameErr
@@ -290,8 +298,8 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	// draw a card for the discard
 	var drawnCard model.Card
 	game, drawnCard = drawTopCard(game)
-	
-	// ensure that this first card is a number card 
+
+	// ensure that this first card is a number card
 	for !isNumberCard(drawnCard) {
 		// if not, add it back to the draw pile
 		game.DrawPile = append(game.DrawPile, drawnCard)

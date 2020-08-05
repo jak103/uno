@@ -5,61 +5,68 @@
       class="overflow-hidden"
     >
       <!-- Game Players Drawer -->
-      <v-navigation-drawer
-          :expand-on-hover="!pane_lock"
-      >
-      <v-list
-        nav
-        dense
-      >
-        <v-list-item two-line >
-          <v-list-item-icon>
-            <v-icon class="pt-3">
-            mdi-account-group
-            </v-icon>
-          </v-list-item-icon>
-
-          <v-list-item-content>
-            <v-list-item-title>Players</v-list-item-title>
-          </v-list-item-content>
-
-          <v-list-item-icon>
-            <v-icon class="pt-3" v-if="gameState.direction === true">
-            mdi-arrow-down-bold
-            </v-icon>
-            <v-icon class="pt-3" v-else>
-            mdi-arrow-up-bold
-            </v-icon>
-          </v-list-item-icon>
-        </v-list-item>
-
-        <v-divider></v-divider>
-            
-        <div v-if="gameState.all_players !== undefined">  
-          <v-list-item
-            v-for="player in gameState.all_players"
-            :key="player.name"
-            :input-value="player.id === gameState.current_player.id"
-            color="#1F7087"
-            class="pa-3 player-drawer-item"
-            two-line
-          >
+      <v-navigation-drawer>
+        <v-list
+          nav
+          dense
+        >
+          <v-list-item two-line >
             <v-list-item-icon>
               <v-icon class="pt-3">
-              mdi-account
+              mdi-account-group
               </v-icon>
             </v-list-item-icon>
+
             <v-list-item-content>
-              {{ player.name }}
-              <ul class="hand ma-0 pa-0">
-                <li v-for="(card, index) of player.cards" :key="index">🃏</li>
-              </ul>
-              <div>
-                <v-btn class="call_button" @click.native="callUno">Uno!</v-btn>
-              </div>
+              <v-list-item-title>Players</v-list-item-title>
             </v-list-item-content>
+
+            <v-list-item-icon>
+              <v-icon class="pt-3" v-if="gameState.direction === true">
+                mdi-arrow-down-bold
+              </v-icon>
+              <v-icon class="pt-3" v-else>
+                mdi-arrow-up-bold
+              </v-icon>
+            </v-list-item-icon>
           </v-list-item>
-        </div>
+
+          <v-divider></v-divider>
+            
+          <div
+            v-if="gameState.all_players !== undefined"            
+          >  
+            <v-list-item
+              v-for="player in gameState.all_players"
+              :key="player.name"
+              :input-value="player.id === gameState.current_player.id"
+              color="#1F7087"
+              class="pa-1 pb-0 pt-0 player-drawer-item"
+              two-line
+            >
+              <v-list-item-content>
+                <v-card 
+                  class="pa-0"                
+                >
+                  <v-container
+                    class="pa-0 pl-2"
+                  >
+                    {{ player.name }}
+                    <v-btn 
+                      :class="player.protection ? 'protected_call_button' : 'unprotected_call_button'" 
+                      @click.native="callUno(player)"
+                      :disabled="player.cards.length > 1"
+                    >
+                      Uno!
+                    </v-btn>              
+                  </v-container>
+                  <ul class="hand pl-2 pb-2">
+                    <li v-for="(card, index) of player.cards" :key="index">🃏</li>
+                  </ul>
+                </v-card>
+              </v-list-item-content>
+            </v-list-item>
+          </div>
         </v-list>
       </v-navigation-drawer>
     </v-card>
@@ -357,17 +364,18 @@ export default {
     },
 
     async playCard(card) { 
-      console.log("Playing card", card);     
       let res = await unoService.playCard(this.$route.params.id, card.value, card.color);
       
       if (res.data) {
         this.gameState = res.data;
       }
     },
+
     sendMessage() {
       this.snackbarText = this.username + " says: " + this.newMessage;
       this.snackbar = true;
     },
+
     async drawCard() {
       let res = await unoService.drawCard(this.$route.params.id);
       
@@ -375,9 +383,13 @@ export default {
         this.gameState = res.data;
       }
     },
-    async callUno() {
-      unoService.callUno(this.gameState.game_id, this.player.name)
-        .then(this.updateData());
+
+    async callUno(calledOnPlayer) {      
+      let res = await unoService.callUno(this.gameState.game_id, calledOnPlayer)
+      
+      if (res.data) {
+        this.gameState = res.data;
+      }
     },
 
     // Getting a hint, added by the creator of the Help Button
@@ -497,11 +509,17 @@ export default {
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
-  .call_button {
-    color: red;
-	align-content: center;
-	margin: 10px;
 
+  .unprotected_call_button {
+    color: red;
+    align-content: center;
+    margin: 10px;
+  }
+
+  .protected_call_button {
+    color: green;
+    align-content: center;
+    margin: 10px;
   }
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
