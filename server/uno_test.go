@@ -34,6 +34,11 @@ func TestDrawCard(t *testing.T) {
 	// Generate real game in database and real player
 	database, _ := db.GetDb()
 	game, player := setupGameWithPlayer(database)
+	
+	// Put a number card on the discard pile
+	// For the purposes of this test, it's ok that it's an extra card
+	game.DiscardPile = append(game.DiscardPile, model.Card{"red", "2"})
+	database.SaveGame(*game)
 
 	// Test Drawing a card with a full deck and real player
 	game, err = drawCard(game.ID, player.ID)
