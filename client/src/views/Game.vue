@@ -130,7 +130,21 @@
             </v-card-text>
 
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
-              Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
+
+              <div>Select a card with
+                <span class="keycap">←</span>
+                <span class="keycap">↑</span>
+                <span class="keycap">→</span>
+                <span class="keycap">↓</span>
+                or the mouse.
+              </div>
+              <div>Press <span class="keycap">Enter</span> or click to play the selected card.</div>
+              <div>Press <span class="keycap">D</span> to draw a card, or click the button below.</div>
+              <div>Press <span class="keycap">C</span> to open chat (<span class="keycap">Esc</span> to close).</div>
+
+              <v-btn @click.native="drawCard">
+                Draw a Card
+              </v-btn>
             </v-card-text>
 
             <v-card-text v-else-if="gameState.status === 'Playing'">
@@ -181,8 +195,9 @@
     <div 
       v-if="gameState.status === 'Playing' && gameState.current_player != undefined" 
       @click="chatOpen = !chatOpen"
-      class="float-button">
-        Chat
+      class="float-button"
+      tabindex="0">
+      Chat
     </div>
     <v-dialog
       v-model="chooseColorDialog.visible"
@@ -391,6 +406,8 @@ export default {
     }, 2000);
   },
   mounted() {
+    document.addEventListener("keyup", _keyListener.bind(this))
+
     this.$emit('sendGameID', this.$route.params.id)
     document.html.classList.add('no-scroll')
 
@@ -401,13 +418,60 @@ export default {
     .catch(err => {
       console.err("Could not get player name from assigned token\n", err)
     })
+
   },
   beforeDestroy (){
     if(this.updateInterval){
       clearInterval(this.updateInterval);
     }
+
+    document.removeEventListener("keyup", _keyListener)
   },
 };
+
+function _keyListener(e) {
+  // Handle closing chat, because chat eats all other keyboard inputs.
+  if (this.chatOpen) {
+    if (e.key === "Escape") {
+      this.chatOpen = false
+    }
+  }
+  else { // Handle all of the other keyboard inputs.
+    switch (e.key) {
+      case "c":
+        if (!this.chatOpen)
+        this.chatOpen = true
+        break;
+
+      case "d":
+        if (this.gameState.draw_pile != undefined) {
+          e.preventDefault()
+
+          this.drawCard()
+        }
+        break;
+
+      case "ArrowDown":
+      case "ArrowRight":
+        if (!document.activeElement.className.includes("playerCard")) {
+          e.preventDefault()
+
+          document.getElementById("myCards").firstElementChild.focus()
+        }
+        break;
+
+      case "ArrowUp":
+      case "ArrowLeft":
+        if (!document.activeElement.className.includes("playerCard")) {
+          e.preventDefault()
+
+          document.getElementById("myCards").lastElementChild.focus()
+        }
+        break;
+    }
+  }
+}
+
 </script>
 
 <style scoped>
@@ -469,6 +533,23 @@ export default {
 
 .hand span {
   font-weight: bold;
+}
+
+/* Keycap style source: http://www.tutorius.com/keycap-style-css */
+span.keycap {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  white-space: nowrap;
+  border: 1px solid #aaa;
+  border-style: outset;
+  border-radius: 4px;
+  padding: 0px 3px 1px 3px;
+  margin: 0px 0px 0px 0px;
+  vertical-align: baseline;
+  line-height: 1.8em;
+  /* background: #fbfbfb; */
 }
 
 /* CSS for the Help buttons */
