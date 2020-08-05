@@ -14,7 +14,7 @@ var unitTestUserName = "UNIT_TEST_USER"
 var unitTestGameName = "UNIT_TEST_GAME_NAME"
 
 func TestTotalGamePlayAuth(t *testing.T) {
-	// Setup
+	// Inital Setup
 	e := echo.New()
 	setupRoutes(e)
 
@@ -31,19 +31,11 @@ func TestTotalGamePlayAuth(t *testing.T) {
 	assert.NotEqual(t, createRsp["game"], nil)
 	game, _ := createRsp["game"].(map[string]interface{})
 
-	// fmt.Println(reflect.TypeOf(game).String())
-	// for k, v := range game {
-	// 	fmt.Println("k:", k, "v:", v)
-	// }
-
 	assert.NotEqual(t, game, nil)
 	assert.Equal(t, game["name"], "game_name")
 	assert.Equal(t, http.StatusOK, createRec.Code)
 
 	gameID := game["game_id"]
-
-	// fmt.Println("Game ID")
-	// fmt.Println(gameID)
 
 	// Test Get Games - all lobby games
 	getRec := httptest.NewRecorder()
@@ -54,13 +46,6 @@ func TestTotalGamePlayAuth(t *testing.T) {
 	json.Unmarshal([]byte(getRec.Body.String()), &getRsp)
 
 	assert.Equal(t, http.StatusOK, getRec.Code)
-
-	// fmt.Println()
-	// fmt.Println()
-
-	// auth
-	// config.headers.Authorization = `Token ${token}`;
-	// drawReq.Header.Set("Authorization", "Bearer "+loginRes.Payload["JWT"].(string))
 
 	// Test Start Game
 	startRec := httptest.NewRecorder()
