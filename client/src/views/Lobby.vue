@@ -25,6 +25,12 @@
             <v-spacer></v-spacer>
             <v-btn
               icon
+              @click="getAllGames()"
+            >
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+            <v-btn
+              icon
               @click="createDialog.visible = true"
             >
               <v-icon>mdi-plus</v-icon>
@@ -124,12 +130,15 @@
         </v-card-title>
         <v-card-text>          
           <v-text-field
+            @keydown.enter="createGame"
+            autofocus
             label="Game name"
             outlined
             v-model="createDialog.name"
             class="pt-4"
           > </v-text-field>
           <v-text-field
+            @keydown.enter="createGame"
             label="Creator name"
             outlined
             v-model="createDialog.creator"            
@@ -155,7 +164,6 @@ export default {
   components: {
 
   },
-
   data() {
     return {
       search: "",

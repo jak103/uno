@@ -300,13 +300,19 @@ func checkForCardInHand(card model.Card, hand []model.Card) bool {
 }
 
 func goToNextPlayer(gameData *model.Game) *model.Game {
-	if gameData.Direction {
-		gameData.CurrentPlayer++
-		gameData.CurrentPlayer %= len(gameData.Players)
+	//check for winner
+	if len(gameData.Players[gameData.CurrentPlayer].Cards) == 0 {
+		gameData.GameOver = gameData.Players[gameData.CurrentPlayer].Name
+		gameData.Status = model.Finished
 	} else {
-		gameData.CurrentPlayer--
-		if gameData.CurrentPlayer < 0 {
-			gameData.CurrentPlayer = len(gameData.Players) - 1
+		if gameData.Direction {
+			gameData.CurrentPlayer++
+			gameData.CurrentPlayer %= len(gameData.Players)
+		} else {
+			gameData.CurrentPlayer--
+			if gameData.CurrentPlayer < 0 {
+				gameData.CurrentPlayer = len(gameData.Players) - 1
+			}
 		}
 	}
 

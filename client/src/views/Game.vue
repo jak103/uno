@@ -22,6 +22,15 @@
           <v-list-item-content>
             <v-list-item-title>Players</v-list-item-title>
           </v-list-item-content>
+
+          <v-list-item-icon>
+            <v-icon class="pt-3" v-if="gameState.direction === true">
+            mdi-arrow-down-bold
+            </v-icon>
+            <v-icon class="pt-3" v-else>
+            mdi-arrow-up-bold
+            </v-icon>
+          </v-list-item-icon>
         </v-list-item>
 
         <v-divider></v-divider>
@@ -126,10 +135,6 @@
             <v-card-text v-else-if="gameState.status === 'Playing'">
               Waiting for {{ gameState.current_player.name }}
             </v-card-text>
-            
-            <v-card-text v-else-if="gameState.status === 'Finished'">
-              The game is finished!
-            </v-card-text>
           </v-card>
 
           <div v-if="gameState.status === 'Playing'" >
@@ -156,6 +161,12 @@
               @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
             ></Card>
           </div>
+          <div v-if="gameState.status === 'Finished'">
+            <Results v-bind:players="{
+                winner: gameState.gameOver,
+                curPlayer: playerName 
+                }"/>
+          </div>
         </v-col>
 
         <!-- Chat -->
@@ -166,8 +177,11 @@
 
     </v-container>
 
-    <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
-      Chat
+    <div 
+      v-if="gameState.status === 'Playing' && gameState.current_player != undefined" 
+      @click="chatOpen = !chatOpen"
+      class="float-button">
+        Chat
     </div>
     <v-dialog
       v-model="chooseColorDialog.visible"
@@ -231,6 +245,7 @@
 import unoService from "../services/unoService";
 import Card from "../components/Card";
 import Chat from "../components/Chat";
+import Results from "../components/Results";
 
 export default {
   
@@ -239,6 +254,7 @@ export default {
   components: {
     Card,
     Chat,
+    Results,
   },
   data() {
     

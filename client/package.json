@@ -8,7 +8,8 @@
     "lint": "vue-cli-service lint",
     "build-watch": "vue-cli-service build-watch",
     "cypress:open": "cypress open",
-    "test-integration": "cypress run --browser chrome"
+    "test-integration": "cypress run --browser chrome",
+    "jest": "jest tests"
   },
   "dependencies": {
     "@types/jest": "^26.0.3",
