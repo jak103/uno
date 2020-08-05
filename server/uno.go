@@ -26,27 +26,27 @@ func getGameUpdate(gameID string, playerID string) (*model.Game, error) {
 
 	// Determine if player is active
 	now := time.Now()
-	for _, player := range gameData.Players {
+	changedData := false
+	for index, player := range gameData.Players {
 		if player.ID == playerID {
-			if player.LastUpdated != "" {
-				lastUpdated, _ := time.Parse(time.RFC3339, player.LastUpdated)
-				adjustedTime := lastUpdated.Add(time.Second * 10)
-				player.IsActive = adjustedTime.Before(now)
-
-				if player.IsActive {
-					player.LastUpdated = now.String()
-				}
-			} else {
-				player.LastUpdated = now.String()
-				player.IsActive = true
+			gameData.Players[index].LastUpdated = now.Format(time.RFC3339)
+			gameData.Players[index].IsActive = true
+			changedData = true
+		} else if player.IsActive && player.LastUpdated != "" {
+			lastUpdated, _ := time.Parse(time.RFC3339, player.LastUpdated)
+			adjustedTime := lastUpdated.Add(time.Second * 10)
+			if adjustedTime.Before(now) {
+				gameData.Players[index].IsActive = false
+				changedData = true
 			}
-			break
 		}
 	}
 
-	gameErr = database.SaveGame(*gameData)
-	if gameErr != nil {
-		return nil, err
+	if changedData {
+		gameErr = database.SaveGame(*gameData)
+		if gameErr != nil {
+			return nil, err
+		}
 	}
 
 	return gameData, nil
@@ -155,14 +155,14 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 			}
 
 			// Update who plays next, taking into account reverse card and skip card
-			if (card.Value == "R") {
+			if card.Value == "R" {
 				gameData.Direction = !gameData.Direction
 				if len(gameData.Players) == 2 {
 					gameData = goToNextPlayer(gameData)
 				}
 			}
 
-			if (card.Value == "S") {
+			if card.Value == "S" {
 				gameData = goToNextPlayer(gameData)
 			}
 
@@ -275,8 +275,8 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	// draw a card for the discard
 	var drawnCard model.Card
 	game, drawnCard = drawTopCard(game)
-	
-	// ensure that this first card is a number card 
+
+	// ensure that this first card is a number card
 	for !isNumberCard(drawnCard) {
 		// if not, add it back to the draw pile
 		game.DrawPile = append(game.DrawPile, drawnCard)
