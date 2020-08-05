@@ -225,12 +225,12 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 
 	gameData, gameErr := database.LookupGameByID(gameID)
 
-	// Reset Uno calling protection after a card is drawn
-	gameData.Players[gameData.CurrentPlayer].Protection = false
-
 	if gameErr != nil {
 		return nil, gameErr
 	}
+
+	// Reset Uno calling protection after a card is drawn
+	gameData.Players[gameData.CurrentPlayer].Protection = false
 
 	// We get the current player from the game
 	player := &gameData.Players[gameData.CurrentPlayer]
