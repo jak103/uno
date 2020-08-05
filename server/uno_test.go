@@ -36,6 +36,11 @@ func TestDrawCard(t *testing.T) {
 	// Generate real game in database and real player
 	database, _ := db.GetDb()
 	game, player := setupGameWithPlayer(database)
+	
+	// Put a number card on the discard pile
+	// For the purposes of this test, it's ok that it's an extra card
+	game.DiscardPile = append(game.DiscardPile, model.Card{"red", "2"})
+	database.SaveGame(*game)
 
 	// Test Drawing a card with a full deck and real player
 	game, err = drawCard(game.ID, player.ID)
@@ -65,7 +70,7 @@ func TestDrawCard(t *testing.T) {
 	// Assert last card in discard is actually to proper last card
 	assert.Nil(t, err, "Failed to draw card.")
 	assert.Equal(t, 2, len(player.Cards))
-	assert.Equal(t, 105, len(game.DrawPile))
+	assert.Equal(t, 106, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
 	assert.Equal(t, lastCard.Color, game.DiscardPile[0].Color)
 	assert.Equal(t, lastCard.Value, game.DiscardPile[0].Value)
@@ -282,4 +287,11 @@ func TestGoToNextPlayer(t *testing.T) {
 	game = goToNextPlayer(game)
 	assert.Equal(t,0,game.CurrentPlayer)
 	database.DeleteGame(game.ID)
+}
+
+func TestcheckGameExists(t *testing.T) {
+	database, _ := db.GetDb()
+	game, _, _ := createNewGame("testGame", "testPlayer")
+	_, gameErr := database.LookupGameByID(game.ID)
+	assert.Nil(t, gameErr, "could not find existing game")
 }

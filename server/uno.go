@@ -116,7 +116,7 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 
 	if gameData.Players[gameData.CurrentPlayer].ID == playerID {
 		hand := gameData.Players[gameData.CurrentPlayer].Cards
-		if checkForCardInHand(card, hand) && (card.Color == gameData.DiscardPile[len(gameData.DiscardPile)-1].Color || card.Value == gameData.DiscardPile[len(gameData.DiscardPile)-1].Value || card.Value == "W4" || card.Value == "W") {
+		if checkForCardInHand(card, hand) && isCardPlayable(card, gameData.DiscardPile) {
 			// Valid card can be played
 
 			gameData.DiscardPile = append(gameData.DiscardPile, card)
@@ -128,12 +128,18 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 				}
 			}
 
+			// Reset Uno calling protection after every card is played
+			gameData.Players[gameData.CurrentPlayer].Protection = false
+
 			// Update who plays next, taking into account reverse card and skip card
-			if (card.Value == "R") {
+			if card.Value == "R" {
 				gameData.Direction = !gameData.Direction
+				if len(gameData.Players) == 2 {
+					gameData = goToNextPlayer(gameData)
+				}
 			}
 
-			if (card.Value == "S") {
+			if card.Value == "S" {
 				gameData = goToNextPlayer(gameData)
 			}
 
@@ -142,10 +148,12 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 			// take into account cards that force the next player to draw
 			if card.Value == "D2" {
 				gameData = drawNCards(gameData, 2)
+				gameData = goToNextPlayer(gameData)
 			}
 
 			if card.Value == "W4" {
 				gameData = drawNCards(gameData, 4)
+				gameData = goToNextPlayer(gameData)
 			}
 		}
 	}
@@ -155,6 +163,54 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 	if err != nil {
 		return nil, err
 	}
+
+	return gameData, nil
+}
+
+func logicCallUno(gameID string, callingPlayerID string, calledOnPlayerID string) (*model.Game, error) {
+	database, dbErr := db.GetDb()
+
+	if dbErr != nil {
+		return nil, dbErr
+	}
+
+	gameData, gameErr := database.LookupGameByID(gameID)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	var callingPlayer, calledOnPlayer *model.Player
+	for i := range gameData.Players {
+		if gameData.Players[i].ID == callingPlayerID {
+			callingPlayer = &gameData.Players[i]
+		}
+
+		if gameData.Players[i].ID == calledOnPlayerID {
+			calledOnPlayer = &gameData.Players[i]
+		}
+	}
+
+	var drawnCard model.Card
+	if len(calledOnPlayer.Cards) == 1 {
+		if calledOnPlayer.Protection == false {
+			if calledOnPlayer.ID == callingPlayer.ID {
+				calledOnPlayer.Protection = true
+			} else {
+				for i := 0; i < 4; i++ {
+					gameData, drawnCard = drawTopCard(gameData)
+
+					calledOnPlayer.Cards = append(calledOnPlayer.Cards, drawnCard)
+				}
+			}
+		}
+	} else {
+		gameData, drawnCard = drawTopCard(gameData)
+
+		callingPlayer.Cards = append(callingPlayer.Cards, drawnCard)
+	}
+
+	database.SaveGame(*gameData)
 
 	return gameData, nil
 }
@@ -172,6 +228,9 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 	if gameErr != nil {
 		return nil, gameErr
 	}
+
+	// Reset Uno calling protection after a card is drawn
+	gameData.Players[gameData.CurrentPlayer].Protection = false
 
 	// We get the current player from the game
 	player := &gameData.Players[gameData.CurrentPlayer]
@@ -195,7 +254,10 @@ func drawCard(gameID string, playerID string) (*model.Game, error) {
 		// append the card into the players cards from the draw pile
 		player.Cards = append(player.Cards, drawnCard)
 
-		gameData = goToNextPlayer(gameData)
+		// if the card cannot be played, advance to the next player
+		if !isCardPlayable(drawnCard, gameData.DiscardPile) {
+			gameData = goToNextPlayer(gameData)
+		}
 
 		// Save the game into the database
 		database.SaveGame(*gameData)
@@ -244,8 +306,8 @@ func dealCards(game *model.Game) (*model.Game, error) {
 	// draw a card for the discard
 	var drawnCard model.Card
 	game, drawnCard = drawTopCard(game)
-	
-	// ensure that this first card is a number card 
+
+	// ensure that this first card is a number card
 	for !isNumberCard(drawnCard) {
 		// if not, add it back to the draw pile
 		game.DrawPile = append(game.DrawPile, drawnCard)
@@ -274,6 +336,22 @@ func dealCards(game *model.Game) (*model.Game, error) {
 ////////////////////////////////////////////////////////////
 // Utility Functions
 ////////////////////////////////////////////////////////////
+
+// Checks if a card is playable
+// Card is playable if it is wild or matches the card on top of the discard pile
+// Does not check that the card is in the player's hand
+// Use checkForCardInHand for that
+func isCardPlayable(card model.Card, discardPile []model.Card) bool {
+	isWild := card.Value == "W4" || card.Value == "W"
+
+	cardOnDiscardPile := discardPile[len(discardPile)-1]
+
+	if (card.Color == cardOnDiscardPile.Color || card.Value == cardOnDiscardPile.Value || isWild) {
+		return true
+	}
+
+	return false
+}
 
 func checkForCardInHand(card model.Card, hand []model.Card) bool {
 	for _, c := range hand {
@@ -305,12 +383,12 @@ func goToNextPlayer(gameData *model.Game) *model.Game {
 	return gameData
 }
 
-func reshuffleDiscardPile(gameDate *model.Game) *model.Game {
+func reshuffleDiscardPile(gameData *model.Game) *model.Game {
 	//Reshuffle all discarded cards except the last one back into the draw pile.
-	oldDiscard := gameDate.DiscardPile[:len(gameDate.DiscardPile)-1]
-	gameDate.DrawPile = shuffleCards(oldDiscard)
-	gameDate.DiscardPile = gameDate.DiscardPile[len(gameDate.DiscardPile)-1:]
-	return gameDate
+	oldDiscard := gameData.DiscardPile[:len(gameData.DiscardPile)-1]
+	gameData.DrawPile = shuffleCards(oldDiscard)
+	gameData.DiscardPile = gameData.DiscardPile[len(gameData.DiscardPile)-1:]
+	return gameData
 }
 
 func drawNCards(gameData *model.Game, nCards uint) *model.Game {
