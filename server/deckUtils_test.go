@@ -73,6 +73,13 @@ func TestPrintCards(t *testing.T) {
 	assert.Equal(t, "red 1\nblue 2\ngreen 3\n", re)
 }
 
+func TestNumberCard(t *testing.T) {
+	numCard := model.Card{"red", "1"} //Card to to test for IS number card
+	notNumCard := model.Card{"red", "W"} //Card to to test for IS NOT number card
+	assert.Equal(t, true, isNumberCard(numCard))
+	assert.Equal(t, false, isNumberCard(notNumCard))
+}
+
 func captureOutput(f func()) string { //Function to capture output source: https://medium.com/@hau12a1/golang-capturing-log-println-and-fmt-println-output-770209c791b4
 	reader, writer, err := os.Pipe()
 	if err != nil {
