@@ -220,3 +220,10 @@ func TestJoinGame(t *testing.T){
 	// test to see if the new Player is in the game
 	assert.Contains(t, game.Players, *newPlayer)
 }
+
+func TestcheckGameExists(t *testing.T) {
+	database, _ := db.GetDb()
+	game, _, _ := createNewGame("testGame", "testPlayer")
+	_, gameErr := database.LookupGameByID(game.ID)
+	assert.Nil(t, gameErr, "could not find existing game")
+}
