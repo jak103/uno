@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
@@ -11,7 +12,7 @@ import (
 ////////////////////////////////////////////////////////////
 // These are all of the functions for the game -> essentially public functions
 ////////////////////////////////////////////////////////////
-func getGameUpdate(gameID string) (*model.Game, error) {
+func getGameUpdate(gameID string, playerID string) (*model.Game, error) {
 	database, err := db.GetDb()
 
 	if err != nil {
@@ -19,6 +20,31 @@ func getGameUpdate(gameID string) (*model.Game, error) {
 	}
 
 	gameData, gameErr := database.LookupGameByID(gameID)
+	if gameErr != nil {
+		return nil, err
+	}
+
+	// Determine if player is active
+	now := time.Now()
+	for _, player := range gameData.Players {
+		if player.ID == playerID {
+			if player.LastUpdated != "" {
+				lastUpdated, _ := time.Parse(time.RFC3339, player.LastUpdated)
+				adjustedTime := lastUpdated.Add(time.Second * 10)
+				player.IsActive = adjustedTime.Before(now)
+
+				if player.IsActive {
+					player.LastUpdated = now.String()
+				}
+			} else {
+				player.LastUpdated = now.String()
+				player.IsActive = true
+			}
+			break
+		}
+	}
+
+	gameErr = database.SaveGame(*gameData)
 	if gameErr != nil {
 		return nil, err
 	}

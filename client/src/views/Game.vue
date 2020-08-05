@@ -36,11 +36,19 @@
             two-line
           >
             <v-list-item-icon>
-              <v-icon class="pt-3">
-              mdi-account
-              </v-icon>
+              <template v-if="!player.isActive">
+                <v-icon class="pt-3" style="color: red;">
+                  mdi-account-off
+                </v-icon>
+              </template>
+              <template v-else>
+                <v-icon class="pt-3">
+                  mdi-account
+                </v-icon>
+              </template>
             </v-list-item-icon>
             <v-list-item-content>
+              {{ player.isActive }} <!-- test to see IsActive -->
               {{ player.name }}
               <ul class="hand ma-0 pa-0">
                 <li v-for="(card, index) of player.cards" :key="index">🃏</li>
