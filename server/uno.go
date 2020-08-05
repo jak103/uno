@@ -159,6 +159,42 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 	return gameData, nil
 }
 
+
+func callUno(gameID, callingUser string, userButtonPressed string) (*model.Game, error){
+	database, dbErr := db.GetDb()
+
+	if dbErr != nil {
+		return nil, dbErr
+	}
+
+	gameData, gameErr := database.LookupGameByID(gameID)
+
+	if gameErr != nil {
+		return nil, gameErr
+	}
+
+	if len(userButtonPressed.Cards) == 1{
+		if userButtonPressed.Protection == 0{
+			if userButtonPressed.ID == callingUser.ID{
+				userButtonPressed.Protection = 1
+			}else{
+				_, drawnCard := drawTopCard(gameData)
+
+				player.Cards = append(userButtonPressed.Cards, drawnCard)
+			}
+		}
+	} else {
+		_, drawnCard := drawTopCard(gameData)
+
+		player.Cards = append(callingUser.Cards, drawnCard)
+	}
+
+	database.SaveGame(*gameData)
+
+	return gameData, nil
+}
+
+
 func drawCard(gameID string, playerID string) (*model.Game, error) {
 	// These lines are simply getting the database and game and handling any error that could occur
 	database, dbErr := db.GetDb()
@@ -305,12 +341,12 @@ func goToNextPlayer(gameData *model.Game) *model.Game {
 	return gameData
 }
 
-func reshuffleDiscardPile(gameDate *model.Game) *model.Game {
+func reshuffleDiscardPile(gameData *model.Game) *model.Game {
 	//Reshuffle all discarded cards except the last one back into the draw pile.
-	oldDiscard := gameDate.DiscardPile[:len(gameDate.DiscardPile)-1]
-	gameDate.DrawPile = shuffleCards(oldDiscard)
-	gameDate.DiscardPile = gameDate.DiscardPile[len(gameDate.DiscardPile)-1:]
-	return gameDate
+	oldDiscard := gameData.DiscardPile[:len(gameData.DiscardPile)-1]
+	gameData.DrawPile = shuffleCards(oldDiscard)
+	gameData.DiscardPile = gameData.DiscardPile[len(gameData.DiscardPile)-1:]
+	return gameData
 }
 
 func drawNCards(gameData *model.Game, nCards uint) *model.Game {

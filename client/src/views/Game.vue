@@ -376,7 +376,7 @@ export default {
       }
     },
 	async callUno() {
-		unoService.callUno(this.gameState.game_id, this.gameState.player_id, this.gameState.current_player.id)
+		unoService.callUno(this.gameState.game_id, this.gameState.player_id, this.gameState.player.name)
 			.then(this.updateData());
 	},
 

@@ -5,4 +5,5 @@ type Player struct {
 	ID    string `bson:"_id,omitempty" json:"id"`
 	Name  string `bson:"name,omitempty" json:"name"`
 	Cards []Card `bson:"cards,omitempty" json:"cards"`
+	Protection bool `bson:"_protection,omitempty" json:"protection"`
 }

@@ -39,6 +39,9 @@ func setupRoutes(e *echo.Echo) {
 
 	group.GET("/games/:id", getGameState)
 	group.GET("/players/token/:token", getPlayerFromToken)
+
+	//Zach Ellis
+	group.POST("/games/:id/call", callUno)
 }
 
 func getGames(c echo.Context) error {
@@ -267,6 +270,23 @@ func draw(c echo.Context) error {
 	gameID := c.Param("id")
 
 	game, err := drawCard(gameID, playerID)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, buildGameState(game, playerID))
+}
+
+/* TODO: call uno correctly */
+func callUno(c echo.Context) error {
+	playerID, err := getPlayerFromContext(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
+	}
+	gameID := c.Param("id")
+
+	game, err := callUno(gameID, callingUser, userButtonPressed)
 
 	if err != nil {
 		return err
