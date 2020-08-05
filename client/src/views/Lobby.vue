@@ -77,7 +77,7 @@
               <v-list-item-content
                 class="pl-4"
               >
-                -- {{player}}
+                -- {{player.name}}
               </v-list-item-content>
             </v-list-item>
           </v-list>
