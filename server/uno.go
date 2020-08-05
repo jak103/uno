@@ -160,7 +160,7 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 }
 
 
-func callUno(gameID, callingUser string, userButtonPressed string) (*model.Game, error){
+func logicCallUno(gameID string, callingUser player, userButtonPressed player) (*model.Game, error){
 	database, dbErr := db.GetDb()
 
 	if dbErr != nil {
@@ -180,13 +180,13 @@ func callUno(gameID, callingUser string, userButtonPressed string) (*model.Game,
 			}else{
 				_, drawnCard := drawTopCard(gameData)
 
-				player.Cards = append(userButtonPressed.Cards, drawnCard)
+				userButtonPressed.Cards = append(userButtonPressed.Cards, drawnCard)
 			}
 		}
 	} else {
 		_, drawnCard := drawTopCard(gameData)
 
-		player.Cards = append(callingUser.Cards, drawnCard)
+		callingUser.Cards = append(callingUser.Cards, drawnCard)
 	}
 
 	database.SaveGame(*gameData)

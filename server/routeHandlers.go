@@ -35,13 +35,13 @@ func setupRoutes(e *echo.Echo) {
 	group.POST("/games/:id/start", startGame)
 	group.POST("/games/:id/play", play) // Ryan Johnson
 	group.POST("/games/:id/draw", draw) // Brady Svedin
-	//	group.POST("/games/:id/uno", callUno)
+	
+	group.POST("/games/:id/call", callUno) // Zach Ellis
 
 	group.GET("/games/:id", getGameState)
 	group.GET("/players/token/:token", getPlayerFromToken)
 
-	//Zach Ellis
-	group.POST("/games/:id/call", callUno)
+	
 }
 
 func getGames(c echo.Context) error {
@@ -278,15 +278,15 @@ func draw(c echo.Context) error {
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
-/* TODO: call uno correctly */
 func callUno(c echo.Context) error {
 	playerID, err := getPlayerFromContext(c)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
 	}
 	gameID := c.Param("id")
+	userCalling, err := getPlayerFromId()
 
-	game, err := callUno(gameID, callingUser, userButtonPressed)
+	game, err := logicCallUno(gameID, playerID, userButtonPressed)
 
 	if err != nil {
 		return err

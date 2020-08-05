@@ -47,7 +47,7 @@ export default {
     return BaseService.post(`/api/chat/${gameId}/add`, { player: playerId, message: message});
   },
   async callUno(gameId, callingUser, userButtonPressed) {
-	return BaseService.post(`/api/games/${gameId}/call`, {player: callingUser, player: userButtonPressed});
+	return BaseService.post(`/api/games/${gameId}/call`, {player: callingUser, playerID: userButtonPressed});
   },
 
 }
