@@ -46,7 +46,6 @@ export default {
     bus.$on('updateSnack', (message) => {
       this.snackbarText=message;
       this.snackbar=true;
-      console.log("you called me!!!!!!!");
     }); 
   },
   methods: {
