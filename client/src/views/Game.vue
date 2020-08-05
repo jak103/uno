@@ -284,6 +284,7 @@ export default {
       snackbar: false,
       snackbarText: "",
       newMessageName: "",
+      playerColor: "",
     };
   },
 
@@ -338,9 +339,10 @@ export default {
       this.sortByColor = true;
     },
 
-    runsnackbar(name, message) {
+    runsnackbar(name, message, color) {
       this.newMessageName = name;
       this.snackbarText = name + " says: " + message;
+      this.playerColor = color;
       this.snackbar = true;
     },
 
