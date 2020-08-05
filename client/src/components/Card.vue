@@ -57,7 +57,6 @@
     <v-dialog
       v-if="number === 'W' || number === 'W4'"
       v-model="showColorDialog"
-      persistent
       max-width="500px"
     >
       <v-card >
