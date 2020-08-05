@@ -89,10 +89,7 @@
               </p>
               <p v-if="gameState.draw_pile != undefined">
                 Cards Remaining in Draw Pile: {{ gameState.draw_pile.length }}
-              </p>
-              <p>
-                <v-switch v-model="pane_lock" :label="`Unlock Players Pane`"></v-switch>
-              </p>
+              </p>              
 
               <!-- Need Help? button -->
               <v-btn @click.native="helpMenu = !helpMenu" >Need Help?</v-btn>
@@ -188,8 +185,11 @@
 
     </v-container>
 
-    <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
-      Chat
+    <div 
+      v-if="gameState.status === 'Playing' && gameState.current_player != undefined" 
+      @click="chatOpen = !chatOpen"
+      class="float-button">
+        Chat
     </div>
     <v-dialog
       v-model="chooseColorDialog.visible"
@@ -267,7 +267,6 @@ export default {
   data() {
     
     return {
-      pane_lock: true,
       gameState: {},
       cards: [],
 
