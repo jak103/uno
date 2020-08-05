@@ -55,6 +55,7 @@
       </span>
     </div>
     <v-dialog
+      v-if="number === 'W' || number === 'W4'"
       v-model="showColorDialog"
       persistent
       max-width="500px"
@@ -129,6 +130,8 @@ export default {
   methods: {
     async playWildCard(color) {
       this.showColorDialog = false;
+      this.color = color;
+      this.$emit("playWild", color);
     }
   }
 };

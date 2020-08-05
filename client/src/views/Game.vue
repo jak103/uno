@@ -158,8 +158,10 @@
               :key="i"
               :number="card.value"
               :color="card.color"
-              :showColorDialog="card.show"
-              @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
+              :showColorDialog="card.showColor"
+              :ref="'player_cards'"
+              @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(i)"
+              v-on:playWild="playWildCard(color, i)"
             ></Card>
           </div>
           <div v-if="gameState.status === 'Finished'">
@@ -301,21 +303,21 @@ export default {
       this.snackbar = true;
     },
 
-    selectWildColor(card)
+    selectWildColor(index)
     {
-      this.chooseColorDialog.card = card;
-      this.chooseColorDialog.visible = true;
+      this.$refs.player_cards[index].showColorDialog = true;
     },
 
-    async playWildCard(color) {
-      this.chooseColorDialog.visible = false;
-      this.chooseColorDialog.card.color = color;
-      this.playCard(this.chooseColorDialog.card);
+    async playWildCard(color, i) {
+      debugger;
+      this.$refs.player_cards[i].showColorDialog = false;
+      this.$refs.player_cards[i].color = color;
+      this.playCard(this.$refs.player_cards[i]);
     },
 
     async playCard(card) { 
-      console.log("Playing card", card);     
-      let res = await unoService.playCard(this.$route.params.id, card.value, card.color);
+      console.log("Playing card", this.$refs.player_cards[card]);     
+      let res = await unoService.playCard(this.$route.params.id, this.$refs.player_cards[card].number, this.$refs.player_cards[card].color);
       
       if (res.data) {
         this.gameState = res.data;
