@@ -230,10 +230,11 @@
 
       <v-snackbar
         v-model="snackbar"
-        color="info"
+        :color="playerColor"
         :timeout='4000'
         v-show="gameState.status === 'Playing' && playerName !== newMessageName"
-        >{{snackbarText}}
+      >
+          {{snackbarText}}
         <v-btn text @click="snackbar=false">
           Close
         </v-btn>
