@@ -68,7 +68,7 @@ func TestDrawCard(t *testing.T) {
 	// Assert last card in discard is actually to proper last card
 	assert.Nil(t, err, "Failed to draw card.")
 	assert.Equal(t, 2, len(player.Cards))
-	assert.Equal(t, 105, len(game.DrawPile))
+	assert.Equal(t, 106, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
 	assert.Equal(t, lastCard.Color, game.DiscardPile[0].Color)
 	assert.Equal(t, lastCard.Value, game.DiscardPile[0].Value)
