@@ -192,7 +192,7 @@
         <v-card-title
           class="blue"
         >
-          Chose color for Wild card
+          Choose a wildcard color
         </v-card-title>
         <v-card-actions>
             <v-col>
