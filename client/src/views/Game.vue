@@ -1,6 +1,6 @@
 
 <template>
-  <div class="mb-0 game-wrapper">
+  <div class="mb-0 game-wrapper no-scroll">
     <v-card 
       class="overflow-hidden"
     >
@@ -392,6 +392,7 @@ export default {
   },
   mounted() {
     this.$emit('sendGameID', this.$route.params.id)
+    document.html.classList.add('no-scroll')
 
     unoService.getPlayerNameFromToken()
     .then( resp => {
@@ -499,8 +500,14 @@ export default {
   .v-list
   {
     height: 100%;
-    margin-bottom:20%;
+    margin-bottom:100%;
     overflow-y: scroll;
+  }
+
+  no-scroll 
+  {
+    position: fixed;
+    overflow-y: hidden;
   }
   
 </style>
