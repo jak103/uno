@@ -88,7 +88,7 @@ func TestTotalGamePlayAuth(t *testing.T) {
 
 	// Chat
 	chatRec := httptest.NewRecorder()
-	chatReq := httptest.NewRequest(http.MethodPost, "/api/chat/"+gameID.(string)+"/add?message=hello_world", nil)
+	chatReq := httptest.NewRequest(http.MethodPost, "/api/chat/"+gameID.(string)+"/add?playerName=creator_name&message=hello_world", nil)
 	chatReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
 
 	e.ServeHTTP(chatRec, chatReq)
