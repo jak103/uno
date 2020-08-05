@@ -39,7 +39,7 @@
         <div v-if="gameState.all_players !== undefined">  
           <v-list-item
             v-for="player in gameState.all_players"
-            :key="player.name"
+            :key="player.id"
             :input-value="player.id === gameState.current_player.id"
             color="#1F7087"
             class="pa-3 player-drawer-item"
@@ -193,7 +193,7 @@
         <v-card-title
           class="blue"
         >
-          Chose color for Wild card
+          Choose a wildcard color
         </v-card-title>
         <v-card-actions>
             <v-col>
