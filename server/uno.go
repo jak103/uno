@@ -101,6 +101,27 @@ func addMessage(gameID string, playerID string, message model.Message) (*model.G
 	return gameData, nil
 }
 
+func updateNotification(gameID string, notification string) (*model.Game, error) {
+	database, err := db.GetDb()
+
+	if err != nil {
+		return nil, err
+	}
+	gameData, err := database.UpdateNotification(gameID, notification)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = database.SaveGame(*gameData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return gameData, nil
+}
+
 func playCard(game string, playerID string, card model.Card) (*model.Game, error) {
 	database, err := db.GetDb()
 

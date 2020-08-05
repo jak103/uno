@@ -224,6 +224,23 @@ func (db *mongoDB) AddMessage(gameID string, playerID string, message model.Mess
 	return game, nil
 }
 
+func (db *mongoDB) UpdateNotification(gameID string, notification string) (*model.Game, error) {
+	game, err := db.LookupGameByID(gameID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Updating Notification")
+	game.Notification = notification //update(game.Notification, notification)
+	err = db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
+}
 // disconnect disconnects from the remote database
 func (db *mongoDB) disconnect() {
 	fmt.Println("Disconnecting from the database.")

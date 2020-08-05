@@ -149,12 +149,15 @@ func addNewMessage(c echo.Context) error {
 }
 
 func notify(c echo.Context) error {
-	notification := c.Get("notification")
-	// var notification string
-	// c.Bind(&notification)
-	log.Println(notification)
-	log.Println("we are here in the notify")
-	return nil
+	playerID, err := getPlayerFromContext(c)
+	gameID := c.Param("id")
+	var notification = "grep"
+	game, err := updateNotification(gameID, notification)
+
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
 func generateToken(p *model.Player) string {
@@ -300,8 +303,8 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["player_id"] = playerID
 	gameState["messages"] = game.Messages
 	gameState["gameOver"] = game.GameOver
-  //gameState["notification"] = game.notification
-  
+    gameState["notification"] = game.notification
+
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[len(game.DiscardPile)-1]
 	} else {

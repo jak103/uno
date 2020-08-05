@@ -254,7 +254,7 @@ export default {
       gameState: {},
       cards: [],
 
-      notification: "Default",
+      notification: "",
       chatOpen: false,
       
       playerName: "",
@@ -277,6 +277,7 @@ export default {
   watch: {
     gamestate: {
       handler: function(newGame, oldGame) {
+        console.log("gamestate is diff")
         if(newGame.notification && newGame.notification !== oldGame.notification){
           bus.$emit('updateSnack', newGame.notification)
         } 
