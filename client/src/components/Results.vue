@@ -1,8 +1,14 @@
 <template>
   <div v-if="players.winner === players.curPlayer">
     <p style="font-size: 36px; text-align:center">
-    WINNER
+    WINNER! Click buttons to celebrate
     </p>
+    <template>
+      <main>
+        <button @click="start">Click to celebrate!</button>
+        <button @click="stop">Click to stop celebrating.</button>
+      </main>
+    </template>
     <p style="font-size: 24px;text-align:center"> 
       {{players.winner}} 
     </p>
@@ -14,11 +20,22 @@
   </div>
   </div>
   <div v-else>
-    You lost! But do you know who didn't lose? 
+    You lost! But do you know who didn't lose?
+    <template>
+      <main>
+        <button @click="love">Click to show some love to the winner.</button>
+        <button @click="stop">Click to stop.</button>
+      </main>
+    </template> 
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+import VueConfetti from 'vue-confetti'
+
+Vue.use(VueConfetti)
+
 export default {
   name: "Results",
   props: {
@@ -30,6 +47,31 @@ export default {
   methods: {
     redirectCall() {
       this.$router.push({ name: 'Lobby'});
+    },
+    start() {
+      this.$confetti.start();
+    },
+ 
+    stop() {
+      this.$confetti.stop();
+    },
+ 
+    love() {
+      this.$confetti.update({
+        particles: [
+          {
+            type: 'heart',
+          },
+          {
+            type: 'circle',
+          },
+        ],
+        defaultColors: [
+          'red',
+          'pink',
+          '#ba0000'
+        ],
+      });
     }
  }
 }
