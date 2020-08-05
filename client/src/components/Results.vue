@@ -1,11 +1,12 @@
 <template>
   <div v-if="players.winner === players.curPlayer">
     <p style="font-size: 36px; text-align:center">
-    WINNER! Click buttons to celebrate
+    WINNER! Click buttons to celebrate.
     </p>
     <template>
       <main>
         <button @click="start">Click to celebrate!</button>
+        <br>
         <button @click="stop">Click to stop celebrating.</button>
       </main>
     </template>
@@ -24,6 +25,7 @@
     <template>
       <main>
         <button @click="love">Click to show some love to the winner.</button>
+        <br>
         <button @click="stop">Click to stop.</button>
       </main>
     </template> 
@@ -48,6 +50,7 @@ export default {
     redirectCall() {
       this.$router.push({ name: 'Lobby'});
     },
+    
     start() {
       this.$confetti.start();
     },
@@ -57,13 +60,11 @@ export default {
     },
  
     love() {
+      this.$confetti.start();
       this.$confetti.update({
         particles: [
           {
             type: 'heart',
-          },
-          {
-            type: 'circle',
           },
         ],
         defaultColors: [
@@ -71,6 +72,7 @@ export default {
           'pink',
           '#ba0000'
         ],
+        defaultSize: 15,
       });
     }
  }
