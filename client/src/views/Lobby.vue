@@ -108,12 +108,15 @@
         </v-card-title>
         <v-card-text>          
           <v-text-field
+            @keydown.enter="createGame"
+            autofocus
             label="Game name"
             outlined
             v-model="createDialog.name"
             class="pt-4"
           > </v-text-field>
           <v-text-field
+            @keydown.enter="createGame"
             label="Creator name"
             outlined
             v-model="createDialog.creator"            
