@@ -36,15 +36,13 @@
             two-line
           >
           
-            <div class="col">
-              <v-list-item-icon class="ml-n4">
+            <div class="ml-n1">
+              <v-list-item-icon>
                 <v-icon class="pt-3">
                 mdi-account
                 </v-icon>
               </v-list-item-icon>
-              
-              <!-- Number under the icon when pane is collapsed -->
-              <div v-if="player.cards != undefined" class="row ml-n3">{{ player.cards.length }}</div>
+              <div v-if="player.cards != undefined" class="row pl-3">{{ player.cards.length }}</div>
             </div>
 
             <v-list-item-content>
