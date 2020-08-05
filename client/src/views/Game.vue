@@ -158,10 +158,10 @@
               :key="i"
               :number="card.value"
               :color="card.color"
-              :showColorDialog="card.showColor"
+              :showColorDialog="card.showColorDialog"
               :ref="'player_cards'"
               @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(i)"
-              v-on:playWild="playWildCard(color, i)"
+              v-on:playWild="(color)=>playWildCard(color, i)"
             ></Card>
           </div>
           <div v-if="gameState.status === 'Finished'">
@@ -312,7 +312,7 @@ export default {
       debugger;
       this.$refs.player_cards[i].showColorDialog = false;
       this.$refs.player_cards[i].color = color;
-      this.playCard(this.$refs.player_cards[i]);
+      this.playCard(i);
     },
 
     async playCard(card) { 
