@@ -17,6 +17,29 @@ type firestoreDB struct {
 	players *firestore.CollectionRef
 }
 
+func (db *firestoreDB) GetAllGames() (*[]model.Game, error) {
+	games := make([]model.Game, 0)
+
+	documents := db.games.DocumentRefs(context.Background())
+	for {
+		docRef, docRefErr := documents.Next()
+
+		if docRefErr == iterator.Done {
+			break
+		}
+
+		var game model.Game
+
+		if docSnapshot, _ := docRef.Get(context.Background()); docSnapshot != nil {
+			_ = docSnapshot.DataTo(&game)
+		}
+
+		games = append(games, game)
+	}
+
+	return &games, nil
+}
+
 // HasGame checks to see if a game with the given ID exists in the database.
 func (db *firestoreDB) HasGameByPassword(password string) bool {
 	game, err := db.LookupGameByPassword(password)
@@ -30,15 +53,27 @@ func (db *firestoreDB) HasGameByID(id string) bool {
 }
 
 // CreateGame a game with the given ID. Perhaps this should instead just return an id?
-func (db *firestoreDB) CreateGame() (*model.Game, error) {
-	game := model.Game{ID: uuid.New().String(), Password: "12234"}
-	gameDoc := db.games.Doc(game.ID)
-
-	if _, err := gameDoc.Create(context.Background(), game); err != nil {
+func (db *firestoreDB) CreateGame(gameName string, creatorID string) (*model.Game, error) {
+	player, err := db.LookupPlayer(creatorID)
+	if err != nil {
 		return nil, err
 	}
 
-	return &game, nil
+	myGame := model.Game{
+		ID:        uuid.New().String(),
+		Password:  "12234",
+		Creator:   *player,
+		Name:      gameName,
+		Status:    model.WaitingForPlayers,
+		Direction: true}
+	myGame.Players = append(myGame.Players, *player)
+	gameDoc := db.games.Doc(myGame.ID)
+
+	if _, err := gameDoc.Create(context.Background(), myGame); err != nil {
+		return nil, err
+	}
+
+	return &myGame, nil
 }
 
 // CreatePlayer creates the player in the database
@@ -197,6 +232,32 @@ func (db *firestoreDB) SavePlayer(player model.Player) error {
 	}
 
 	return nil
+}
+
+// SendMessage add a Message to a game chat.
+func (db *firestoreDB) AddMessage(gameID string, playerID string, message model.Message) (*model.Game, error) {
+	game, err := db.LookupGameByID(gameID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	player, err := db.LookupPlayer(playerID)
+	message.Player = *player
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Adding a new Message")
+	game.Messages = append(game.Messages, message)
+	err = db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
 }
 
 // Disconnect disconnects from the remote database
