@@ -6,7 +6,7 @@
   </div>
   <div v-else-if="number === 'S'" :class="card_classes">
     <span class="inner">
-      <span class="mark">
+      <span class="smark">
         <img v-if="color === 'green'" class="s-inner" src="@/assets/card_symbols/s-green.svg">
         <img v-else-if="color === 'yellow'" class="s-inner" src="@/assets/card_symbols/s-yellow.svg">
         <img v-else-if="color === 'red'" class="s-inner" src="@/assets/card_symbols/s-red.svg">
@@ -16,7 +16,7 @@
   </div>
   <div v-else-if="number === 'D2'" :class="card_classes">
     <span class="inner">
-      <span class="mark">
+      <span class="smark">
         <img v-if="color === 'green'" class="d2-inner" src="@/assets/card_symbols/d2-green.svg">
         <img v-else-if="color === 'yellow'" class="d2-inner" src="@/assets/card_symbols/d2-yellow.svg">
         <img v-else-if="color === 'red'" class="d2-inner" src="@/assets/card_symbols/d2-red.svg">
@@ -108,7 +108,7 @@ export default {
   overflow: hidden;
 }
 
-.card .mark {
+.card .mark, .smark {
   display: inline-block;
   vertical-align: middle;
   background: #ffffff;
@@ -116,6 +116,10 @@ export default {
   padding: 0 26px;
   border-radius: 100px 60px / 120px 60px;
   line-height: 1.4;
+}
+
+.smark {
+  padding: 0 13px;
 }
 
 .card:before,
@@ -256,8 +260,7 @@ export default {
   content: "reverse";
 }
 .r-inner{
-  height: 100%;
-  width: 100%;
+  width: 54px;
   margin-bottom: -10%;
 }
 /* End Reverse Arrow CSS */
@@ -268,9 +271,7 @@ export default {
 }
 
 .s-inner{
-  height: 150%;
-  width: 150%;
-  margin-left: -25%;
+  width: 81px;
   margin-bottom: -10%;
 }
 /* End Skip CSS */
@@ -282,8 +283,7 @@ export default {
 }
 
 .d2-inner {
-  height: 100%;
-  width: 100%;
+  width: 54px;
 }
 /* End Draw 2 CSS */
 
@@ -310,8 +310,7 @@ export default {
   background-image: linear-gradient(to left, red, yellow, green, blue) !important;
 }
 .w4-inner {
-  height: 120%;
-  width: 120%;
+  width: 65px;
   margin-left: -10%;
   margin-bottom: -15%;
 }
