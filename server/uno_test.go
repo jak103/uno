@@ -2,7 +2,6 @@ package main
 
 import (
 	"testing"
-
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
@@ -172,4 +171,52 @@ func TestDealCards(t *testing.T) {
 	assert.Equal(t, 180, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
 
+}
+
+func TestCheckForCardInHand(t *testing.T){
+	//Created two cards One will be in the hand and the other won't
+	validCard := model.Card{"red", "1"}
+	falseCard := model.Card{"blue", "4"}
+	//Created a hand with the valid card in it
+	hand := []model.Card{validCard}
+	
+	//Testing to see if the function returns True for a card that is 
+	//present and False for a card that isn't present
+	assert.True(t, checkForCardInHand(validCard, hand))
+	assert.False(t, checkForCardInHand(falseCard, hand))
+}
+
+func TestCreatePlayer(t *testing.T){
+	// get the database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// use the createPlayer function
+	player, err := createPlayer("test")
+	assert.Nil(t, err, "could not create player")
+	// Lookup the player in the database to see if it is there
+	databasePlayer, err := database.LookupPlayer(player.ID)
+	assert.Nil(t, err, "could not find player")
+	// Test to see if the database player and the created player are the same
+	assert.Equal(t, player, databasePlayer)
+}
+
+func TestJoinGame(t *testing.T){
+	// get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// create a new game with one player
+	game, _, err := createNewGame("testGame", "testPlayer")
+	assert.Nil(t, err, "could not create game")
+	// create a new player
+	newPlayer, err := createPlayer("joinGamePlayer")
+	assert.Nil(t, err, "could not create new player")
+	// attempt to join game
+	game, err = joinGame(game.ID, newPlayer)
+	database.SaveGame(*game)
+	assert.Nil(t, err, "could not join game with new player")
+	// lookup game from database 
+	game, err = database.LookupGameByID(game.ID)
+	assert.Nil(t, err, "could not find game in database")
+	// test to see if the new Player is in the game
+	assert.Contains(t, game.Players, *newPlayer)
 }

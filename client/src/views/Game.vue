@@ -1,3 +1,4 @@
+
 <template>
   <div class="mb-0 game-wrapper">
     <v-card 
@@ -21,6 +22,15 @@
           <v-list-item-content>
             <v-list-item-title>Players</v-list-item-title>
           </v-list-item-content>
+
+          <v-list-item-icon>
+            <v-icon class="pt-3" v-if="gameState.direction === true">
+            mdi-arrow-down-bold
+            </v-icon>
+            <v-icon class="pt-3" v-else>
+            mdi-arrow-up-bold
+            </v-icon>
+          </v-list-item-icon>
         </v-list-item>
 
         <v-divider></v-divider>
@@ -73,6 +83,18 @@
               <p>
                 <v-switch v-model="pane_lock" :label="`Unlock Players Pane`"></v-switch>
               </p>
+
+              <!-- Need Help? button -->
+              <v-btn @click.native="helpMenu = !helpMenu" >Need Help?</v-btn>
+              <v-card v-show="helpMenu" class="mt-5 pa-2" outlined tile >                  
+                <router-link to="/help#rules">Rules</router-link> |
+                <router-link to="/help#tutorials">Tutorials</router-link> |
+                <router-link to="/help#cardAbilities">Card Abilities</router-link> |
+
+                <!-- Hint Button -->
+                <v-btn @click.native="hint">Hint</v-btn>
+              </v-card>
+
             </v-card>
           </v-row>
 
@@ -199,7 +221,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
   </div>
 </template>
 
@@ -212,12 +233,15 @@ import bus from "../helpers/bus";
 //import AppVue from '../App.vue';
 
 export default {
+  
   name: "Game",
+  title:"Greatest Uno",
   components: {
     Card,
     Chat,
   },
   data() {
+    
     return {
       pane_lock: true,
       gameState: {},
@@ -239,6 +263,7 @@ export default {
       colors: { 'red': 0, 'blue': 1 , 'green': 2, 'yellow': 3, 'wild': 4},
       values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13},
     
+      helpMenu: false,
       newMessageName: "",
     };
   },
@@ -260,7 +285,14 @@ export default {
         this.gameState = res.data;
       }
       this.decideSort()
+    },  
+    async startGame() {
+      await unoService.startGame(this.$route.params.id);
+      // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
+      this.updateData(); 
     },
+
+    // Methods for organizing the Cards, added by Andrew McMullin for the organize-cards issue
     decideSort() {
       if (this.sortByColor) {
         this.orgByColor()
@@ -294,11 +326,6 @@ export default {
 
       this.sortByNum = false;
       this.sortByColor = true;
-    },
-    async startGame() {
-      await unoService.startGame(this.$route.params.id);
-      // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
-      this.updateData(); 
     },
 
     runsnackbar(name, message) {
@@ -335,15 +362,24 @@ export default {
       if (res.data) {
         this.gameState = res.data;
       }
-     }
     },
-    created() {
+
+    // Getting a hint, added by the creator of the Help Button
+    hint(){
+      var color = this.gameState.current_card.color
+      var number = this.gameState.current_card.value
+      alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
+    }, 
+  }, 
+
+  created() {
+    this.updateData();
+    this.updateInterval = setInterval(() => {
       this.updateData();
-      this.updateInterval = setInterval(() => {
-        this.updateData();
       }, 2000);
-    },
-    mounted() {
+  },
+  mounted() {
+    this.$emit('sendGameID', this.$route.params.id)
     unoService.getPlayerNameFromToken()
     .then( resp => {
         this.playerName = resp?.data?.name
@@ -352,11 +388,11 @@ export default {
       console.err("Could not get player name from assigned token\n", err)
     })
   },
-    beforeDestroy (){
-      if(this.updateInterval){
-        clearInterval(this.updateInterval);
-      }
+  beforeDestroy (){
+    if(this.updateInterval){
+      clearInterval(this.updateInterval);
     }
+  }
 };
 </script>
 
@@ -421,4 +457,29 @@ export default {
   font-weight: bold;
 }
 
+/* CSS for the Help buttons */
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
+  
+  .helpDropBtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+  }
+/* The container <div> - needed to position the dropdown content */
+  .helpDropBtn {
+    position: relative;
+    display: inline-block;
+  }
+/* Dropdown Content (Hidden by Default) */
+  .dropdown_content {
+    display: none;
+    position: absolute;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
 </style>
