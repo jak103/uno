@@ -168,13 +168,24 @@
               </v-row>
             </v-card>
 
-            <Card
-              v-for="(card, i) in gameState.player_cards"
-              :key="i"
-              :number="card.value"
-              :color="card.color"
-              @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
-            ></Card>
+            <div id=myCards>
+              <Card
+                v-for="(card, i) in gameState.player_cards"
+                :key="i"
+                :number="card.value"
+                :color="card.color"
+                :tabindex="(i == 0) ? 0 : -1"
+                @click.native=" (card.value == 'W' || card.value == 'W4')
+                                ? selectWildColor(card)
+                                : playCard(card)"
+                @keydown.arrow-right.native="swapCardFocus(i, i + 1)"
+                @keydown.arrow-down.native="swapCardFocus(i, i + 1)"
+                @keydown.arrow-left.native="swapCardFocus(i, i - 1)"
+                @keydown.arrow-up.native="swapCardFocus(i, i - 1)"
+                @keypress.enter.native="playCard(card)"
+                class="playerCard"
+              ></Card>
+            </div>
           </div>
           <div v-if="gameState.status === 'Finished'">
             <Results v-bind:players="{
@@ -389,6 +400,21 @@ export default {
       if (res.data) {
         this.gameState = res.data;
       }
+    },
+
+    swapCardFocus(currentIndex, swapIndex) {
+      var cards = document.getElementById("myCards").children
+      var card = cards[currentIndex]
+      var other = cards[((swapIndex % cards.length) + cards.length) % cards.length]
+
+      var tmp = other.getAttribute("tabindex")
+      other.setAttribute("tabindex", card.getAttribute("tabindex"))
+      card.setAttribute("tabindex", tmp)
+
+      // This assumes that we just swapped a tabindex 0 card with a tabindex -1
+      // card, which is currently true, but might not always be the case.
+      // There's probably a better solution here.
+      other.focus()
     },
 
     // Getting a hint, added by the creator of the Help Button

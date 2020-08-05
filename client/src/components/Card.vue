@@ -140,6 +140,10 @@ export default {
   -webkit-transform: rotate(180deg);
 }
 
+.card:focus {
+  transform: scale(1.2);
+}
+
 .card.blue {
   color: #0063b3;
 }
