@@ -238,3 +238,27 @@ func TestCheckGameExists(t *testing.T){
 	fakeGame, err := checkGameExists("fakeGame")
 	assert.False(t, fakeGame)
 }
+
+func TestGetGameUpdate(t *testing.T){
+	// Get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// Create Player
+	player, err := database.CreatePlayer("testPlayer")
+	assert.Nil(t, err, "could not create player")
+	// Create Game
+	game, err := database.CreateGame("testGame", player.ID)
+	assert.Nil(t, err, "could not create game")
+	// Get Game Update from function
+	gameUpdate, err := getGameUpdate(game.ID)
+	assert.Nil(t, err, "could not get game update")
+	// Get game data from the database
+	gameData, err := database.LookupGameByID(game.ID)
+	assert.Nil(t, err, "could not get game from database")
+	// Check to see if the gameUpdate is equal to the game in the database
+	assert.Equal(t, gameData, gameUpdate)
+	// Check that the function returns Nil for non existant game
+	fakeGame, _ := getGameUpdate("fakeGame")
+	assert.Nil(t, fakeGame, "Found game that does not exist")
+}
+
