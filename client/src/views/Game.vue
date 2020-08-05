@@ -226,11 +226,6 @@ export default {
       chatOpen: false,
       
       playerName: "",
-      chooseColorDialog: {
-        visible: false,
-        card: {},
-        color: ""
-      },
 
       sortByNum: false,
       sortByColor: false,
@@ -309,7 +304,6 @@ export default {
     },
 
     async playWildCard(color, i) {
-      debugger;
       this.$refs.player_cards[i].showColorDialog = false;
       this.$refs.player_cards[i].color = color;
       this.playCard(i);
