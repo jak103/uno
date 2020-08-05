@@ -134,6 +134,9 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 			// Update who plays next, taking into account reverse card and skip card
 			if card.Value == "R" {
 				gameData.Direction = !gameData.Direction
+				if len(gameData.Players) == 2 {
+					gameData = goToNextPlayer(gameData)
+				}
 			}
 
 			if card.Value == "S" {
@@ -145,10 +148,12 @@ func playCard(game string, playerID string, card model.Card) (*model.Game, error
 			// take into account cards that force the next player to draw
 			if card.Value == "D2" {
 				gameData = drawNCards(gameData, 2)
+				gameData = goToNextPlayer(gameData)
 			}
 
 			if card.Value == "W4" {
 				gameData = drawNCards(gameData, 4)
+				gameData = goToNextPlayer(gameData)
 			}
 		}
 	}

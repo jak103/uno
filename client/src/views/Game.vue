@@ -1,6 +1,6 @@
 
 <template>
-  <div class="mb-0 game-wrapper">
+  <div class="mb-0 game-wrapper no-scroll">
     <v-card 
       class="overflow-hidden"
     >
@@ -154,9 +154,9 @@
 
               <v-row v-else class="pl-3">
                 Organize Cards
-                <v-btn @click.native="orgByColor">by Color</v-btn>
-                <v-btn @click.native="orgByNum">by Number</v-btn>
-                <v-btn @click.native="orgOff">Off</v-btn>
+                <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
+                <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
+                <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
               </v-row>
             </v-card>
 
@@ -200,7 +200,7 @@
         <v-card-title
           class="blue"
         >
-          Chose color for Wild card
+          Choose a wildcard color
         </v-card-title>
         <v-card-actions>
             <v-col>
@@ -407,6 +407,7 @@ export default {
   },
   mounted() {
     this.$emit('sendGameID', this.$route.params.id)
+    document.html.classList.add('no-scroll')
 
     unoService.getPlayerNameFromToken()
     .then( resp => {
@@ -520,6 +521,24 @@ export default {
     align-content: center;
     margin: 10px;
   }
+
+  .org-btn {
+    margin: 10px;
+  }
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
+
+  .v-list
+  {
+    height: 100%;
+    margin-bottom:100%;
+    overflow-y: scroll;
+  }
+
+  no-scroll 
+  {
+    position: fixed;
+    overflow-y: hidden;
+  }
+  
 </style>
