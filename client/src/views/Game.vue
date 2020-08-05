@@ -166,7 +166,10 @@
               :key="i"
               :number="card.value"
               :color="card.color"
-              @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
+              :showColorDialog="card.showColorDialog"
+              :ref="'player_cards'"
+              @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(i)"
+              v-on:playWild="(color)=>playWildCard(color, i)"
             ></Card>
           </div>
           <div v-if="gameState.status === 'Finished'">
@@ -191,49 +194,6 @@
       class="float-button">
         Chat
     </div>
-    <v-dialog
-      v-model="chooseColorDialog.visible"
-      persistent
-      max-width="500px"
-    >
-      <v-card >
-        <v-card-title
-          class="blue"
-        >
-          Choose a wildcard color
-        </v-card-title>
-        <v-card-actions>
-            <v-col>
-              <v-btn
-                color="red"
-                large
-                @click.native="playWildCard('red')"
-              >Red</v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-                color="green"
-                large
-                @click.native="playWildCard('green')"
-              >Green</v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-                color="blue"
-                large
-                @click.native="playWildCard('blue')"
-              >Blue</v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-              color="yellow"
-              large
-                @click.native="playWildCard('yellow')"
-              >Yellow</v-btn>
-            </v-col>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
       <v-snackbar
         v-model="snackbar"
@@ -273,11 +233,6 @@ export default {
       chatOpen: false,
       
       playerName: "",
-      chooseColorDialog: {
-        visible: false,
-        card: {},
-        color: ""
-      },
 
       sortByNum: false,
       sortByColor: false,
@@ -350,21 +305,20 @@ export default {
       this.snackbar = true;
     },
 
-    selectWildColor(card)
+    selectWildColor(index)
     {
-      this.chooseColorDialog.card = card;
-      this.chooseColorDialog.visible = true;
+      this.$refs.player_cards[index].showColorDialog = true;
     },
 
-    async playWildCard(color) {
-      this.chooseColorDialog.visible = false;
-      this.chooseColorDialog.card.color = color;
-      this.playCard(this.chooseColorDialog.card);
+    async playWildCard(color, i) {
+      this.$refs.player_cards[i].showColorDialog = false;
+      this.$refs.player_cards[i].color = color;
+      this.playCard(i);
     },
 
     async playCard(card) { 
       let res = await unoService.playCard(this.$route.params.id, card.value, card.color);
-      
+     
       if (res.data) {
         this.gameState = res.data;
       }
