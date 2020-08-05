@@ -11,7 +11,7 @@
           width="1000"              
         >
           <v-card-title 
-            style="background-color: #33B0FF"                                 
+            style="background-color: #007BC7"                                 
           >
             Games  
             <v-spacer></v-spacer>
