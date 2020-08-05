@@ -148,9 +148,9 @@
 
               <v-row v-else class="pl-3">
                 Organize Cards
-                <v-btn @click.native="orgByColor">by Color</v-btn>
-                <v-btn @click.native="orgByNum">by Number</v-btn>
-                <v-btn @click.native="orgOff">Off</v-btn>
+                <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
+                <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
+                <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
               </v-row>
             </v-card>
 
@@ -484,6 +484,9 @@ export default {
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+  }
+  .org-btn {
+    margin: 10px;
   }
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
