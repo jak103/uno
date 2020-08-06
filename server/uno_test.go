@@ -226,6 +226,20 @@ func TestJoinGame(t *testing.T){
 	assert.Contains(t, game.Players, *newPlayer)
 }
 
+func TestAddMessage(t *testing.T){
+	
+	// get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+
+	game, player := setupGameWithPlayer(database)
+	m := model.Message{Player: *player, Value: "Hello World"}
+	
+	game, err = addMessage(game.ID, player.ID, m)
+	// test to see if the new Player is in the game
+	assert.Contains(t, game.Messages, m)
+}
+
 func TestcheckGameExists(t *testing.T) {
 	database, _ := db.GetDb()
 	game, _, _ := createNewGame("testGame", "testPlayer")
