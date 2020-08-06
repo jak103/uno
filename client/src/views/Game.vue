@@ -327,8 +327,8 @@ export default {
       }
     },
 
-    async playCard(i) { 
-      let res = await unoService.playCard(this.$route.params.id, this.$refs.player_cards[i].number, this.$refs.player_cards[i].color);
+    async playCard(card) { 
+      let res = await unoService.playCard(this.$route.params.id, card.value, card.color);
      
       if (res.data) {
         this.gameState = res.data;
