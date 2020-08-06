@@ -371,6 +371,7 @@ export default {
      
       if (res.data) {
         this.gameState = res.data;
+        this.decideSort();
       }
     },
 
@@ -384,6 +385,7 @@ export default {
       
       if (res.data) {
         this.gameState = res.data;
+        this.decideSort();
       }
     },
 
