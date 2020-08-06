@@ -306,12 +306,6 @@ func TestAddMessage(t *testing.T){
 	assert.Contains(t, game.Messages, m)
 }
 
-func TestCheckGameExists(t *testing.T) {
-	database, _ := db.GetDb()
-	game, _, _ := createNewGame("testGame", "testPlayer")
-	_, gameErr := database.LookupGameByID(game.ID)
-	assert.Nil(t, gameErr, "could not find existing game")
-}
 
 func TestCheckGameExists(t *testing.T){
 	// Get database
