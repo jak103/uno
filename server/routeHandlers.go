@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/mattwhite180/go-away"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
@@ -18,6 +19,7 @@ var tokenSecret string = "usudevops"
 func setupRoutes(e *echo.Echo) {
 	// Routes that don't require a valid JWT
 	e.GET("/api/games", getGames)
+    e.GET("/api/games/summary/:id", getGame) 
 	e.POST("/api/games", newGame)
 	e.POST("/api/games/:id/join", joinExistingGame)
 
@@ -66,6 +68,27 @@ func getGames(c echo.Context) error {
 	return c.JSON(http.StatusOK, gameSummaries)
 }
 
+func getGame(c echo.Context) error {
+	//log.Println("Running getGames")
+	database, err := db.GetDb()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not find game: Failed to connect to db")
+	}
+    
+    gameID := c.Param("id")
+    
+	game, err := database.LookupGameByID(gameID)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Could not find game")
+	}
+    
+    summary := model.GameToSummary(*game)
+	
+	return c.JSON(http.StatusOK, summary)
+}
+
 func newGame(c echo.Context) error {
 	m := echo.Map{}
 
@@ -84,6 +107,10 @@ func newGame(c echo.Context) error {
 
 	if gameName == "" || creatorName == "" {
 		return c.JSON(http.StatusBadRequest, "Missing game name or creator")
+	}
+
+	if goaway.IsProfane(gameName) == true || goaway.IsProfane(creatorName) == true {
+		return c.JSON(http.StatusBadRequest, "Profane game name or creator")
 	}
 
 	game, creator, gameErr := createNewGame(gameName, creatorName)
@@ -115,6 +142,10 @@ func joinExistingGame(c echo.Context) error {
 
 	if playerName == "" {
 		return c.JSON(http.StatusBadRequest, "Missing player name")
+	}
+
+	if goaway.IsProfane(playerName) {
+		return c.JSON(http.StatusBadRequest, "Profane player name")
 	}
 
 	player, _ := createPlayer(playerName)
@@ -168,7 +199,7 @@ func getGameState(c echo.Context) error {
 	playerID, err := getPlayerFromContext(c)
 	gameID := c.Param("id")
 
-	game, err := getGameUpdate(gameID)
+	game, err := getGameUpdate(gameID, playerID)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid game ID")
