@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,107 +22,117 @@ func TestTotalGamePlayAuth(t *testing.T) {
 	// Create an joinable game
 	createRec := httptest.NewRecorder()
 	createReq := httptest.NewRequest(http.MethodPost, "/api/games?name=game_name&creator=creator_name", nil)
-	e.ServeHTTP(createRec, createReq)
+	createCtx := e.NewContext(createReq, createRec)
 
-	createRsp := make(map[string]interface{})
-	json.Unmarshal([]byte(createRec.Body.String()), &createRsp)
+	var gameID string
+	var token *jwt.Token
+	var validToken bool
+	if assert.NoError(t, newGame(createCtx)) {
+		createRsp := make(map[string]interface{})
+		json.Unmarshal([]byte(createRec.Body.String()), &createRsp)
 
-	// Create Game Assertions
-	assert.NotEqual(t, createRsp["token"], nil)
-	assert.NotEqual(t, createRsp["game"], nil)
-	game, _ := createRsp["game"].(map[string]interface{})
+		// Create Game Assertions
+		assert.NotEqual(t, createRsp["token"], nil)
 
-	assert.NotEqual(t, game, nil)
-	assert.Equal(t, game["name"], "game_name")
-	assert.Equal(t, http.StatusOK, createRec.Code)
+		token, validToken = parseJWT(createRsp["token"].(string), tokenSecret)
 
-	gameID := game["game_id"]
+		assert.Equal(t, true, validToken)
+
+		assert.NotEqual(t, createRsp["game"], nil)
+		game, _ := createRsp["game"].(map[string]interface{})
+
+		assert.NotEqual(t, game, nil)
+		assert.Equal(t, game["name"], "game_name")
+		assert.Equal(t, http.StatusOK, createRec.Code)
+
+		gameID = game["game_id"].(string)
+	}
 
 	// Test Get Games - all lobby games
 	getRec := httptest.NewRecorder()
 	getReq := httptest.NewRequest(http.MethodGet, "/api/games", nil)
-	e.ServeHTTP(getRec, getReq)
+	getCtx := e.NewContext(getReq, getRec)
 
-	getRsp := make(map[string]interface{})
-	json.Unmarshal([]byte(getRec.Body.String()), &getRsp)
-
-	assert.Equal(t, http.StatusOK, getRec.Code)
+	if assert.NoError(t, getGames(getCtx)) {
+		assert.Equal(t, http.StatusOK, getRec.Code)
+	}
 
 	// Test Start Game
 	startRec := httptest.NewRecorder()
-	startReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID.(string)+"/start", nil)
-	startReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
+	startReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID+"/start", nil)
 
-	e.ServeHTTP(startRec, startReq)
+	startCtx := e.NewContext(startReq, startRec)
+	startCtx.Set("user", token)
+	startCtx.SetParamNames("id")
+	startCtx.SetParamValues(gameID)
 
-	startRsp := make(map[string]interface{})
-	json.Unmarshal([]byte(startRec.Body.String()), &startRsp)
-
-	assert.Equal(t, startRsp["name"], "game_name")
-	assert.Equal(t, http.StatusOK, startRec.Code)
+	if assert.NoError(t, startGame(startCtx)) {
+		assert.Equal(t, http.StatusOK, startRec.Code)
+	}
 
 	// Draw
 	drawRec := httptest.NewRecorder()
-	drawReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID.(string)+"/draw", nil)
-	drawReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
+	drawReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID+"/draw", nil)
 
-	e.ServeHTTP(drawRec, drawReq)
+	drawCtx := e.NewContext(drawReq, drawRec)
+	drawCtx.Set("user", token)
+	drawCtx.SetParamNames("id")
+	drawCtx.SetParamValues(gameID)
 
-	drawRsp := make(map[string]interface{})
-	json.Unmarshal([]byte(drawRec.Body.String()), &drawRsp)
-
-	assert.Equal(t, drawRsp["name"], "game_name")
-	assert.Equal(t, http.StatusOK, drawRec.Code)
+	if assert.NoError(t, draw(drawCtx)) {
+		assert.Equal(t, http.StatusOK, drawRec.Code)
+	}
 
 	// Play
 	playRec := httptest.NewRecorder()
-	playReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID.(string)+"/draw", nil)
-	playReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
+	playReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID+"/draw", nil)
 
-	e.ServeHTTP(playRec, playReq)
+	playCtx := e.NewContext(playReq, playRec)
+	playCtx.Set("user", token)
+	playCtx.SetParamNames("id")
+	playCtx.SetParamValues(gameID)
 
-	playRsp := make(map[string]interface{})
-	json.Unmarshal([]byte(playRec.Body.String()), &playRsp)
-
-	assert.Equal(t, playRsp["name"], "game_name")
-	assert.Equal(t, http.StatusOK, playRec.Code)
+	if assert.NoError(t, play(playCtx)) {
+		assert.Equal(t, http.StatusOK, playRec.Code)
+	}
 
 	// Chat
 	chatRec := httptest.NewRecorder()
-	chatReq := httptest.NewRequest(http.MethodPost, "/api/chat/"+gameID.(string)+"/add?playerName=creator_name&message=hello_world", nil)
-	chatReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
+	chatReq := httptest.NewRequest(http.MethodPost, "/api/chat/"+gameID+"/add?playerName=creator_name&message=hello_world", nil)
 
-	e.ServeHTTP(chatRec, chatReq)
+	chatCtx := e.NewContext(chatReq, chatRec)
+	chatCtx.Set("user", token)
+	chatCtx.SetParamNames("id")
+	chatCtx.SetParamValues(gameID)
 
-	chatRsp := make(map[string]interface{})
-	json.Unmarshal([]byte(chatRec.Body.String()), &chatRsp)
-
-	assert.Equal(t, chatRsp["name"], "game_name")
-	assert.Equal(t, http.StatusOK, chatRec.Code)
+	if assert.NoError(t, addNewMessage(chatCtx)) {
+		assert.Equal(t, http.StatusOK, chatRec.Code)
+	}
 
 	// Get game state
 	stateRec := httptest.NewRecorder()
-	stateReq := httptest.NewRequest(http.MethodGet, "/api/games/"+gameID.(string), nil)
-	stateReq.Header.Set("Authorization", "Token "+createRsp["token"].(string))
+	stateReq := httptest.NewRequest(http.MethodGet, "/api/games/"+gameID, nil)
 
-	e.ServeHTTP(stateRec, stateReq)
+	e.NewContext(stateReq, stateRec)
+	stateCtx := e.NewContext(stateReq, stateRec)
+	stateCtx.Set("user", token)
+	stateCtx.SetParamNames("id")
+	stateCtx.SetParamValues(gameID)
 
-	stateRsp := make(map[string]interface{})
-	json.Unmarshal([]byte(stateRec.Body.String()), &stateRsp)
-
-	assert.Equal(t, stateRsp["name"], "game_name")
-	assert.Equal(t, http.StatusOK, stateRec.Code)
+	if assert.NoError(t, getGameState(stateCtx)) {
+		assert.Equal(t, http.StatusOK, stateRec.Code)
+	}
 
 	// Test Join Game
 	joinRec := httptest.NewRecorder()
-	joinReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID.(string)+"/join?playerName=player_name", nil)
+	joinReq := httptest.NewRequest(http.MethodPost, "/api/games/"+gameID+"/join?playerName=player_name", nil)
 
-	e.ServeHTTP(joinRec, joinReq)
+	joinCtx := e.NewContext(joinReq, joinRec)
+	joinCtx.SetParamNames("id")
+	joinCtx.SetParamValues(gameID)
+	joinCtx.Set("playerName", "player_name")
 
-	joinRsp := make(map[string]interface{})
-	json.Unmarshal([]byte(joinRec.Body.String()), &joinRsp)
-
-	assert.NotEqual(t, joinRsp["token"], nil)
-	assert.NotEqual(t, joinRsp["game"], nil)
-	assert.Equal(t, http.StatusOK, joinRec.Code)
+	if assert.NoError(t, joinExistingGame(joinCtx)) {
+		assert.Equal(t, http.StatusOK, joinRec.Code)
+	}
 }
