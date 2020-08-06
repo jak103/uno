@@ -18,7 +18,10 @@
             <section id="tutorials"> 
                               
                 <h2> Tutorials: </h2>
-                <a id="section2"><p class=text > Tutorials here</p></a>
+                <a id="section2" >
+                    <v-list-item href="https://www.youtube.com/watch?v=sWoSZmHsCls" class=text target="_blank">Click here for a tutorial on 'How to play Uno'</v-list-item>
+                    <v-list-item href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class=text target="_blank">Click here for another tutorial</v-list-item>
+                </a>
             </section>    
             <section id="cardAbilities">
                 
@@ -66,7 +69,7 @@
 
 <script>
  import Card from "../components/Card";
- 
+
  export default {
     components: {
     Card
