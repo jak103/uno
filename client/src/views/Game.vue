@@ -195,18 +195,19 @@
                 :key="i"
                 :number="card.value"
                 :color="card.color"
-                :tabindex="(i == 0) ? 0 : -1"
+                :tabidx="(i == 0) ? 0 : -1"
                 :showColorDialog="card.showColorDialog"
                 @click.native=" (card.value == 'W' || card.value == 'W4')
-                                ? selectWildColor(card)
+                                ? selectWildColor(i)
                                 : playCard(card)"
                 @keydown.arrow-right.native="swapCardFocus(i, i + 1)"
                 @keydown.arrow-down.native="swapCardFocus(i, i + 1)"
                 @keydown.arrow-left.native="swapCardFocus(i, i - 1)"
                 @keydown.arrow-up.native="swapCardFocus(i, i - 1)"
-                @keypress.enter.native="playCard(card)"
+                @keypress.enter.native="(card.value == 'W' || card.value == 'W4')
+                                        ? selectWildColor(i)
+                                        : playCard(card)"
                 v-on:playWild="(color)=>playWildCard(color, i)"
-                class="playerCard"
               ></Card>
             </v-container>
           </div>
@@ -407,8 +408,8 @@ export default {
 
     swapCardFocus(currentIndex, swapIndex) {
       var cards = this.$refs.player_cards
-      var card = cards[currentIndex]
-      var other = cards[((swapIndex % cards.length) + cards.length) % cards.length]
+      var card = cards[currentIndex].$el
+      var other = cards[((swapIndex % cards.length) + cards.length) % cards.length].$el
 
       var tmp = other.getAttribute("tabindex")
       other.setAttribute("tabindex", card.getAttribute("tabindex"))
@@ -493,27 +494,26 @@ function _keyListener(e) {
       case "d":
         if (this.gameState.draw_pile != undefined) {
           e.preventDefault()
-
           this.drawCard()
         }
         break;
 
       case "ArrowDown":
       case "ArrowRight":
-        if (!document.activeElement.className.includes("playerCard")) {
+        if (!document.activeElement.className.includes("card")) {
           e.preventDefault()
 
-          this.$refs.player_cards[0].focus()
+          this.$refs.player_cards[0].$el.focus()
         }
         break;
 
       case "ArrowUp":
       case "ArrowLeft":
-        if (!document.activeElement.className.includes("playerCard")) {
+        if (!document.activeElement.className.includes("card")) {
           e.preventDefault()
 
           let cards = this.$refs.player_cards
-          cards[cards.length - 1].focus()
+          cards[cards.length - 1].$el.focus()
         }
         break;
     }
