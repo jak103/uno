@@ -24,6 +24,7 @@ type Game struct {
 	Direction     bool       `bson:"direction,omitempty" json:"direction"`
 	Messages      []Message  `bson:"messeges,omitempty" json:"messages"`
 	GameOver      string     `bson:"winner,omitempty" json:"game_over"`
+	Notification  string     `bson:"notification,omitempty" json:"notification"`
 }
 
 // GameSummary Provides summary information for the lobby
