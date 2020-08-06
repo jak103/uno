@@ -6,7 +6,7 @@
           <v-btn text large to='/'>
             <div class="headline">USU DevOps :: UNO</div>
           </v-btn>
-
+          <v-spacer></v-spacer>
           <v-btn text :to="redirect()" >
             <div>Game</div>
           </v-btn>

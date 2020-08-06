@@ -11,7 +11,7 @@
           width="1000"              
         >
           <v-card-title 
-            style="background-color: #33B0FF"                                 
+            style="background-color: #007BC7"                                 
           >
             Games  
             <v-spacer></v-spacer>
@@ -197,7 +197,29 @@ export default {
       let res = await unoService.getAllGames();
       this.games = res.data;
     },
-
+    
+    async joinGameOnLoad(gameid) {
+      // pop up join to game they were invited to, if they are responding to an invite
+      
+      try {
+          let res = await unoService.getGameSummary(gameid);
+          
+          if (res.data != null && res.data.status == "Waiting For Players") {
+            // let the user join this game!
+            this.joinDialog.game = res.data;
+            this.joinDialog.visible = true;
+          } else {
+            // tell the user they cannot join that game!
+            // invalid game name -- TODO use a snack bar for this
+            alert("This game is not joinable!");
+          }
+        } catch {
+          // invalid game name -- TODO use a snack bar for this
+          alert("game was not found!");
+        }
+      
+    },
+    
     handleActionClick(game) {
       if (game.status == "Playing") {
         this.$router.push({path: `/game/${game.id}`});
@@ -247,7 +269,7 @@ export default {
         return;
       }
 
-      let res = await unoService.newGame(this.createDialog.name, this.createDialog.creator); 
+      let res = await unoService.newGame(this.createDialog.name, this.createDialog.creator);
       
       if (res.data.token && res.data.game) {
         localStorage.set('token', res.data.token);
@@ -273,6 +295,15 @@ export default {
 
   mounted() {
     this.getAllGames();
-  }
+  },
+  
+  created (){
+    // get the game id they wish to join, if it exists
+    let gameid = window.location.hash.substr(1);
+    if(gameid.length > 0){
+      // if there is a gameid we want to join(from an invite), get the game state to make sure it is still waiting for players to join.
+      this.joinGameOnLoad(gameid);
+    }
+  },
 }
 </script>

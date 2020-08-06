@@ -97,7 +97,7 @@ export default {
                     // If we have a new message scroll down and tell the game
                     if ( len__new !== len__old ) {
                         this.loop_scroll = true;
-                        this.$emit('snackbarText', this.messages[len__new].player.name, this.messages[len__new].message)
+                        this.$emit('snackbarText', this.messages[len__new].player.name, this.messages[len__new].message, this.messages[len__new].player.color)
                     }
                 }
                 this.info = null;
@@ -185,6 +185,12 @@ export default {
 .message {
     width: 100%;
     min-height: 80px;
+}
+
+.message:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 
 .message-content {
