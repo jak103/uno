@@ -25,6 +25,42 @@ func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 	return game, player
 }
 
+func TestCallUno(t *testing.T){
+
+	//create two players and game place them in game
+	database, _ := db.GetDb()
+	unoPlayer,_ := database.CreatePlayer("UnoPlayer")
+	callingPlayer,_ := database.CreatePlayer("CallingPlayer")
+	game, unoPlayer := setupGameWithPlayer(database)
+
+	game, _ = database.JoinGame(game.ID, unoPlayer.ID)
+	game, _ = database.JoinGame(game.ID, callingPlayer.ID)
+
+	//Deal cards to each player
+	game, err := dealCards(game)
+	assert.Nil(t, err, "error found")
+
+	//getting rid of cards from uno player
+	game.Players[0].Cards = game.Players[0].Cards[:1]
+	
+	//Call uno on player with one card, and no protection
+	game, err1 := logicCallUno(game.ID, callingPlayer.ID, unoPlayer.ID)
+
+	//Expect player to recieve four cards
+	assert.Nil(t, err1, "error found")
+	assert.Equal(t, 5, len(game.Players[0].Cards))
+
+	//Get rid of cards from uno player to have one card
+	game.Players[0].Cards = game.Players[0].Cards[:1]
+	game.Players[0].Protection = true
+
+	//Call uno on player with one card, and protection
+	game, err2 := logicCallUno(game.ID, callingPlayer.ID, unoPlayer.ID)
+
+	//Expect player to not receive cards
+	assert.Nil(t, err2, "error found")
+	assert.Equal(t, 1, len(game.Players[0].Cards))
+}
 
 func TestDrawCard(t *testing.T) {
 	// Test passing in a bogus game id, we should get an error
