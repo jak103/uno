@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/mattwhite180/go-away"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
@@ -108,6 +109,10 @@ func newGame(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Missing game name or creator")
 	}
 
+	if goaway.IsProfane(gameName) == true || goaway.IsProfane(creatorName) == true {
+		return c.JSON(http.StatusBadRequest, "Profane game name or creator")
+	}
+
 	game, creator, gameErr := createNewGame(gameName, creatorName)
 
 	if gameErr != nil {
@@ -137,6 +142,10 @@ func joinExistingGame(c echo.Context) error {
 
 	if playerName == "" {
 		return c.JSON(http.StatusBadRequest, "Missing player name")
+	}
+
+	if goaway.IsProfane(playerName) {
+		return c.JSON(http.StatusBadRequest, "Profane player name")
 	}
 
 	player, _ := createPlayer(playerName)
