@@ -146,7 +146,7 @@
             </v-card-text>
             
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
-
+<!--
               <div>Select a card with
                 <span class="keycap">←</span>
                 <span class="keycap">↑</span>
@@ -157,6 +157,7 @@
               <div>Press <span class="keycap">Enter</span> or click to play the selected card.</div>
               <div>Press <span class="keycap">D</span> to draw a card, or click the button below.</div>
               <div>Press <span class="keycap">C</span> to open chat (<span class="keycap">Esc</span> to close).</div>
+              -->
               <div>
                 <v-btn @click.native="drawCard">Draw from deck</v-btn>
               </div>
@@ -234,7 +235,7 @@
       tabindex="0">
       Chat
     </div>
-    
+    <!--
     <v-dialog
       v-model="chooseColorDialog.visible"
       persistent
@@ -278,7 +279,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
+-->
   </div>
 </template>
 
