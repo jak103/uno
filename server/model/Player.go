@@ -7,4 +7,5 @@ type Player struct {
 	Cards       []Card `bson:"cards,omitempty" json:"cards"`
 	LastUpdated string `bson:"lastUpdated,omitempty" json:"lastUpdated"`
 	IsActive    bool   `bson:"isActive,omitempty" json:"isActive"`
+	Protection  bool   `bson:"protection,omitempty" json:"protection"`
 }
