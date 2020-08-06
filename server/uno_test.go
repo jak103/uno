@@ -252,18 +252,18 @@ func TestGoToNextPlayer(t *testing.T) {
 	database, err := db.GetDb()
 	assert.Nil(t, err, "MockDB: Could not retrive database")
 	// Creating first player and testing for errors
-	player1 , err := database.CreatePlayer("Test 1")
-	assert.Nil(t, err, "MockDB: Could not create player")
-	// Creating second player to add to game and testing for errors
 	player2 , err := database.CreatePlayer("Test 2")
 	assert.Nil(t, err, "MockDB: Could not create player")
+	// Creating second player to add to game and testing for errors
+	player3 , err := database.CreatePlayer("Test 3")
+	assert.Nil(t, err, "MockDB: Could not create player")
 	// Creating game and testing for errors 
-	game, err := database.CreateGame("Test Game 1", player1.ID)
+	game, err := database.CreateGame("Test Game 1", "Creator")
 	assert.Nil(t, err, "MockDB: Could not create game")
 	// Adding players
-	game , err  = joinGame(game.ID, player1)
-	database.SaveGame(*game)
 	game , err  = joinGame(game.ID, player2)
+	database.SaveGame(*game)
+	game , err  = joinGame(game.ID, player3)
 	database.SaveGame(*game)
 	// Testing a situation where the players have no cards to trigger winning condition if statement.  
 	game.CurrentPlayer = 0
@@ -276,7 +276,7 @@ func TestGoToNextPlayer(t *testing.T) {
 	assert.Nil(t, err, "MockDB: Could not deal cards")
 	// Testing one direction
 	game = goToNextPlayer(game)
-	assert.Equal(t,0,game.CurrentPlayer)
+	assert.Equal(t,2,game.CurrentPlayer)
 	// Swapping direction
 	game.Direction = !game.Direction
 	// Testing the other direction 
