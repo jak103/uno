@@ -7,17 +7,18 @@ import (
 	"testing"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/jak103/uno/db"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
-
-var unitTestUserName = "UNIT_TEST_USER"
-var unitTestGameName = "UNIT_TEST_GAME_NAME"
 
 func TestTotalGamePlayAuth(t *testing.T) {
 	// Inital Setup
 	e := echo.New()
 	setupRoutes(e)
+
+	// initalize a database
+	db.GetDb()
 
 	// Create an joinable game
 	createRec := httptest.NewRecorder()
