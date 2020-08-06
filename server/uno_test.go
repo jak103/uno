@@ -5,11 +5,13 @@ import (
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/stretchr/testify/assert"
+	"errors"
 )
+
+
 
 // This function is meant to get a game and a player into the data base in a usable state for testing.
 func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
-
 	player, _ := database.CreatePlayer("Player 1")
 
 	game, _ := database.CreateGame("Game 1", player.ID)
@@ -23,8 +25,8 @@ func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 	return game, player
 }
 
-func TestDrawCard(t *testing.T) {
 
+func TestDrawCard(t *testing.T) {
 	// Test passing in a bogus game id, we should get an error
 	game, err := drawCard("Bogus game id", "Bogus player id")
 
@@ -121,15 +123,13 @@ func TestDrawCard(t *testing.T) {
 	// Assert that we got an error from the draw card function as we should have.
 	// Assert that the player didn't get any cards
 	// Assert that the draw pile didn't lose any cards.
-	assert.NotNil(t, err, "Player drew out of turn. Please make sure only the player whoes turn it is can play.")
+	assert.NotNil(t, err, "Player drew out of turn. Please make sure only the player who's turn it is can play.")
 	assert.Equal(t, "It is not your turn to play", err.Error())
 	assert.Equal(t, 0, len(player2.Cards))
 	assert.Equal(t, 107, len(game.DrawPile))
-
 }
 
 func TestDealCards(t *testing.T) {
-
 	// Generate real game in database and real player
 	database, err := db.GetDb()
 	game, player := setupGameWithPlayer(database)
@@ -175,7 +175,6 @@ func TestDealCards(t *testing.T) {
 	}
 	assert.Equal(t, 180, len(game.DrawPile))
 	assert.Equal(t, 1, len(game.DiscardPile))
-
 }
 
 func TestCheckForCardInHand(t *testing.T){
@@ -196,34 +195,98 @@ func TestCreatePlayer(t *testing.T){
 	database, err := db.GetDb()
 	assert.Nil(t, err, "could not find database")
 	// use the createPlayer function
-	player, err := createPlayer("test")
-	assert.Nil(t, err, "could not create player")
+	player, err := createPlayer("test") 
+ 	assert.Nil(t, err, "could not create player")
 	// Lookup the player in the database to see if it is there
 	databasePlayer, err := database.LookupPlayer(player.ID)
 	assert.Nil(t, err, "could not find player")
 	// Test to see if the database player and the created player are the same
-	assert.Equal(t, player, databasePlayer)
+	assert.Equal(t, player, databasePlayer) 
 }
 
 func TestJoinGame(t *testing.T){
-	// get database
+	// Get database
 	database, err := db.GetDb()
 	assert.Nil(t, err, "could not find database")
-	// create a new game with one player
-	game, _, err := createNewGame("testGame", "testPlayer")
-	assert.Nil(t, err, "could not create game")
-	// create a new player
-	newPlayer, err := createPlayer("joinGamePlayer")
+	// Create a new game with one player
+	player, err := database.CreatePlayer("testPlayer")
 	assert.Nil(t, err, "could not create new player")
-	// attempt to join game
+	game, err := database.CreateGame("testGame", player.ID)
+	assert.Nil(t, err, "could not create game")
+	// Create a new player
+	newPlayer, err := database.CreatePlayer("joinGamePlayer")
+	assert.Nil(t, err, "could not create new player")
+	// Attempt to join game
 	game, err = joinGame(game.ID, newPlayer)
 	database.SaveGame(*game)
 	assert.Nil(t, err, "could not join game with new player")
-	// lookup game from database 
+	// Lookup game from database 
 	game, err = database.LookupGameByID(game.ID)
 	assert.Nil(t, err, "could not find game in database")
-	// test to see if the new Player is in the game
+	// Test to see if the newPlayer is in the game
 	assert.Contains(t, game.Players, *newPlayer)
+	// attempt to join an errored game
+	err = errors.New("MockDB: Error!")
+	game, err = joinGame("Bad ID", newPlayer)
+	assert.Nil(t, game, "Joined a valid game")
+
+}
+
+func TestDrawTopCard(t *testing.T) {
+	// Creating database and testing for errors
+	database, err := db.GetDb()
+	assert.Nil(t, err, "MockDB: Could not retrive database")
+	// Creating player and testing for errors
+	player , err := database.CreatePlayer("Test Player")
+	assert.Nil(t, err, "MockDB: Could not create player")
+	// Creating game and testing for errors 
+	game, err := database.CreateGame("Test Game", player.ID)
+	assert.Nil(t, err, "MockDB: Could not create game")
+	// Setting game.DrawPile to a test deck
+	game.DrawPile = []model.Card{model.Card{"red", "1"}, model.Card{"blue", "2"}, model.Card{"green", "3"}}
+	// Testing drawTopCard
+	game, cardReturned := drawTopCard(game) 
+	assert.Equal(t, model.Card{"green", "3"}, cardReturned)
+}
+
+func TestGoToNextPlayer(t *testing.T) {
+	// Creating database and testing for errors
+	database, err := db.GetDb()
+	assert.Nil(t, err, "MockDB: Could not retrive database")
+	// Creating first player and testing for errors
+	player1 , err := database.CreatePlayer("Test 1")
+	assert.Nil(t, err, "MockDB: Could not create player")
+	// Creating second player to add to game and testing for errors
+	player2 , err := database.CreatePlayer("Test 2")
+	assert.Nil(t, err, "MockDB: Could not create player")
+	// Creating game and testing for errors 
+	game, err := database.CreateGame("Test Game 1", player1.ID)
+	assert.Nil(t, err, "MockDB: Could not create game")
+	// Adding players
+	game , err  = joinGame(game.ID, player1)
+	database.SaveGame(*game)
+	game , err  = joinGame(game.ID, player2)
+	database.SaveGame(*game)
+	// Testing a situation where the players have no cards to trigger winning condition if statement.  
+	game.CurrentPlayer = 0
+	game = goToNextPlayer(game)
+	// When winning condition is present goToNextPlayer will not change the current player
+	assert.Equal(t, 0, game.CurrentPlayer)
+	// Dealing cards to players
+	game, err = dealCards(game)
+	game.CurrentPlayer = 1
+	assert.Nil(t, err, "MockDB: Could not deal cards")
+	// Testing one direction
+	game = goToNextPlayer(game)
+	assert.Equal(t,0,game.CurrentPlayer)
+	// Swapping direction
+	game.Direction = !game.Direction
+	// Testing the other direction 
+	game = goToNextPlayer(game)
+	assert.Equal(t,1,game.CurrentPlayer)
+	game = goToNextPlayer(game)
+	assert.Equal(t,0,game.CurrentPlayer)
+	database.DeleteGame(game.ID)
 }
 func TestIsCardPlayable(t *testing.T){
 
@@ -277,3 +340,45 @@ func TestcheckGameExists(t *testing.T) {
 	_, gameErr := database.LookupGameByID(game.ID)
 	assert.Nil(t, gameErr, "could not find existing game")
 }
+
+func TestCheckGameExists(t *testing.T){
+	// Get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// Create Player
+	player, err := database.CreatePlayer("testPlayer")
+	assert.Nil(t, err, "could not create player")
+	// Create Game
+	game, err := database.CreateGame("testGame", player.ID)
+	assert.Nil(t, err, "could not create game")
+	// Check to see if the function detects the created game
+	validGame, err := checkGameExists(game.ID)
+	assert.True(t, validGame)
+	// Check to see if the function does not detect a game that does not exist
+	fakeGame, err := checkGameExists("fakeGame")
+	assert.False(t, fakeGame)
+}
+
+func TestGetGameUpdate(t *testing.T){
+	// Get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// Create Player
+	player, err := database.CreatePlayer("testPlayer")
+	assert.Nil(t, err, "could not create player")
+	// Create Game
+	game, err := database.CreateGame("testGame", player.ID)
+	assert.Nil(t, err, "could not create game")
+	// Get Game Update from function
+	gameUpdate, err := getGameUpdate(game.ID, player.ID)
+	assert.Nil(t, err, "could not get game update")
+	// Get game data from the database
+	gameData, err := database.LookupGameByID(game.ID)
+	assert.Nil(t, err, "could not get game from database")
+	// Check to see if the gameUpdate is equal to the game in the database
+	assert.Equal(t, gameData, gameUpdate)
+	// Check that the function returns Nil for non existant game
+	fakeGame, _ := getGameUpdate("fakeGame", "fakePlayer")
+	assert.Nil(t, fakeGame, "Found game that does not exist")
+}
+
