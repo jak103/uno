@@ -366,7 +366,7 @@ export default {
 
     getTileBackgroundColor(player) {
       if (player.isActive !== undefined && player.isActive !== null && player.isActive === false) {
-        return "warn";
+        return "error";
       } else if (this.gameState.current_player !== undefined && this.gameState.current_player !== null && player.id === this.gameState.current_player.id) {
         return "info"
       } else {
