@@ -52,10 +52,11 @@
                     class="pa-0 pl-2"
                   >
                     {{ player.name }}
-                    <v-btn 
+                    <v-btn
+                      v-if="gameState.status === 'Playing'"
                       :class="player.protection ? 'protected_call_button' : 'unprotected_call_button'" 
                       @click.native="callUno(player)"
-                      :disabled="player.cards.length > 1"
+                      :disabled="player.cards && player.cards.length > 1"
                     >
                       Uno!
                     </v-btn>              
@@ -316,11 +317,12 @@ export default {
       this.playCard(i);
     },
 
-    async playCard(card) { 
-      let res = await unoService.playCard(this.$route.params.id, card.value, card.color);
+    async playCard(i) { 
+      let res = await unoService.playCard(this.$route.params.id, this.$refs.player_cards[i].number, this.$refs.player_cards[i].color);
      
       if (res.data) {
         this.gameState = res.data;
+        this.decideSort();
       }
     },
 
@@ -334,6 +336,7 @@ export default {
       
       if (res.data) {
         this.gameState = res.data;
+        this.decideSort();
       }
     },
 
