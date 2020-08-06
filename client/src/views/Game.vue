@@ -41,7 +41,7 @@
             <v-card
               v-for="player in gameState.all_players"
               :key="player.name"
-              :color="player.id === gameState.current_player.id ? 'info' : ''"
+              :color="getTileBackgroundColor(player)"
               class="pa-1"
             >
               <v-card-title
@@ -363,6 +363,16 @@ export default {
       this.snackbarText = "Play a card with the number " + number + " or a card that is the color " + color + ".";
       this.snackbar = true;
     }, 
+
+    getTileBackgroundColor(player) {
+      if (player.isActive !== undefined && player.isActive !== null && player.isActive === false) {
+        return "error";
+      } else if (this.gameState.current_player !== undefined && this.gameState.current_player !== null && player.id === this.gameState.current_player.id) {
+        return "info"
+      } else {
+        return ""
+      }
+    },
   }, 
 
   created() {
