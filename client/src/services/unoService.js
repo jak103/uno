@@ -13,6 +13,10 @@ export default {
     return BaseService.post(`/api/games`, {name: gameName, creator: creatorName});
   },
 
+  async deleteGame(gameId) {
+    return BaseService.get(`/api/games/${gameId}/delete`);
+  },
+
   async joinGame(gameId, playerName) {
     return BaseService.post(`/api/games/${gameId}/join`, { playerName: playerName });
   },

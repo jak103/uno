@@ -90,6 +90,36 @@ func createNewGame(gameName string, creatorName string) (*model.Game, *model.Pla
 	return game, creator, nil
 }
 
+func deleteGameandPlayers(gameID string) error {
+	database, err := db.GetDb()
+	if err != nil {
+		return err
+	}
+
+	game, err := database.LookupGameByID(gameID)
+	if err != nil {
+		return err
+	}
+
+	// If the Status is "Finished" and the Creator is Deleting it
+	if game.Status == "Finished" {
+		for i, player := range game.Players {
+			fmt.Println(i, "Player Deleted:", player.Name)
+			err = database.DeletePlayer(player.ID)
+			if err != nil {
+				return err
+			}
+		}
+
+		err = database.DeleteGame(gameID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
 func joinGame(game string, player *model.Player) (*model.Game, error) {
 	database, err := db.GetDb()
 	if err != nil {
@@ -393,7 +423,7 @@ func isCardPlayable(card model.Card, discardPile []model.Card) bool {
 
 	cardOnDiscardPile := discardPile[len(discardPile)-1]
 
-	if (card.Color == cardOnDiscardPile.Color || card.Value == cardOnDiscardPile.Value || isWild) {
+	if card.Color == cardOnDiscardPile.Color || card.Value == cardOnDiscardPile.Value || isWild {
 		return true
 	}
 
