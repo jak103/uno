@@ -287,6 +287,51 @@ func TestGoToNextPlayer(t *testing.T) {
 	assert.Equal(t,0,game.CurrentPlayer)
 	database.DeleteGame(game.ID)
 }
+func TestIsCardPlayable(t *testing.T){
+
+	// Generate real game in database and real player
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+
+	game, _ := setupGameWithPlayer(database)
+
+	// puts a card to test with in the discard pile
+	game.DiscardPile = append(game.DiscardPile, model.Card{Color: "red", Value: "2"})
+
+	// tests to see if a card of the same color is playable
+	test1 := isCardPlayable(model.Card{Color: "red", Value: "1"} , game.DiscardPile)
+	assert.Equal(t, test1, true)
+
+	// tests to see if a card of the same number is playable
+	test2 := isCardPlayable(model.Card{Color: "blue", Value: "2"} , game.DiscardPile)
+	assert.Equal(t, test2, true)
+
+	// tests to see if a wild is playable
+	test3 := isCardPlayable(model.Card{Color: "black", Value: "W"} , game.DiscardPile)
+	assert.Equal(t, test3, true)
+
+	// tests to see if a wild draw four is playable
+	test4 := isCardPlayable(model.Card{Color: "black", Value: "W4"} , game.DiscardPile)
+	assert.Equal(t, test4, true)
+}
+func TestReshuffleDiscardPile(t *testing.T){
+
+	// Generate real game in database and real player
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+
+	game, _ := setupGameWithPlayer(database)
+
+	// puts the deck into the discard pile from the beginning
+	game.DiscardPile = generateShuffledDeck(1)
+
+	// shuffles the discard pile into the draw pile
+	game = reshuffleDiscardPile(game)
+
+	// checks to see if the discard pile is now empty
+	assert.Equal(t, len(game.DiscardPile), 1)
+
+}
 
 func TestcheckGameExists(t *testing.T) {
 	database, _ := db.GetDb()
@@ -294,6 +339,40 @@ func TestcheckGameExists(t *testing.T) {
 	_, gameErr := database.LookupGameByID(game.ID)
 	assert.Nil(t, gameErr, "could not find existing game")
 }
+
+
+func TestDrawNCards(t *testing.T){
+	// get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// create game
+	game, _, err := createNewGame("testGame", "testCreater")
+	assert.Nil(t, err, "game not created")
+	game.DrawPile = generateShuffledDeck(1)
+	// create player
+	player, err:= createPlayer("player2")
+	assert.Nil(t, err, "player not created")
+	// add player to game
+	game, _ = joinGame(game.ID, player)
+	database.SaveGame(*game)
+	assert.Nil(t, err, "game not joined")
+	// deal cards out
+	game, err = dealCards(game)
+	assert.Nil(t, err, "cards not dealt")
+	// check if player 2 joined the game
+	// players := len(game.Players)
+	// assert.Equal(t, players, 2)
+	// check if player was dealt cards
+	assert.Equal(t, 7, len(game.Players[game.CurrentPlayer].Cards)) 
+	// draw 2
+	game = drawNCards(game, 2) 
+	// check if 2 cards were drawn
+	assert.Equal(t, 9, len(game.Players[game.CurrentPlayer].Cards)) 
+	// draw 4
+	game = drawNCards(game, 4) 
+	// check if 4 cards were drawn
+	assert.Equal(t, 13, len(game.Players[game.CurrentPlayer].Cards)) 
+} 
 
 func TestCheckGameExists(t *testing.T){
 	// Get database
@@ -335,4 +414,3 @@ func TestGetGameUpdate(t *testing.T){
 	fakeGame, _ := getGameUpdate("fakeGame", "fakePlayer")
 	assert.Nil(t, fakeGame, "Found game that does not exist")
 }
-

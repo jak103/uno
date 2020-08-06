@@ -146,9 +146,17 @@
             </v-card-text>
             
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
-              <div>
-                <p>Click to play a card from your hand or draw a card</p>
+
+              <div>Select a card with
+                <span class="keycap">←</span>
+                <span class="keycap">↑</span>
+                <span class="keycap">→</span>
+                <span class="keycap">↓</span>
+                or the mouse.
               </div>
+              <div>Press <span class="keycap">Enter</span> or click to play the selected card.</div>
+              <div>Press <span class="keycap">D</span> to draw a card, or click the button below.</div>
+              <div>Press <span class="keycap">C</span> to open chat (<span class="keycap">Esc</span> to close).</div>
               <div>
                 <v-btn @click.native="drawCard">Draw from deck</v-btn>
               </div>
@@ -183,12 +191,22 @@
             <h4>Your Cards</h4>
               <Card
                 v-for="(card, i) in gameState.player_cards"
+                :ref="'player_cards'"
                 :key="i"
                 :number="card.value"
                 :color="card.color"
+                :tabidx="(i == 0) ? 0 : -1"
                 :showColorDialog="card.showColorDialog"
-                :ref="'player_cards'"
-                @click.native="(card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(card)"
+                @click.native=" (card.value == 'W' || card.value == 'W4')
+                                ? selectWildColor(i)
+                                : playCard(card)"
+                @keydown.arrow-right.native="swapCardFocus(i, i + 1)"
+                @keydown.arrow-down.native="swapCardFocus(i, i + 1)"
+                @keydown.arrow-left.native="swapCardFocus(i, i - 1)"
+                @keydown.arrow-up.native="swapCardFocus(i, i - 1)"
+                @keypress.enter.native="(card.value == 'W' || card.value == 'W4')
+                                        ? selectWildColor(i)
+                                        : playCard(card)"
                 v-on:playWild="(color)=>playWildCard(color, i)"
               ></Card>
             </v-container>
@@ -212,21 +230,54 @@
     <div 
       v-if="gameState.status === 'Playing' && gameState.current_player != undefined" 
       @click="chatOpen = !chatOpen"
-      class="float-button">
-        Chat
+      class="float-button"
+      tabindex="0">
+      Chat
     </div>
-
-      <v-snackbar
-        v-model="snackbar"
-        :color="playerColor"
-        :timeout='4000'
-        v-show="playerName !== newMessageName"
-      >
-        {{snackbarText}}
-        <v-btn text @click="snackbar=false">
-          Close
-        </v-btn>
-      </v-snackbar>
+    
+    <v-dialog
+      v-model="chooseColorDialog.visible"
+      persistent
+      max-width="500px"
+    >
+      <v-card >
+        <v-card-title
+          class="blue"
+        >
+          Choose a wildcard color
+        </v-card-title>
+        <v-card-actions>
+            <v-col>
+              <v-btn
+                color="red"
+                large
+                @click.native="playWildCard('red')"
+              >Red</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="green"
+                large
+                @click.native="playWildCard('green')"
+              >Green</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="blue"
+                large
+                @click.native="playWildCard('blue')"
+              >Blue</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+              color="yellow"
+              large
+                @click.native="playWildCard('yellow')"
+              >Yellow</v-btn>
+            </v-col>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   </div>
 </template>
@@ -235,6 +286,7 @@
 import unoService from "../services/unoService";
 import Card from "../components/Card";
 import Chat from "../components/Chat";
+import bus from "../helpers/bus";
 import Results from "../components/Results";
 
 export default {
@@ -252,6 +304,7 @@ export default {
       gameState: {},
       cards: [],
 
+      notification: "",
       chatOpen: false,
       
       playerName: "",
@@ -263,14 +316,20 @@ export default {
       values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13},
     
       helpMenu: false,
-      
-      snackbar: false,
-      snackbarText: "",
       newMessageName: "",
       playerColor: "",
     };
   },
-
+  watch: {
+    gameState: {
+      handler: function(newGame, oldGame) {
+        if(newGame.notification && newGame.notification !== oldGame.notification){
+          bus.$emit('updateSnack', newGame.notification)
+        } 
+      },
+      deep: true
+    }
+  }, 
   methods: {
     async updateData() {
       let res = await unoService.getGameState(this.$route.params.id);
@@ -292,13 +351,13 @@ export default {
       navigator.clipboard.writeText(window.location.origin + "#" + this.$route.params.id).then(() => {
         /* clipboard successfully set */
         this.newMessageName = this.playerName + "copy";
-        this.snackbarText = "Invite URL copied to clipboard. Share it with a friend!";
-        this.snackbar = true;
+        var notification = "Invite URL copied to clipboard. Share it with a friend!";
+        bus.$emit('updateSnack', notification);
       }, () => {
         /* clipboard write failed */
         this.newMessageName = this.playerName + "copy";
-        this.snackbarText = "Error getting invite link.";
-        this.snackbar = true;
+        var notification = "Error getting invite link.";
+        bus.$emit('updateSnack', notification);
       });
     },
     
@@ -340,9 +399,8 @@ export default {
 
     runsnackbar(name, message, color) {
       this.newMessageName = name;
-      this.snackbarText = name + " says: " + message;
-      this.playerColor = color;
-      this.snackbar = true;
+      var newMessage = name + " says: " + message;
+      bus.$emit('updateSnack', newMessage, color);
     },
 
     selectWildColor(index)
@@ -371,22 +429,33 @@ export default {
      
       if (res.data) {
         this.gameState = res.data;
+        this.decideSort();
       }
-    },
-
-    sendMessage() {
-      this.snackbarText = this.username + " says: " + this.newMessage;
-      this.snackbar = true;
     },
 
     async drawCard() {
       let res = await unoService.drawCard(this.$route.params.id);
-      
       if (res.data) {
         this.gameState = res.data;
+        this.decideSort();
       }
     },
 
+    swapCardFocus(currentIndex, swapIndex) {
+      var cards = this.$refs.player_cards
+      var card = cards[currentIndex].$el
+      var other = cards[((swapIndex % cards.length) + cards.length) % cards.length].$el
+
+      var tmp = other.getAttribute("tabindex")
+      other.setAttribute("tabindex", card.getAttribute("tabindex"))
+      card.setAttribute("tabindex", tmp)
+
+      // This assumes that we just swapped a tabindex 0 card with a tabindex -1
+      // card, which is currently true, but might not always be the case.
+      // There's probably a better solution here.
+      other.focus()
+    },
+    
     async callUno(calledOnPlayer) {      
       let res = await unoService.callUno(this.gameState.game_id, calledOnPlayer)
       
@@ -399,8 +468,8 @@ export default {
     hint(){
       var color = this.gameState.current_card.color
       var number = this.gameState.current_card.value
-      this.snackbarText = "Play a card with the number " + number + " or a card that is the color " + color + ".";
-      this.snackbar = true;
+      var notification = "Play a card with the number " + number + " or a card that is the color " + color + ".";
+      bus.$emit('updateSnack', notification, color)
     }, 
 
     getTileBackgroundColor(player) {
@@ -418,11 +487,12 @@ export default {
     this.updateData();
     this.updateInterval = setInterval(() => {
       this.updateData();
-    }, 2000);
+      }, 2000);
   },
   mounted() {
-    this.$emit('sendGameID', this.$route.params.id)
+    document.addEventListener("keyup", _keyListener.bind(this))
 
+    this.$emit('sendGameID', this.$route.params.id)
     unoService.getPlayerNameFromToken()
     .then( resp => {
         this.playerName = resp?.data?.name
@@ -430,13 +500,59 @@ export default {
     .catch(err => {
       console.err("Could not get player name from assigned token\n", err)
     })
+
   },
   beforeDestroy (){
     if(this.updateInterval){
       clearInterval(this.updateInterval);
     }
+    document.removeEventListener("keyup", _keyListener)
   },
 };
+
+function _keyListener(e) {
+  // Handle closing chat, because chat eats all other keyboard inputs.
+  if (this.chatOpen) {
+    if (e.key === "Escape") {
+      this.chatOpen = false
+    }
+  }
+  else { // Handle all of the other keyboard inputs.
+    switch (e.key) {
+      case "c":
+        if (!this.chatOpen)
+        this.chatOpen = true
+        break;
+
+      case "d":
+        if (this.gameState.draw_pile != undefined) {
+          e.preventDefault()
+          this.drawCard()
+        }
+        break;
+
+      case "ArrowDown":
+      case "ArrowRight":
+        if (!document.activeElement.className.includes("card")) {
+          e.preventDefault()
+
+          this.$refs.player_cards[0].$el.focus()
+        }
+        break;
+
+      case "ArrowUp":
+      case "ArrowLeft":
+        if (!document.activeElement.className.includes("card")) {
+          e.preventDefault()
+
+          let cards = this.$refs.player_cards
+          cards[cards.length - 1].$el.focus()
+        }
+        break;
+    }
+  }
+}
+
 </script>
 
 <style scoped>
@@ -494,6 +610,23 @@ export default {
 .card-container {
   overflow-y: auto; 
   max-height: 60vh;
+}
+
+/* Keycap style source: http://www.tutorius.com/keycap-style-css */
+span.keycap {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  white-space: nowrap;
+  border: 1px solid #aaa;
+  border-style: outset;
+  border-radius: 4px;
+  padding: 0px 3px 1px 3px;
+  margin: 0px 0px 0px 0px;
+  vertical-align: baseline;
+  line-height: 1.8em;
+  /* background: #fbfbfb; */
 }
 
 /* CSS for the Help buttons */
