@@ -251,14 +251,15 @@ func TestGoToNextPlayer(t *testing.T) {
 	// Creating database and testing for errors
 	database, err := db.GetDb()
 	assert.Nil(t, err, "MockDB: Could not retrive database")
-	// Creating first player and testing for errors
+	// Creating creator and first player and testing for errors
+	creator , err := database.CreatePlayer("Creator")
 	player2 , err := database.CreatePlayer("Test 2")
 	assert.Nil(t, err, "MockDB: Could not create player")
-	// Creating second player to add to game and testing for errors
+	// Creating third player to add to game and testing for errors
 	player3 , err := database.CreatePlayer("Test 3")
 	assert.Nil(t, err, "MockDB: Could not create player")
 	// Creating game and testing for errors 
-	game, err := database.CreateGame("Test Game 1", "Creator")
+	game, err := database.CreateGame("Test Game 1", creator.ID)
 	assert.Nil(t, err, "MockDB: Could not create game")
 	// Adding players
 	game , err  = joinGame(game.ID, player2)
