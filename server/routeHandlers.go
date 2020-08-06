@@ -99,8 +99,12 @@ func newGame(c echo.Context) error {
 
 func deleteGame(c echo.Context) error {
 	gameID := c.Param("id")
-	err := deleteOldGame(gameID)
+	deleterID, err := getPlayerFromContext(c)
+	if err != nil {
+		return err
+	}
 
+	err = deleteGameandPlayers(gameID, deleterID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Unable to Delete Game")
 	}

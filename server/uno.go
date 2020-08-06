@@ -64,16 +64,33 @@ func createNewGame(gameName string, creatorName string) (*model.Game, *model.Pla
 	return game, creator, nil
 }
 
-func deleteOldGame(gameID string) error {
+func deleteGameandPlayers(gameID string, deleterID string) error {
 	database, err := db.GetDb()
 	if err != nil {
 		return err
 	}
 
+	// game, err := database.LookupGameByID(gameID)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// If the Status is not Playing and the Creator is Deleting it
+	// The problem is idk if the winning-condition team added a Status of "Done"
+	// Also if the creator doesn't delete the
+	// if game.Status != "Playing" && game.Creator.ID == deleterID {
+	// 	for i, player := range game.Players {
+	// 		err = database.DeletePlayer(player.ID)
+	// 		if err != nil {
+	// 			return err
+	// 		}
+	// 	}
+
 	err = database.DeleteGame(gameID)
 	if err != nil {
 		return err
 	}
+	// }
 
 	return err
 }

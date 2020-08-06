@@ -8,11 +8,7 @@
           </v-btn>
 
           <v-btn text :to="redirect()" >
-            <div>LastGame</div>
-          </v-btn>
-
-          <v-btn text :to="'/help'" >
-            <div>Help</div>
+            <div>Game</div>
           </v-btn>
       </v-app-bar>
       

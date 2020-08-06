@@ -39,7 +39,7 @@
             <v-btn
               @click="deleteItems"
             >
-              <small>Delete Selected Items</small>
+              <small>Delete Selected Games</small>
             </v-btn>
           </v-card-title>
 
@@ -158,7 +158,7 @@
 <script>
 import unoService from '../services/unoService';
 import localStorage from '../util/localStorage';
-// @ is an alias to /src
+
 export default {
   name: 'Lobby',
   components: {
@@ -261,11 +261,10 @@ export default {
       if ( confirm(`Are you sure you want to delete ${plural}?`) ) {
         for ( var i = this.games.length - 1; i >= 0; i--) {
 
-          if (this.games[i].selected) {         
-            console.log(i, this.games[i].name)   
+          if (this.games[i].selected) {
+            
             unoService.deleteGame(this.games[i].id)
             this.games.splice(i, 1);
-
           }
         }
       }
