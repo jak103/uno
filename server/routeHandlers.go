@@ -36,10 +36,12 @@ func setupRoutes(e *echo.Echo) {
 	group.POST("/games/:id/start", startGame)
 	group.POST("/games/:id/play", play) // Ryan Johnson
 	group.POST("/games/:id/draw", draw) // Brady Svedin
-	//	group.POST("/games/:id/uno", callUno)
+
+	group.POST("/games/:id/call", callUno) // Zach Ellis
 
 	group.GET("/games/:id", getGameState)
 	group.GET("/players/token/:token", getPlayerFromToken)
+
 }
 
 func getGames(c echo.Context) error {
@@ -188,7 +190,7 @@ func getGameState(c echo.Context) error {
 	playerID, err := getPlayerFromContext(c)
 	gameID := c.Param("id")
 
-	game, err := getGameUpdate(gameID)
+	game, err := getGameUpdate(gameID, playerID)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid game ID")
@@ -297,6 +299,26 @@ func draw(c echo.Context) error {
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
+func callUno(c echo.Context) error {
+	log.Println("Handling callUno post")
+	playerID, err := getPlayerFromContext(c)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, "Failed to authenticate user")
+	}
+	var calledOnPlayer model.Player
+	c.Bind(&calledOnPlayer)
+
+	gameID := c.Param("id")
+
+	game, err := logicCallUno(gameID, playerID, calledOnPlayer.ID)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, buildGameState(game, playerID))
+}
+
 func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState := make(map[string]interface{})
 
@@ -319,9 +341,9 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 
 	for _, player := range game.Players {
 		if player.ID != playerID {
-			for _, card := range player.Cards {
-				card.Color = "Blank"
-				card.Value = "Blank"
+			for i := range player.Cards {
+				player.Cards[i].Color = "Blank"
+				player.Cards[i].Value = "Blank"
 			}
 		} else {
 			gameState["player_cards"] = player.Cards
