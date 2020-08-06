@@ -203,10 +203,11 @@
 
       <v-snackbar
         v-model="snackbar"
-        color="info"
+        :color="playerColor"
         :timeout='4000'
         v-show="playerName !== newMessageName"
-        >{{snackbarText}}
+      >
+        {{snackbarText}}
         <v-btn text @click="snackbar=false">
           Close
         </v-btn>
@@ -251,6 +252,7 @@ export default {
       snackbar: false,
       snackbarText: "",
       newMessageName: "",
+      playerColor: "",
     };
   },
 
@@ -321,9 +323,10 @@ export default {
       this.sortByColor = true;
     },
 
-    runsnackbar(name, message) {
+    runsnackbar(name, message, color) {
       this.newMessageName = name;
       this.snackbarText = name + " says: " + message;
+      this.playerColor = color;
       this.snackbar = true;
     },
 
