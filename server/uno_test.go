@@ -220,3 +220,36 @@ func TestJoinGame(t *testing.T){
 	// test to see if the new Player is in the game
 	assert.Contains(t, game.Players, *newPlayer)
 }
+
+func TestDrawNCards(t *testing.T){
+	// get database
+	database, err := db.GetDb()
+	assert.Nil(t, err, "could not find database")
+	// create game
+	game, _, err := createNewGame("testGame", "testCreater")
+	assert.Nil(t, err, "game not created")
+	game.DrawPile = generateShuffledDeck(1)
+	// create player
+	player, err:= createPlayer("player2")
+	assert.Nil(t, err, "player not created")
+	// add player to game
+	game, _ = joinGame(game.ID, player)
+	database.SaveGame(*game)
+	assert.Nil(t, err, "game not joined")
+	// deal cards out
+	game, err = dealCards(game)
+	assert.Nil(t, err, "cards not dealt")
+	// check if player 2 joined the game
+	players := len(game.Players)
+	assert.Equal(t, players, 2)
+	// check if player was dealt cards
+	assert.Equal(t, 7, len(game.Players[game.CurrentPlayer].Cards)) 
+	// draw 2
+	game = drawNCards(game, 2) 
+	// check if 2 cards were drawn
+	assert.Equal(t, 9, len(game.Players[game.CurrentPlayer].Cards)) 
+	// draw 4
+	game = drawNCards(game, 4) 
+	// check if 4 cards were drawn
+	assert.Equal(t, 13, len(game.Players[game.CurrentPlayer].Cards)) 
+}
