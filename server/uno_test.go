@@ -325,7 +325,7 @@ func TestGetGameUpdate(t *testing.T){
 	game, err := database.CreateGame("testGame", player.ID)
 	assert.Nil(t, err, "could not create game")
 	// Get Game Update from function
-	gameUpdate, err := getGameUpdate(game.ID)
+	gameUpdate, err := getGameUpdate(game.ID, player.ID)
 	assert.Nil(t, err, "could not get game update")
 	// Get game data from the database
 	gameData, err := database.LookupGameByID(game.ID)
@@ -333,7 +333,7 @@ func TestGetGameUpdate(t *testing.T){
 	// Check to see if the gameUpdate is equal to the game in the database
 	assert.Equal(t, gameData, gameUpdate)
 	// Check that the function returns Nil for non existant game
-	fakeGame, _ := getGameUpdate("fakeGame")
+	fakeGame, _ := getGameUpdate("fakeGame", "fakePlayer")
 	assert.Nil(t, fakeGame, "Found game that does not exist")
 }
 
