@@ -282,22 +282,20 @@ export default {
       }
     },
     deleteItems () {
-      let plural = (this.games.length > 1) ? 'these items' : 'this item';
       let NotDeleted = [];
-      if ( confirm(`Are you sure you want to delete ${plural[0]}?`) ) {
-        for ( var i = this.games.length - 1; i >= 0; i--) {
-          if (this.games[i].selected) {
-            if (this.games[i].status == "Finished") {
-              unoService.deleteGame(this.games[i].id);
-              this.games.splice(i, 1);
-            }else{
-              NotDeleted.push(this.games[i].name);
-            }
+      for ( var i = this.games.length - 1; i >= 0; i--) {
+        if (this.games[i].selected) {
+          if (this.games[i].status == "Finished") {
+            unoService.deleteGame(this.games[i].id);
+            this.games.splice(i, 1);
+          }else{
+            NotDeleted.push(this.games[i].name);
           }
         }
       }
       if (NotDeleted.length > 0) {
-        var notification = "Games: [ " + NotDeleted.toString() + ` ]. ${plural[1]} not Finished yet, You are unable to Delete ${plural[2]}.`;
+        let plural = (NotDeleted.length > 1) ? ['Games', 'Are', 'them'] : ['Game', 'Is', 'it'];
+        var notification = `${plural[0]}: [ ` + NotDeleted.toString() + ` ]. ${plural[1]} not Finished yet, You are unable to Delete ${plural[2]}.`;
         bus.$emit('updateSnack', notification);
       }
     },
