@@ -174,27 +174,25 @@
               </v-row>
             </v-card>
 
-            <div id=myCards>
-              <Card
-                v-for="(card, i) in gameState.player_cards"
-                :ref="'player_cards'"
-                :key="i"
-                :number="card.value"
-                :color="card.color"
-                :tabindex="(i == 0) ? 0 : -1"
-                :showColorDialog="card.showColorDialog"
-                @click.native=" (card.value == 'W' || card.value == 'W4')
-                                ? selectWildColor(card)
-                                : playCard(card)"
-                @keydown.arrow-right.native="swapCardFocus(i, i + 1)"
-                @keydown.arrow-down.native="swapCardFocus(i, i + 1)"
-                @keydown.arrow-left.native="swapCardFocus(i, i - 1)"
-                @keydown.arrow-up.native="swapCardFocus(i, i - 1)"
-                @keypress.enter.native="playCard(card)"
-                v-on:playWild="(color)=>playWildCard(color, i)"
-                class="playerCard"
-              ></Card>
-            </div>
+            <Card
+              v-for="(card, i) in gameState.player_cards"
+              :ref="'player_cards'"
+              :key="i"
+              :number="card.value"
+              :color="card.color"
+              :tabindex="(i == 0) ? 0 : -1"
+              :showColorDialog="card.showColorDialog"
+              @click.native=" (card.value == 'W' || card.value == 'W4')
+                              ? selectWildColor(card)
+                              : playCard(card)"
+              @keydown.arrow-right.native="swapCardFocus(i, i + 1)"
+              @keydown.arrow-down.native="swapCardFocus(i, i + 1)"
+              @keydown.arrow-left.native="swapCardFocus(i, i - 1)"
+              @keydown.arrow-up.native="swapCardFocus(i, i - 1)"
+              @keypress.enter.native="playCard(card)"
+              v-on:playWild="(color)=>playWildCard(color, i)"
+              class="playerCard"
+            ></Card>
           </div>
           <div v-if="gameState.status === 'Finished'">
             <Results v-bind:players="{
@@ -363,7 +361,7 @@ export default {
     },
 
     swapCardFocus(currentIndex, swapIndex) {
-      var cards = document.getElementById("myCards").children
+      var cards = this.$refs.player_cards
       var card = cards[currentIndex]
       var other = cards[((swapIndex % cards.length) + cards.length) % cards.length]
 
@@ -451,7 +449,7 @@ function _keyListener(e) {
         if (!document.activeElement.className.includes("playerCard")) {
           e.preventDefault()
 
-          document.getElementById("myCards").firstElementChild.focus()
+          this.$refs.player_cards[0].focus()
         }
         break;
 
@@ -460,7 +458,8 @@ function _keyListener(e) {
         if (!document.activeElement.className.includes("playerCard")) {
           e.preventDefault()
 
-          document.getElementById("myCards").lastElementChild.focus()
+          let cards = this.$refs.player_cards
+          cards[cards.length - 1].focus()
         }
         break;
     }
