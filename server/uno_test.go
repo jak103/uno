@@ -232,11 +232,14 @@ func TestAddMessage(t *testing.T){
 	database, err := db.GetDb()
 	assert.Nil(t, err, "could not find database")
 
+	// sets up the game with a player, creates a message for the only player in the game
 	game, player := setupGameWithPlayer(database)
 	m := model.Message{Player: *player, Value: "Hello World"}
 	
+	// add the Message to the game
 	game, err = addMessage(game.ID, player.ID, m)
-	// test to see if the new Player is in the game
+	
+	// test to see if the new Message is in the game
 	assert.Contains(t, game.Messages, m)
 }
 
