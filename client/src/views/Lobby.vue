@@ -158,6 +158,7 @@
 <script>
 import unoService from '../services/unoService';
 import localStorage from '../util/localStorage';
+import bus from '../helpers/bus';
 
 export default {
   name: 'Lobby',
@@ -252,20 +253,21 @@ export default {
         localStorage.set('token', res.data.token);
         this.$router.push({path: `/game/${res.data.game.game_id}`});
       } else {
-        alert ("Failed to create & join game");
+        //show the snack with your error message (just local)
+        bus.$emit('updateSnack', "Failed to create & join game");
       }
     },
 
     async createGame() { 
       if (!this.createDialog.name || this.createDialog.name == "") {
-        // invalid game name -- TODO use a snack bar for this
-        alert("Undefined Game Name");
+        //show the snack with your error message (just local)
+        bus.$emit('updateSnack', "Undefined Game name");
         return;
       }
      
       if (!this.createDialog.creator || this.createDialog.creator == "") {
-        // invalid creator name -- TODO use a snack bar for this
-        alert("Undefined Creator Name");
+        //show the snack with your error message (just local)
+        bus.$emit('updateSnack', "Undefined Creator Name");
         return;
       }
 
@@ -275,7 +277,8 @@ export default {
         localStorage.set('token', res.data.token);
         this.$router.push({path: `/game/${res.data.game.game_id}`});
       } else {
-        alert ("Failed to create & join game");
+        //show the snack with your error message (just local)
+        bus.$emit('updateSnack', "Failed to create & join game");
       }
     },
     deleteItems () {
@@ -288,15 +291,14 @@ export default {
               unoService.deleteGame(this.games[i].id);
               this.games.splice(i, 1);
             }else{
-              NotDeleted.push(this.games[i]);
+              NotDeleted.push(this.games[i].name);
             }
           }
         }
       }
       if (NotDeleted.length > 0) {
-        // I know that the snackbar is going to be moved to the App.vue
-        this.snackbarText = "Games: " + NotDeleted + "Are not Finished yet, You are unable to Delete them.";
-        this.snackbar = true;
+        var notification = "Games: [ " + NotDeleted.toString() + " ]. Are not Finished yet, You are unable to Delete them.";
+        bus.$emit('updateSnack', notification);
       }
     },
   },
