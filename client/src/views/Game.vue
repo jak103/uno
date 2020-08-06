@@ -2,52 +2,69 @@
 <template>
   <div class="mb-0 game-wrapper">
     <v-card 
-      class="overflow-hidden"
+      class="overflow-down"
     >
       <!-- Game Players Drawer -->
-      <v-navigation-drawer
-          :expand-on-hover="!pane_lock"
-      >
-      <v-list
-        nav
-        dense
-      >
-        <v-list-item two-line >
-          <v-list-item-icon>
-            <v-icon class="pt-3">
-            mdi-account-group
-            </v-icon>
-          </v-list-item-icon>
-
-          <v-list-item-content>
-            <v-list-item-title>Players</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-divider></v-divider>
-            
-        <div v-if="gameState.all_players !== undefined">  
-          <v-list-item
-            v-for="player in gameState.all_players"
-            :key="player.name"
-            :input-value="player.id === gameState.current_player.id"
-            color="#1F7087"
-            class="pa-3 player-drawer-item"
-            two-line
-          >
+      <v-navigation-drawer>
+        <v-list
+          nav
+          dense
+        >
+          <v-list-item two-line >
             <v-list-item-icon>
               <v-icon class="pt-3">
-              mdi-account
+              mdi-account-group
               </v-icon>
             </v-list-item-icon>
+
             <v-list-item-content>
-              {{ player.name }}
-              <ul class="hand ma-0 pa-0">
-                <li v-for="(card, index) of player.cards" :key="index">🃏</li>
-              </ul>
+              <v-list-item-title>Players</v-list-item-title>
             </v-list-item-content>
+
+            <v-list-item-icon>
+              <v-icon class="pt-3" v-if="gameState.direction === true">
+                mdi-arrow-down-bold
+              </v-icon>
+              <v-icon class="pt-3" v-else>
+                mdi-arrow-up-bold
+              </v-icon>
+            </v-list-item-icon>
           </v-list-item>
-        </div>
+
+          <v-divider
+            class="mb-2"
+          ></v-divider>
+            
+          <div
+            v-if="gameState.all_players !== undefined"            
+          >  
+            <v-card
+              v-for="player in gameState.all_players"
+              :key="player.name"
+              :color="getTileBackgroundColor(player)"
+              class="pa-1"
+            >
+              <v-card-title
+                class="pa-0 pl-1 drawer-card-title"
+              >
+                {{ player.name }}
+                <v-btn
+                  v-if="player.cards !== undefined && player.cards !== null"
+                  :class="player.protection ? 'protected_call_button' : 'unprotected_call_button'" 
+                  @click.native="callUno(player)"
+                  :disabled="player.cards.length > 1"
+                  class="pa-0"
+                >
+                  Uno!
+                </v-btn>   
+              </v-card-title>
+              <v-card-text class="pa-0 pl-1">
+                <span>
+                  <span v-for="(card, index) of player.cards" :key="index">🃏</span>
+                </span>
+              </v-card-text>
+            </v-card>
+          </div>
         </v-list>
       </v-navigation-drawer>
     </v-card>
@@ -70,10 +87,7 @@
               </p>
               <p v-if="gameState.draw_pile != undefined">
                 Cards Remaining in Draw Pile: {{ gameState.draw_pile.length }}
-              </p>
-              <p>
-                <v-switch v-model="pane_lock" :label="`Unlock Players Pane`"></v-switch>
-              </p>
+              </p>              
 
               <!-- Need Help? button -->
               <v-btn @click.native="helpMenu = !helpMenu" >Need Help?</v-btn>
@@ -126,10 +140,6 @@
             <v-card-text v-else-if="gameState.status === 'Playing'">
               Waiting for {{ gameState.current_player.name }}
             </v-card-text>
-            
-            <v-card-text v-else-if="gameState.status === 'Finished'">
-              The game is finished!
-            </v-card-text>
           </v-card>
 
           <div v-if="gameState.status === 'Playing'" >
@@ -142,19 +152,32 @@
 
               <v-row v-else class="pl-3">
                 Organize Cards
-                <v-btn @click.native="orgByColor">by Color</v-btn>
-                <v-btn @click.native="orgByNum">by Number</v-btn>
-                <v-btn @click.native="orgOff">Off</v-btn>
+                <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
+                <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
+                <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
               </v-row>
             </v-card>
 
-            <Card
-              v-for="(card, i) in gameState.player_cards"
-              :key="i"
-              :number="card.value"
-              :color="card.color"
-              @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(card) : playCard(card)"
-            ></Card>
+            <v-container
+              class="card-container"
+            >
+              <Card
+                v-for="(card, i) in gameState.player_cards"
+                :key="i"
+                :number="card.value"
+                :color="card.color"
+                :showColorDialog="card.showColorDialog"
+                :ref="'player_cards'"
+                @click.native="(card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(card)"
+                v-on:playWild="(color)=>playWildCard(color, i)"
+              ></Card>
+            </v-container>
+          </div>
+          <div v-if="gameState.status === 'Finished'">
+            <Results v-bind:players="{
+                winner: gameState.gameOver,
+                curPlayer: playerName 
+                }"/>
           </div>
         </v-col>
 
@@ -166,52 +189,12 @@
 
     </v-container>
 
-    <div v-if="gameState.status === 'Playing' && gameState.current_player != undefined" @click="chatOpen = !chatOpen" class="float-button">
-      Chat
+    <div 
+      v-if="gameState.status === 'Playing' && gameState.current_player != undefined" 
+      @click="chatOpen = !chatOpen"
+      class="float-button">
+        Chat
     </div>
-    <v-dialog
-      v-model="chooseColorDialog.visible"
-      persistent
-      max-width="500px"
-    >
-      <v-card >
-        <v-card-title
-          class="blue"
-        >
-          Chose color for Wild card
-        </v-card-title>
-        <v-card-actions>
-            <v-col>
-              <v-btn
-                color="red"
-                large
-                @click.native="playWildCard('red')"
-              >Red</v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-                color="green"
-                large
-                @click.native="playWildCard('green')"
-              >Green</v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-                color="blue"
-                large
-                @click.native="playWildCard('blue')"
-              >Blue</v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-              color="yellow"
-              large
-                @click.native="playWildCard('yellow')"
-              >Yellow</v-btn>
-            </v-col>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
       <v-snackbar
         v-model="snackbar"
@@ -231,6 +214,7 @@
 import unoService from "../services/unoService";
 import Card from "../components/Card";
 import Chat from "../components/Chat";
+import Results from "../components/Results";
 
 export default {
   
@@ -239,22 +223,17 @@ export default {
   components: {
     Card,
     Chat,
+    Results,
   },
   data() {
     
     return {
-      pane_lock: true,
       gameState: {},
       cards: [],
 
       chatOpen: false,
       
       playerName: "",
-      chooseColorDialog: {
-        visible: false,
-        card: {},
-        color: ""
-      },
 
       sortByNum: false,
       sortByColor: false,
@@ -278,7 +257,14 @@ export default {
         this.gameState = res.data;
       }
       this.decideSort()
+    },  
+    async startGame() {
+      await unoService.startGame(this.$route.params.id);
+      // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
+      this.updateData(); 
     },
+
+    // Methods for organizing the Cards, added by Andrew McMullin for the organize-cards issue
     decideSort() {
       if (this.sortByColor) {
         this.orgByColor()
@@ -288,7 +274,6 @@ export default {
         this.loadingHand = false
       }
     },
-    // Methods for organizing the Cards
     orgOff() {
       if (this.sortByColor == true || this.sortByNum == true) {
         this.loadingHand = true;
@@ -314,11 +299,6 @@ export default {
       this.sortByNum = false;
       this.sortByColor = true;
     },
-    async startGame() {
-      await unoService.startGame(this.$route.params.id);
-      // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
-      this.updateData(); 
-    },
 
     runsnackbar(name, message) {
       this.newMessageName = name;
@@ -326,30 +306,40 @@ export default {
       this.snackbar = true;
     },
 
-    selectWildColor(card)
+    selectWildColor(index)
     {
-      this.chooseColorDialog.card = card;
-      this.chooseColorDialog.visible = true;
+      this.$refs.player_cards[index].showColorDialog = true;
     },
 
-    async playWildCard(color) {
-      this.chooseColorDialog.visible = false;
-      this.chooseColorDialog.card.color = color;
-      this.playCard(this.chooseColorDialog.card);
-    },
-
-    async playCard(card) { 
-      console.log("Playing card", card);     
-      let res = await unoService.playCard(this.$route.params.id, card.value, card.color);
+    async playWildCard(color, i) {
       
+      this.$refs.player_cards[i].showColorDialog = false;
+      this.$refs.player_cards[i].color = color;
+
+      let res = await unoService.playCard(
+        this.$route.params.id, 
+        this.$refs.player_cards[i].number, 
+        this.$refs.player_cards[i].color
+      );
+     
       if (res.data) {
         this.gameState = res.data;
       }
     },
+
+    async playCard(card) { 
+      let res = await unoService.playCard(this.$route.params.id, card.value, card.color);
+     
+      if (res.data) {
+        this.gameState = res.data;
+      }
+    },
+
     sendMessage() {
       this.snackbarText = this.username + " says: " + this.newMessage;
       this.snackbar = true;
     },
+
     async drawCard() {
       let res = await unoService.drawCard(this.$route.params.id);
       
@@ -357,12 +347,34 @@ export default {
         this.gameState = res.data;
       }
     },
+
+    async callUno(calledOnPlayer) {      
+      let res = await unoService.callUno(this.gameState.game_id, calledOnPlayer)
+      
+      if (res.data) {
+        this.gameState = res.data;
+      }
+    },
+
+    // Getting a hint, added by the creator of the Help Button
     hint(){
       var color = this.gameState.current_card.color
       var number = this.gameState.current_card.value
-      alert("Play a card with the number " + number + " or a card that is the color " + color + ".")
+      this.snackbarText = "Play a card with the number " + number + " or a card that is the color " + color + ".";
+      this.snackbar = true;
     }, 
+
+    getTileBackgroundColor(player) {
+      if (player.isActive !== undefined && player.isActive !== null && player.isActive === false) {
+        return "error";
+      } else if (this.gameState.current_player !== undefined && this.gameState.current_player !== null && player.id === this.gameState.current_player.id) {
+        return "info"
+      } else {
+        return ""
+      }
+    },
   }, 
+
   created() {
     this.updateData();
     this.updateInterval = setInterval(() => {
@@ -370,6 +382,8 @@ export default {
     }, 2000);
   },
   mounted() {
+    this.$emit('sendGameID', this.$route.params.id)
+
     unoService.getPlayerNameFromToken()
     .then( resp => {
         this.playerName = resp?.data?.name
@@ -419,32 +433,28 @@ export default {
 
 .game-wrapper {
   display: flex; 
-  min-height: 100%;
-  background-color: black;
+  min-height: 100vh;
+  height: 100vh;
 }
 
-.player-drawer-item {
-  overflow: hidden;
-}
-
-.player-drawer-item > div {
-  overflow: hidden;
-}
-
-.hand {
-  overflow: hidden;
+.overflow-down
+{
+  overflow: auto;
+  max-height: 100vh;
 }
 
 .v-btn {
   margin: 0px 10px 0px 10px;
 }
 
-.hand > li {
-  display: inline;
+.drawer-card-title {
+  display: flex; 
+  justify-content: space-between
 }
 
-.hand span {
-  font-weight: bold;
+.card-container {
+  overflow-y: auto; 
+  max-height: 60vh;
 }
 
 /* CSS for the Help buttons */
@@ -469,6 +479,22 @@ export default {
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+  }
+
+  .unprotected_call_button {
+    color: red;
+    align-content: center;
+    margin: 10px;
+  }
+
+  .protected_call_button {
+    color: green;
+    align-content: center;
+    margin: 10px;
+  }
+
+  .org-btn {
+    margin: 10px;
   }
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}

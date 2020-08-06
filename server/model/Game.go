@@ -23,14 +23,16 @@ type Game struct {
 	Status        GameStatus `bson:"status,omitempty" json:"status"`
 	Direction     bool       `bson:"direction,omitempty" json:"direction"`
 	Messages      []Message  `bson:"messeges,omitempty" json:"messages"`
+	GameOver      string     `bson:"winner,omitempty" json:"game_over"`
 }
 
 // GameSummary Provides summary information for the lobby
 type GameSummary struct {
-	ID      string     `json:"id"`
-	Name    string     `json:"name"`
-	Creator string     `json:"creator"`
-	Players []string   `json:"players"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Creator string `json:"creator"`
+	// Players []string `json:"players"`
+	Players []Player   `json:"players"`
 	Status  GameStatus `json:"status"`
 }
 
@@ -40,10 +42,7 @@ func GameToSummary(g Game) (summary GameSummary) {
 	summary.Name = g.Name
 	summary.Creator = g.Creator.Name
 	summary.Status = g.Status
-
-	for _, p := range g.Players {
-		summary.Players = append(summary.Players, p.Name)
-	}
+	summary.Players = g.Players
 
 	return summary
 }

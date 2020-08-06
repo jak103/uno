@@ -60,11 +60,12 @@ func (db *firestoreDB) CreateGame(gameName string, creatorID string) (*model.Gam
 	}
 
 	myGame := model.Game{
-		ID:       uuid.New().String(),
-		Password: "12234",
-		Creator:  *player,
-		Name:     gameName,
-		Status:   model.WaitingForPlayers}
+		ID:        uuid.New().String(),
+		Password:  "12234",
+		Creator:   *player,
+		Name:      gameName,
+		Status:    model.WaitingForPlayers,
+		Direction: true}
 	myGame.Players = append(myGame.Players, *player)
 	gameDoc := db.games.Doc(myGame.ID)
 
