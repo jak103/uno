@@ -1,4 +1,5 @@
 <template>
+<div>
   <div v-if="players.winner === players.curPlayer">
     <p style="font-size: 36px; text-align:center">
     WINNER! Click buttons to celebrate.
@@ -13,23 +14,26 @@
     <p style="font-size: 24px;text-align:center"> 
       {{players.winner}} 
     </p>
-    <!-- <button v-on:click="counter += 1">Add 1</button> -->
-    <div id = "buttonContainer">
-    <div style="text-align:center" id="playAgain">
-      <button style="width:150px" id = "buttons" v-on:click="redirectCall()"> Play Again?</button>
-    </div>
   </div>
-  </div>
-  <div v-else>
-    You lost! But do you know who didn't lose?
+  <div v-else style="font-size: 24px;text-align:center">
+    You lost! But do you know who didn't lose? 
+    <p>
+      {{players.winner}} 
+    </p>
     <template>
       <main>
         <button @click="love">Click to show some love to the winner.</button>
         <br>
         <button @click="stop">Click to stop.</button>
       </main>
-    </template> 
+    </template>     
   </div>
+    <div id = "buttonContainer">
+      <div style="text-align:center" id="playAgain">
+        <button style="width:150px" id = "buttons" v-on:click="redirectCall()"> Play Again?</button>
+      </div>
+    </div>
+</div>
 </template>
 
 <script>

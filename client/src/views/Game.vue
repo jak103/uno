@@ -1,8 +1,8 @@
 
 <template>
-  <div class="mb-0 game-wrapper no-scroll">
+  <div class="mb-0 game-wrapper">
     <v-card 
-      class="overflow-hidden"
+      class="overflow-down"
     >
       <!-- Game Players Drawer -->
       <v-navigation-drawer>
@@ -31,41 +31,39 @@
             </v-list-item-icon>
           </v-list-item>
 
-          <v-divider></v-divider>
+          <v-divider
+            class="mb-2"
+          ></v-divider>
             
           <div
             v-if="gameState.all_players !== undefined"            
           >  
-            <v-list-item
+            <v-card
               v-for="player in gameState.all_players"
               :key="player.name"
-              :input-value="player.id === gameState.current_player.id"
-              color="#1F7087"
-              class="pa-1 pb-0 pt-0 player-drawer-item"
-              two-line
+              :color="getTileBackgroundColor(player)"
+              class="pa-1"
             >
-              <v-list-item-content>
-                <v-card 
-                  class="pa-0"                
+              <v-card-title
+                class="pa-0 pl-1 drawer-card-title"
+              >
+                {{ player.name }}
+                <v-btn
+                  v-if="player.cards !== undefined && player.cards !== null"
+                  :class="player.protection ? 'protected_call_button' : 'unprotected_call_button'" 
+                  @click.native="callUno(player)"
+                  :disabled="player.cards.length > 1"
+                  class="pa-0"
                 >
-                  <v-container
-                    class="pa-0 pl-2"
-                  >
-                    {{ player.name }}
-                    <v-btn 
-                      :class="player.protection ? 'protected_call_button' : 'unprotected_call_button'" 
-                      @click.native="callUno(player)"
-                      :disabled="player.cards.length > 1"
-                    >
-                      Uno!
-                    </v-btn>              
-                  </v-container>
-                  <ul class="hand pl-2 pb-2">
-                    <li v-for="(card, index) of player.cards" :key="index">🃏</li>
-                  </ul>
-                </v-card>
-              </v-list-item-content>
-            </v-list-item>
+                  Uno!
+                </v-btn>   
+              </v-card-title>
+              <v-card-text class="pa-0 pl-1">
+                <span>
+                  <span v-for="(card, index) of player.cards" :key="index">🃏</span>
+                </span>
+              </v-card-text>
+            </v-card>
           </div>
         </v-list>
       </v-navigation-drawer>
@@ -134,7 +132,12 @@
                 Please wait for the creator to start the game.
               </v-row>
             </v-card-text>
-
+            
+            <!-- Invite Button -->
+            <v-card-text v-if="gameState.status === 'Waiting For Players'">
+                Feel free to invite a friend! Click to copy a link to send to a friend. <v-btn @click.native="invite">Invite a friend</v-btn>
+            </v-card-text>
+            
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
               Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
             </v-card-text>
@@ -160,17 +163,20 @@
               </v-row>
             </v-card>
 
-            <Card
-
-              v-for="(card, i) in gameState.player_cards"
-              :key="i"
-              :number="card.value"
-              :color="card.color"
-              :showColorDialog="card.showColorDialog"
-              :ref="'player_cards'"
-              @click.native=" (card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(i)"
-              v-on:playWild="(color)=>playWildCard(color, i)"
-            ></Card>
+            <v-container
+              class="card-container"
+            >
+              <Card
+                v-for="(card, i) in gameState.player_cards"
+                :key="i"
+                :number="card.value"
+                :color="card.color"
+                :showColorDialog="card.showColorDialog"
+                :ref="'player_cards'"
+                @click.native="(card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(card)"
+                v-on:playWild="(color)=>playWildCard(color, i)"
+              ></Card>
+            </v-container>
           </div>
           <div v-if="gameState.status === 'Finished'">
             <Results v-bind:players="{
@@ -197,10 +203,11 @@
 
       <v-snackbar
         v-model="snackbar"
-        color="info"
+        :color="playerColor"
         :timeout='4000'
-        v-show="gameState.status === 'Playing' && playerName !== newMessageName"
-        >{{snackbarText}}
+        v-show="playerName !== newMessageName"
+      >
+        {{snackbarText}}
         <v-btn text @click="snackbar=false">
           Close
         </v-btn>
@@ -245,6 +252,7 @@ export default {
       snackbar: false,
       snackbarText: "",
       newMessageName: "",
+      playerColor: "",
     };
   },
 
@@ -262,7 +270,23 @@ export default {
       // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
       this.updateData(); 
     },
-
+    
+    invite(){
+      // sourced https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard
+      // to know how to work with clipboard
+      navigator.clipboard.writeText(window.location.origin + "#" + this.$route.params.id).then(() => {
+        /* clipboard successfully set */
+        this.newMessageName = this.playerName + "copy";
+        this.snackbarText = "Invite URL copied to clipboard. Share it with a friend!";
+        this.snackbar = true;
+      }, () => {
+        /* clipboard write failed */
+        this.newMessageName = this.playerName + "copy";
+        this.snackbarText = "Error getting invite link.";
+        this.snackbar = true;
+      });
+    },
+    
     // Methods for organizing the Cards, added by Andrew McMullin for the organize-cards issue
     decideSort() {
       if (this.sortByColor) {
@@ -299,9 +323,10 @@ export default {
       this.sortByColor = true;
     },
 
-    runsnackbar(name, message) {
+    runsnackbar(name, message, color) {
       this.newMessageName = name;
       this.snackbarText = name + " says: " + message;
+      this.playerColor = color;
       this.snackbar = true;
     },
 
@@ -311,9 +336,19 @@ export default {
     },
 
     async playWildCard(color, i) {
+      
       this.$refs.player_cards[i].showColorDialog = false;
       this.$refs.player_cards[i].color = color;
-      this.playCard(i);
+
+      let res = await unoService.playCard(
+        this.$route.params.id, 
+        this.$refs.player_cards[i].number, 
+        this.$refs.player_cards[i].color
+      );
+     
+      if (res.data) {
+        this.gameState = res.data;
+      }
     },
 
     async playCard(card) { 
@@ -352,6 +387,16 @@ export default {
       this.snackbarText = "Play a card with the number " + number + " or a card that is the color " + color + ".";
       this.snackbar = true;
     }, 
+
+    getTileBackgroundColor(player) {
+      if (player.isActive !== undefined && player.isActive !== null && player.isActive === false) {
+        return "error";
+      } else if (this.gameState.current_player !== undefined && this.gameState.current_player !== null && player.id === this.gameState.current_player.id) {
+        return "info"
+      } else {
+        return ""
+      }
+    },
   }, 
 
   created() {
@@ -362,7 +407,6 @@ export default {
   },
   mounted() {
     this.$emit('sendGameID', this.$route.params.id)
-    document.html.classList.add('no-scroll')
 
     unoService.getPlayerNameFromToken()
     .then( resp => {
@@ -413,32 +457,28 @@ export default {
 
 .game-wrapper {
   display: flex; 
-  min-height: 100%;
-  background-color: black;
+  min-height: 100vh;
+  height: 100vh;
 }
 
-.player-drawer-item {
-  overflow: hidden;
-}
-
-.player-drawer-item > div {
-  overflow: hidden;
-}
-
-.hand {
-  overflow: hidden;
+.overflow-down
+{
+  overflow: auto;
+  max-height: 100vh;
 }
 
 .v-btn {
   margin: 0px 10px 0px 10px;
 }
 
-.hand > li {
-  display: inline;
+.drawer-card-title {
+  display: flex; 
+  justify-content: space-between
 }
 
-.hand span {
-  font-weight: bold;
+.card-container {
+  overflow-y: auto; 
+  max-height: 60vh;
 }
 
 /* CSS for the Help buttons */
@@ -482,18 +522,4 @@ export default {
   }
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown_content, .hintbtn a:hover {display: block;}
-
-  .v-list
-  {
-    height: 100%;
-    margin-bottom:100%;
-    overflow-y: scroll;
-  }
-
-  no-scroll 
-  {
-    position: fixed;
-    overflow-y: hidden;
-  }
-  
 </style>
