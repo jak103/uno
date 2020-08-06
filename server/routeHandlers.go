@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mattwhite180/go-away"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/mattwhite180/go-away"
 )
 
 var tokenSecret string = "usudevops"
@@ -19,9 +19,10 @@ var tokenSecret string = "usudevops"
 func setupRoutes(e *echo.Echo) {
 	// Routes that don't require a valid JWT
 	e.GET("/api/games", getGames)
-    e.GET("/api/games/summary/:id", getGame) 
+	e.GET("/api/games/summary/:id", getGame)
 	e.POST("/api/games", newGame)
 	e.POST("/api/games/:id/join", joinExistingGame)
+	e.GET("/api/games/:id/delete", deleteGame)
 
 	// Create a group that requires a valid JWT
 	group := e.Group("/api")
@@ -33,6 +34,9 @@ func setupRoutes(e *echo.Echo) {
 
 	// Add Message to the Chat
 	group.POST("/chat/:id/add", addNewMessage) // Andrew McMullin
+
+	// get notification to snackbars
+	group.POST("/snack/:id/notify", notify)
 
 	group.POST("/games/:id/start", startGame)
 	group.POST("/games/:id/play", play) // Ryan Johnson
@@ -75,17 +79,17 @@ func getGame(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Could not find game: Failed to connect to db")
 	}
-    
-    gameID := c.Param("id")
-    
+
+	gameID := c.Param("id")
+
 	game, err := database.LookupGameByID(gameID)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Could not find game")
 	}
-    
-    summary := model.GameToSummary(*game)
-	
+
+	summary := model.GameToSummary(*game)
+
 	return c.JSON(http.StatusOK, summary)
 }
 
@@ -123,6 +127,22 @@ func newGame(c echo.Context) error {
 	token := generateToken(creator)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{"token": token, "game": buildGameState(game, creator.ID)})
+}
+
+func deleteGame(c echo.Context) error {
+	gameID := c.Param("id")
+	// deleterID, err := getPlayerFromContext(c)
+	// if err != nil {
+	// 	return err
+	// }
+
+	err := deleteGameandPlayers(gameID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Unable to Delete Game")
+	}
+
+	return c.JSON(http.StatusOK, "Successfully Deleted Game")
+
 }
 
 func joinExistingGame(c echo.Context) error {
@@ -175,6 +195,21 @@ func addNewMessage(c echo.Context) error {
 		return err
 	}
 
+	return c.JSON(http.StatusOK, buildGameState(game, playerID))
+}
+
+func notify(c echo.Context) error {
+	playerID, err := getPlayerFromContext(c)
+	gameID := c.Param("id")
+
+	var notification model.Notification
+	c.Bind(&notification)
+
+	game, err := updateNotification(gameID, notification)
+
+	if err != nil {
+		return err
+	}
 	return c.JSON(http.StatusOK, buildGameState(game, playerID))
 }
 
@@ -341,6 +376,7 @@ func buildGameState(game *model.Game, playerID string) map[string]interface{} {
 	gameState["player_id"] = playerID
 	gameState["messages"] = game.Messages
 	gameState["gameOver"] = game.GameOver
+    gameState["notification"] = game.Notification
 
 	if game.DiscardPile != nil {
 		gameState["current_card"] = game.DiscardPile[len(game.DiscardPile)-1]
