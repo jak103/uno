@@ -57,8 +57,7 @@
                 </v-icon>
               </template>
             </v-list-item-icon>
-            <v-list-item-content>
-              {{ player.isActive }} <!-- test to see IsActive -->
+            <v-list-item-content>            
               {{ player.name }}
               <ul class="hand ma-0 pa-0">
                 <li v-for="(card, index) of player.cards" :key="index">🃏</li>
