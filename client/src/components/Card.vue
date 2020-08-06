@@ -1,11 +1,15 @@
 <template>
-  <div>
-    <div v-if="!isNaN(number)" :class="card_classes">
+  <div :tabindex="tabidx" :class="card_classes">
+
+    <!-- Numeric cards -->
+    <template v-if="!isNaN(number)">
       <span class="inner">
         <span class="mark">{{ number }}</span>
       </span>
-    </div>
-    <div v-else-if="number === 'S'" :class="card_classes">
+    </template>
+
+    <!-- Flow Control Cards -->
+    <template v-else-if="number === 'S'">
       <span class="inner">
         <span class="mark">
           <img v-if="color === 'green'" class="s-inner" src="@/assets/card_symbols/s-green.svg">
@@ -14,32 +18,9 @@
           <img v-else-if="color === 'blue'" class="s-inner" src="@/assets/card_symbols/s-blue.svg">
         </span>
       </span>
-    </div>
-    <div v-else-if="number === 'D2'" :class="card_classes">
-      <span class="inner">
-        <span class="mark">
-          <img v-if="color === 'green'" class="d2-inner" src="@/assets/card_symbols/d2-green.svg">
-          <img v-else-if="color === 'yellow'" class="d2-inner" src="@/assets/card_symbols/d2-yellow.svg">
-          <img v-else-if="color === 'red'" class="d2-inner" src="@/assets/card_symbols/d2-red.svg">
-          <img v-else-if="color === 'blue'" class="d2-inner" src="@/assets/card_symbols/d2-blue.svg">
-        </span>
-      </span>
-    </div>
-    <div v-else-if="number === 'W4'" :class="card_classes">
-      <span class="inner">
-        <span class="mark">
-          <img class="w4-inner" src="@/assets/card_symbols/d4.svg">
-        </span>
-      </span>
-    </div>
-    <div v-else-if="number === 'W'" :class="card_classes">
-      <span class="inner">
-        <span class="mark">
-          <img class="w-inner" src="@/assets/card_symbols/w.svg">
-        </span>
-      </span>
-    </div>
-    <div v-else-if="number === 'R'" :class="card_classes">
+    </template>
+
+    <template v-else-if="number === 'R'">
       <span class="inner">
         <span class="mark">
           <img v-if="color === 'green'" class="r-inner" src="@/assets/card_symbols/r-green.svg">
@@ -48,18 +29,51 @@
           <img v-else-if="color === 'blue'" class="r-inner" src="@/assets/card_symbols/r-blue.svg">
         </span>
       </span>
-    </div>
-    <div v-else :class="card_classes">
+    </template>
+
+    <!-- Drawing Cards -->
+    <template v-else-if="number === 'D2'">
+      <span class="inner">
+        <span class="mark">
+          <img v-if="color === 'green'" class="d2-inner" src="@/assets/card_symbols/d2-green.svg">
+          <img v-else-if="color === 'yellow'" class="d2-inner" src="@/assets/card_symbols/d2-yellow.svg">
+          <img v-else-if="color === 'red'" class="d2-inner" src="@/assets/card_symbols/d2-red.svg">
+          <img v-else-if="color === 'blue'" class="d2-inner" src="@/assets/card_symbols/d2-blue.svg">
+        </span>
+      </span>
+    </template>
+
+    <!-- Wildcards -->
+    <template v-else-if="number === 'W4'">
+      <span class="inner">
+        <span class="mark">
+          <img class="w4-inner" src="@/assets/card_symbols/d4.svg">
+        </span>
+      </span>
+    </template>
+
+    <template v-else-if="number === 'W'">
+      <span class="inner">
+        <span class="mark">
+          <img class="w-inner" src="@/assets/card_symbols/w.svg">
+        </span>
+      </span>
+    </template>
+
+    <!-- Errors -->
+    <template v-else>
       <span class="inner">
         <span class="mark">E{{number}}</span>
       </span>
-    </div>
+    </template>
+
+    <!-- Wildcard dialogs -->
     <v-dialog
       v-if="number === 'W' || number === 'W4'"
       v-model="showColorDialog"
       max-width="500px"
     >
-      <v-card >
+      <v-card>
         <v-card-title
           class="blue"
         >
@@ -115,6 +129,10 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    tabidx: {
+      type: Number,
+      default: -1
     }
   },
   computed: {
@@ -194,6 +212,10 @@ export default {
   bottom: 15px;
   right: 10px;
   -webkit-transform: rotate(180deg);
+}
+
+.card:focus {
+  transform: scale(1.2);
 }
 
 .card.blue {

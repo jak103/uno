@@ -35,12 +35,33 @@
             >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              @click="deleteItems"
+            >
+              <small>Delete Selected Games</small>
+            </v-btn>
           </v-card-title>
+
+          <!-- Data Table -->
           <v-data-table
             :headers="headers"
             :items="games"
             :search="search"
+            dense
           >
+
+            <!-- CheckBox -->
+            <template v-slot:item.check="{item}">
+                <v-checkbox
+                  class="mt-n1"
+                  v-model="item.selected"
+                  primary
+                  hide-details
+                ></v-checkbox>
+            </template>
+
+            <!-- Watch or Join Button -->
             <template v-slot:item.action="{item}">
               <v-btn
                 text
@@ -51,6 +72,7 @@
               </v-btn>
             </template>
           </v-data-table>
+
         </v-card>
       </v-row>
     </v-container>
@@ -136,7 +158,8 @@
 <script>
 import unoService from '../services/unoService';
 import localStorage from '../util/localStorage';
-// @ is an alias to /src
+import bus from '../helpers/bus';
+
 export default {
   name: 'Lobby',
   components: {
@@ -146,6 +169,7 @@ export default {
     return {
       search: "",
       headers:[
+        { text: "Check", value: "check" },
         { text: "Name", value: "name" },
         { text: "Creator", value: "creator" },
         { text: "# of Players", value: "players.length" },
@@ -229,20 +253,21 @@ export default {
         localStorage.set('token', res.data.token);
         this.$router.push({path: `/game/${res.data.game.game_id}`});
       } else {
-        alert ("Failed to create & join game");
+        //show the snack with your error message (just local)
+        bus.$emit('updateSnack', "Failed to create & join game");
       }
     },
 
     async createGame() { 
       if (!this.createDialog.name || this.createDialog.name == "") {
-        // invalid game name -- TODO use a snack bar for this
-        alert("Undefined Game Name");
+        //show the snack with your error message (just local)
+        bus.$emit('updateSnack', "Undefined Game name");
         return;
       }
      
       if (!this.createDialog.creator || this.createDialog.creator == "") {
-        // invalid creator name -- TODO use a snack bar for this
-        alert("Undefined Creator Name");
+        //show the snack with your error message (just local)
+        bus.$emit('updateSnack', "Undefined Creator Name");
         return;
       }
 
@@ -252,9 +277,28 @@ export default {
         localStorage.set('token', res.data.token);
         this.$router.push({path: `/game/${res.data.game.game_id}`});
       } else {
-        alert ("Failed to create & join game");
+        //show the snack with your error message (just local)
+        bus.$emit('updateSnack', "Failed to create & join game");
       }
-    }
+    },
+    deleteItems () {
+      let NotDeleted = [];
+      for ( var i = this.games.length - 1; i >= 0; i--) {
+        if (this.games[i].selected) {
+          if (this.games[i].status == "Finished") {
+            unoService.deleteGame(this.games[i].id);
+            this.games.splice(i, 1);
+          }else{
+            NotDeleted.push(this.games[i].name);
+          }
+        }
+      }
+      if (NotDeleted.length > 0) {
+        let plural = (NotDeleted.length > 1) ? ['Games', 'Are', 'them'] : ['Game', 'Is', 'it'];
+        var notification = `${plural[0]}: [ ` + NotDeleted.toString() + ` ]. ${plural[1]} not Finished yet, You are unable to Delete ${plural[2]}.`;
+        bus.$emit('updateSnack', notification);
+      }
+    },
   },
 
   mounted() {
