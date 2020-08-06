@@ -234,18 +234,50 @@
       tabindex="0">
       Chat
     </div>
-
-      <v-snackbar
-        v-model="snackbar"
-        :color="playerColor"
-        :timeout='4000'
-        v-show="playerName !== newMessageName"
-      >
-        {{snackbarText}}
-        <v-btn text @click="snackbar=false">
-          Close
-        </v-btn>
-      </v-snackbar>
+    
+    <v-dialog
+      v-model="chooseColorDialog.visible"
+      persistent
+      max-width="500px"
+    >
+      <v-card >
+        <v-card-title
+          class="blue"
+        >
+          Choose a wildcard color
+        </v-card-title>
+        <v-card-actions>
+            <v-col>
+              <v-btn
+                color="red"
+                large
+                @click.native="playWildCard('red')"
+              >Red</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="green"
+                large
+                @click.native="playWildCard('green')"
+              >Green</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="blue"
+                large
+                @click.native="playWildCard('blue')"
+              >Blue</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+              color="yellow"
+              large
+                @click.native="playWildCard('yellow')"
+              >Yellow</v-btn>
+            </v-col>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   </div>
 </template>
@@ -254,6 +286,7 @@
 import unoService from "../services/unoService";
 import Card from "../components/Card";
 import Chat from "../components/Chat";
+import bus from "../helpers/bus";
 import Results from "../components/Results";
 
 export default {
@@ -271,6 +304,7 @@ export default {
       gameState: {},
       cards: [],
 
+      notification: "",
       chatOpen: false,
       
       playerName: "",
@@ -282,14 +316,20 @@ export default {
       values: { '1' : 0, '2' : 1, '3' : 2, '4' : 3, '5' : 4, '6' : 5, '7' : 6, '8' : 7, '9' : 8, 'S' : 9, 'R' : 10, 'W' : 11, 'D2' : 12, 'W4' : 13},
     
       helpMenu: false,
-      
-      snackbar: false,
-      snackbarText: "",
       newMessageName: "",
       playerColor: "",
     };
   },
-
+  watch: {
+    gameState: {
+      handler: function(newGame, oldGame) {
+        if(newGame.notification && newGame.notification !== oldGame.notification){
+          bus.$emit('updateSnack', newGame.notification)
+        } 
+      },
+      deep: true
+    }
+  }, 
   methods: {
     async updateData() {
       let res = await unoService.getGameState(this.$route.params.id);
@@ -311,13 +351,13 @@ export default {
       navigator.clipboard.writeText(window.location.origin + "#" + this.$route.params.id).then(() => {
         /* clipboard successfully set */
         this.newMessageName = this.playerName + "copy";
-        this.snackbarText = "Invite URL copied to clipboard. Share it with a friend!";
-        this.snackbar = true;
+        var notification = "Invite URL copied to clipboard. Share it with a friend!";
+        bus.$emit('updateSnack', notification);
       }, () => {
         /* clipboard write failed */
         this.newMessageName = this.playerName + "copy";
-        this.snackbarText = "Error getting invite link.";
-        this.snackbar = true;
+        var notification = "Error getting invite link.";
+        bus.$emit('updateSnack', notification);
       });
     },
     
@@ -359,9 +399,8 @@ export default {
 
     runsnackbar(name, message, color) {
       this.newMessageName = name;
-      this.snackbarText = name + " says: " + message;
-      this.playerColor = color;
-      this.snackbar = true;
+      var newMessage = name + " says: " + message;
+      bus.$emit('updateSnack', newMessage, color);
     },
 
     selectWildColor(index)
@@ -394,14 +433,8 @@ export default {
       }
     },
 
-    sendMessage() {
-      this.snackbarText = this.username + " says: " + this.newMessage;
-      this.snackbar = true;
-    },
-
     async drawCard() {
       let res = await unoService.drawCard(this.$route.params.id);
-      
       if (res.data) {
         this.gameState = res.data;
         this.decideSort();
@@ -435,8 +468,8 @@ export default {
     hint(){
       var color = this.gameState.current_card.color
       var number = this.gameState.current_card.value
-      this.snackbarText = "Play a card with the number " + number + " or a card that is the color " + color + ".";
-      this.snackbar = true;
+      var notification = "Play a card with the number " + number + " or a card that is the color " + color + ".";
+      bus.$emit('updateSnack', notification, color)
     }, 
 
     getTileBackgroundColor(player) {
@@ -454,13 +487,12 @@ export default {
     this.updateData();
     this.updateInterval = setInterval(() => {
       this.updateData();
-    }, 2000);
+      }, 2000);
   },
   mounted() {
     document.addEventListener("keyup", _keyListener.bind(this))
 
     this.$emit('sendGameID', this.$route.params.id)
-
     unoService.getPlayerNameFromToken()
     .then( resp => {
         this.playerName = resp?.data?.name
@@ -474,7 +506,6 @@ export default {
     if(this.updateInterval){
       clearInterval(this.updateInterval);
     }
-
     document.removeEventListener("keyup", _keyListener)
   },
 };

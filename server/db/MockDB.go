@@ -157,6 +157,24 @@ func (db *mockDB) AddMessage(gameID string, playerID string, message model.Messa
 	}
 }
 
+func (db *mockDB) UpdateNotification(gameID string, notification model.Notification) (*model.Game, error) {
+	game, err := db.LookupGameByID(gameID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Updating Notification")
+	game.Notification = notification.Value //update(game.Notification, notification)
+	err = db.SaveGame(*game)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
+}
+
 // Disconnect disconnects from the remote database
 func (db *mockDB) disconnect() {
 	return
