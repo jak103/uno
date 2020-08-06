@@ -47,6 +47,7 @@ func (db *mockDB) CreateGame(gameName string, creatorID string) (*model.Game, er
 		Name:      gameName,
 		Status:    model.WaitingForPlayers,
 		Direction: true}
+	myGame.Players = append(myGame.Players, *player)
 	db.games[myGame.ID] = myGame
 	db.gamePasswords[myGame.Password] = myGame
 
