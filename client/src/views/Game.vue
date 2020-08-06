@@ -76,6 +76,9 @@
           <!-- Game stats -->
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
+              <h2>
+                Game Information
+              </h2>
               <p>
                 Current Game id: {{ gameState.game_id }}
               </p>
@@ -103,10 +106,13 @@
             </v-card>
           </v-row>
 
-          <!-- Current Card and actions -->
+          <!-- Discard Pile and actions -->
           <v-col cols="12" v-if="gameState.status === 'Playing'">
             <v-row v-if="gameState.current_card != undefined">
               <v-card class="center-text ma-3 pa-6" outlined tile>
+                <h2>
+                  Discard Pile
+                </h2>
                 <Card
                   :number="gameState.current_card.value"
                   :key="gameState.current_card.color"
@@ -124,6 +130,7 @@
             outlined
             tile
           >
+            <h2>How To Play</h2>
             <v-card-text v-if="gameState.status === 'Waiting For Players'">
               <v-row v-if="gameState.creator != undefined && gameState.creator.id == gameState.player_id">
                 You are the creator of the game. When you are ready: <v-btn @click.native="startGame">Start Game</v-btn>
@@ -139,7 +146,12 @@
             </v-card-text>
             
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
-              Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
+              <div>
+                <p>Click to play a card from your hand or draw a card</p>
+              </div>
+              <div>
+                <v-btn @click.native="drawCard">Draw from deck</v-btn>
+              </div>
             </v-card-text>
 
             <v-card-text v-else-if="gameState.status === 'Playing'">
@@ -156,16 +168,19 @@
               </v-row>
 
               <v-row v-else class="pl-3">
-                Organize Cards
-                <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
-                <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
-                <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
+                <h2>Organize Cards</h2>
+                  <div>
+                    <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
+                    <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
+                    <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
+                  </div>
               </v-row>
             </v-card>
 
             <v-container
               class="card-container"
             >
+            <h2>Your Cards</h2>
               <Card
                 v-for="(card, i) in gameState.player_cards"
                 :key="i"
