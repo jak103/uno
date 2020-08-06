@@ -146,9 +146,17 @@
             </v-card-text>
             
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
-              <div>
-                <p>Click to play a card from your hand or draw a card</p>
+
+              <div>Select a card with
+                <span class="keycap">←</span>
+                <span class="keycap">↑</span>
+                <span class="keycap">→</span>
+                <span class="keycap">↓</span>
+                or the mouse.
               </div>
+              <div>Press <span class="keycap">Enter</span> or click to play the selected card.</div>
+              <div>Press <span class="keycap">D</span> to draw a card, or click the button below.</div>
+              <div>Press <span class="keycap">C</span> to open chat (<span class="keycap">Esc</span> to close).</div>
               <div>
                 <v-btn @click.native="drawCard">Draw from deck</v-btn>
               </div>
@@ -183,12 +191,22 @@
             <h4>Your Cards</h4>
               <Card
                 v-for="(card, i) in gameState.player_cards"
+                :ref="'player_cards'"
                 :key="i"
                 :number="card.value"
                 :color="card.color"
+                :tabidx="(i == 0) ? 0 : -1"
                 :showColorDialog="card.showColorDialog"
-                :ref="'player_cards'"
-                @click.native="(card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(card)"
+                @click.native=" (card.value == 'W' || card.value == 'W4')
+                                ? selectWildColor(i)
+                                : playCard(card)"
+                @keydown.arrow-right.native="swapCardFocus(i, i + 1)"
+                @keydown.arrow-down.native="swapCardFocus(i, i + 1)"
+                @keydown.arrow-left.native="swapCardFocus(i, i - 1)"
+                @keydown.arrow-up.native="swapCardFocus(i, i - 1)"
+                @keypress.enter.native="(card.value == 'W' || card.value == 'W4')
+                                        ? selectWildColor(i)
+                                        : playCard(card)"
                 v-on:playWild="(color)=>playWildCard(color, i)"
               ></Card>
             </v-container>
@@ -212,8 +230,9 @@
     <div 
       v-if="gameState.status === 'Playing' && gameState.current_player != undefined" 
       @click="chatOpen = !chatOpen"
-      class="float-button">
-        Chat
+      class="float-button"
+      tabindex="0">
+      Chat
     </div>
 
       <v-snackbar
@@ -389,6 +408,21 @@ export default {
       }
     },
 
+    swapCardFocus(currentIndex, swapIndex) {
+      var cards = this.$refs.player_cards
+      var card = cards[currentIndex].$el
+      var other = cards[((swapIndex % cards.length) + cards.length) % cards.length].$el
+
+      var tmp = other.getAttribute("tabindex")
+      other.setAttribute("tabindex", card.getAttribute("tabindex"))
+      card.setAttribute("tabindex", tmp)
+
+      // This assumes that we just swapped a tabindex 0 card with a tabindex -1
+      // card, which is currently true, but might not always be the case.
+      // There's probably a better solution here.
+      other.focus()
+    },
+    
     async callUno(calledOnPlayer) {      
       let res = await unoService.callUno(this.gameState.game_id, calledOnPlayer)
       
@@ -423,6 +457,8 @@ export default {
     }, 2000);
   },
   mounted() {
+    document.addEventListener("keyup", _keyListener.bind(this))
+
     this.$emit('sendGameID', this.$route.params.id)
 
     unoService.getPlayerNameFromToken()
@@ -432,13 +468,60 @@ export default {
     .catch(err => {
       console.err("Could not get player name from assigned token\n", err)
     })
+
   },
   beforeDestroy (){
     if(this.updateInterval){
       clearInterval(this.updateInterval);
     }
+
+    document.removeEventListener("keyup", _keyListener)
   },
 };
+
+function _keyListener(e) {
+  // Handle closing chat, because chat eats all other keyboard inputs.
+  if (this.chatOpen) {
+    if (e.key === "Escape") {
+      this.chatOpen = false
+    }
+  }
+  else { // Handle all of the other keyboard inputs.
+    switch (e.key) {
+      case "c":
+        if (!this.chatOpen)
+        this.chatOpen = true
+        break;
+
+      case "d":
+        if (this.gameState.draw_pile != undefined) {
+          e.preventDefault()
+          this.drawCard()
+        }
+        break;
+
+      case "ArrowDown":
+      case "ArrowRight":
+        if (!document.activeElement.className.includes("card")) {
+          e.preventDefault()
+
+          this.$refs.player_cards[0].$el.focus()
+        }
+        break;
+
+      case "ArrowUp":
+      case "ArrowLeft":
+        if (!document.activeElement.className.includes("card")) {
+          e.preventDefault()
+
+          let cards = this.$refs.player_cards
+          cards[cards.length - 1].$el.focus()
+        }
+        break;
+    }
+  }
+}
+
 </script>
 
 <style scoped>
@@ -496,6 +579,23 @@ export default {
 .card-container {
   overflow-y: auto; 
   max-height: 60vh;
+}
+
+/* Keycap style source: http://www.tutorius.com/keycap-style-css */
+span.keycap {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  white-space: nowrap;
+  border: 1px solid #aaa;
+  border-style: outset;
+  border-radius: 4px;
+  padding: 0px 3px 1px 3px;
+  margin: 0px 0px 0px 0px;
+  vertical-align: baseline;
+  line-height: 1.8em;
+  /* background: #fbfbfb; */
 }
 
 /* CSS for the Help buttons */
