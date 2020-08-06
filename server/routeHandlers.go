@@ -168,7 +168,7 @@ func getGameState(c echo.Context) error {
 	playerID, err := getPlayerFromContext(c)
 	gameID := c.Param("id")
 
-	game, err := getGameUpdate(gameID)
+	game, err := getGameUpdate(gameID, playerID)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid game ID")
