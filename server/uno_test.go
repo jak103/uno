@@ -16,8 +16,6 @@ func setupGameWithPlayer(database *db.DB) (*model.Game, *model.Player) {
 
 	game, _ := database.CreateGame("Game 1", player.ID)
 
-	game, _ = database.JoinGame(game.ID, player.ID)
-
 	game.DrawPile = generateShuffledDeck(1)
 
 	database.SaveGame(*game)
