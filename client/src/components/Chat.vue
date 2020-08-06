@@ -187,6 +187,12 @@ export default {
     min-height: 80px;
 }
 
+.message:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 .message-content {
   max-width: 255px;
   word-wrap: break-word;
