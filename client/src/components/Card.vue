@@ -1,57 +1,102 @@
 <template>
-  <div v-if="!isNaN(number)" :class="card_classes">
-    <span class="inner">
-      <span class="mark">{{ number }}</span>
-    </span>
-  </div>
-  <div v-else-if="number === 'S'" :class="card_classes">
-    <span class="inner">
-      <span class="mark">
-        <img v-if="color === 'green'" class="s-inner" src="@/assets/card_symbols/s-green.svg">
-        <img v-else-if="color === 'yellow'" class="s-inner" src="@/assets/card_symbols/s-yellow.svg">
-        <img v-else-if="color === 'red'" class="s-inner" src="@/assets/card_symbols/s-red.svg">
-        <img v-else-if="color === 'blue'" class="s-inner" src="@/assets/card_symbols/s-blue.svg">
+  <div>
+    <div v-if="!isNaN(number)" :class="card_classes">
+      <span class="inner">
+        <span class="mark">{{ number }}</span>
       </span>
-    </span>
-  </div>
-  <div v-else-if="number === 'D2'" :class="card_classes">
-    <span class="inner">
-      <span class="mark">
-        <img v-if="color === 'green'" class="d2-inner" src="@/assets/card_symbols/d2-green.svg">
-        <img v-else-if="color === 'yellow'" class="d2-inner" src="@/assets/card_symbols/d2-yellow.svg">
-        <img v-else-if="color === 'red'" class="d2-inner" src="@/assets/card_symbols/d2-red.svg">
-        <img v-else-if="color === 'blue'" class="d2-inner" src="@/assets/card_symbols/d2-blue.svg">
+    </div>
+    <div v-else-if="number === 'S'" :class="card_classes">
+      <span class="inner">
+        <span class="mark">
+          <img v-if="color === 'green'" class="s-inner" src="@/assets/card_symbols/s-green.svg">
+          <img v-else-if="color === 'yellow'" class="s-inner" src="@/assets/card_symbols/s-yellow.svg">
+          <img v-else-if="color === 'red'" class="s-inner" src="@/assets/card_symbols/s-red.svg">
+          <img v-else-if="color === 'blue'" class="s-inner" src="@/assets/card_symbols/s-blue.svg">
+        </span>
       </span>
-    </span>
-  </div>
-  <div v-else-if="number === 'W4'" :class="card_classes">
-    <span class="inner">
-      <span class="mark">
-        <img class="w4-inner" src="@/assets/card_symbols/d4.svg">
+    </div>
+    <div v-else-if="number === 'D2'" :class="card_classes">
+      <span class="inner">
+        <span class="mark">
+          <img v-if="color === 'green'" class="d2-inner" src="@/assets/card_symbols/d2-green.svg">
+          <img v-else-if="color === 'yellow'" class="d2-inner" src="@/assets/card_symbols/d2-yellow.svg">
+          <img v-else-if="color === 'red'" class="d2-inner" src="@/assets/card_symbols/d2-red.svg">
+          <img v-else-if="color === 'blue'" class="d2-inner" src="@/assets/card_symbols/d2-blue.svg">
+        </span>
       </span>
-    </span>
-  </div>
-  <div v-else-if="number === 'W'" :class="card_classes">
-    <span class="inner">
-      <span class="mark">
-        <img class="w-inner" src="@/assets/card_symbols/w.svg">
+    </div>
+    <div v-else-if="number === 'W4'" :class="card_classes">
+      <span class="inner">
+        <span class="mark">
+          <img class="w4-inner" src="@/assets/card_symbols/d4.svg">
+        </span>
       </span>
-    </span>
-  </div>
-  <div v-else-if="number === 'R'" :class="card_classes">
-    <span class="inner">
-      <span class="mark">
-        <img v-if="color === 'green'" class="r-inner" src="@/assets/card_symbols/r-green.svg">
-        <img v-else-if="color === 'yellow'" class="r-inner" src="@/assets/card_symbols/r-yellow.svg">
-        <img v-else-if="color === 'red'" class="r-inner" src="@/assets/card_symbols/r-red.svg">
-        <img v-else-if="color === 'blue'" class="r-inner" src="@/assets/card_symbols/r-blue.svg">
+    </div>
+    <div v-else-if="number === 'W'" :class="card_classes">
+      <span class="inner">
+        <span class="mark">
+          <img class="w-inner" src="@/assets/card_symbols/w.svg">
+        </span>
       </span>
-    </span>
-  </div>
-  <div v-else :class="card_classes">
-    <span class="inner">
-      <span class="mark">E{{number}}</span>
-    </span>
+    </div>
+    <div v-else-if="number === 'R'" :class="card_classes">
+      <span class="inner">
+        <span class="mark">
+          <img v-if="color === 'green'" class="r-inner" src="@/assets/card_symbols/r-green.svg">
+          <img v-else-if="color === 'yellow'" class="r-inner" src="@/assets/card_symbols/r-yellow.svg">
+          <img v-else-if="color === 'red'" class="r-inner" src="@/assets/card_symbols/r-red.svg">
+          <img v-else-if="color === 'blue'" class="r-inner" src="@/assets/card_symbols/r-blue.svg">
+        </span>
+      </span>
+    </div>
+    <div v-else :class="card_classes">
+      <span class="inner">
+        <span class="mark">E{{number}}</span>
+      </span>
+    </div>
+    <v-dialog
+      v-if="number === 'W' || number === 'W4'"
+      v-model="showColorDialog"
+      max-width="500px"
+    >
+      <v-card >
+        <v-card-title
+          class="blue"
+        >
+          Choose color for Wild card
+        </v-card-title>
+        <v-card-actions>
+            <v-col>
+              <v-btn
+                color="red"
+                large
+                @click.native="playWildCard('red')"
+              >Red</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="green"
+                large
+                @click.native="playWildCard('green')"
+              >Green</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+                color="blue"
+                large
+                @click.native="playWildCard('blue')"
+              >Blue</v-btn>
+            </v-col>
+            <v-col>
+              <v-btn
+              color="yellow"
+              large
+                @click.native="playWildCard('yellow')"
+              >Yellow</v-btn>
+            </v-col>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -66,6 +111,11 @@ export default {
       type: String,
       required: true
     },
+    showColorDialog: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
   },
   computed: {
     card_classes: function() {
@@ -74,6 +124,12 @@ export default {
       else
         return `card ${this.number.toLowerCase()} ${this.color.toLowerCase()}`;
     },
+  },
+
+  methods: {
+    async playWildCard(color) {
+      this.$emit("playWild", color);
+    }
   }
 };
 </script>
