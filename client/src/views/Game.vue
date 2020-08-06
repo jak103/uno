@@ -41,7 +41,7 @@
             <v-card
               v-for="player in gameState.all_players"
               :key="player.name"
-              :color="player.id === gameState.current_player.id ? 'info' : ''"
+              :color="getTileBackgroundColor(player)"
               class="pa-1"
             >
               <v-card-title
@@ -76,6 +76,9 @@
           <!-- Game stats -->
           <v-row>
             <v-card class="ma-3 pa-6" outlined tile>
+              <h2>
+                Game Information
+              </h2>
               <p>
                 Current Game id: {{ gameState.game_id }}
               </p>
@@ -103,10 +106,13 @@
             </v-card>
           </v-row>
 
-          <!-- Current Card and actions -->
+          <!-- Discard Pile and actions -->
           <v-col cols="12" v-if="gameState.status === 'Playing'">
             <v-row v-if="gameState.current_card != undefined">
               <v-card class="center-text ma-3 pa-6" outlined tile>
+                <h2>
+                  Discard Pile
+                </h2>
                 <Card
                   :number="gameState.current_card.value"
                   :key="gameState.current_card.color"
@@ -124,6 +130,7 @@
             outlined
             tile
           >
+            <h2>How To Play</h2>
             <v-card-text v-if="gameState.status === 'Waiting For Players'">
               <v-row v-if="gameState.creator != undefined && gameState.creator.id == gameState.player_id">
                 You are the creator of the game. When you are ready: <v-btn @click.native="startGame">Start Game</v-btn>
@@ -132,7 +139,12 @@
                 Please wait for the creator to start the game.
               </v-row>
             </v-card-text>
-
+            
+            <!-- Invite Button -->
+            <v-card-text v-if="gameState.status === 'Waiting For Players'">
+                Feel free to invite a friend! Click to copy a link to send to a friend. <v-btn @click.native="invite">Invite a friend</v-btn>
+            </v-card-text>
+            
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
 
               <div>Select a card with
@@ -145,10 +157,9 @@
               <div>Press <span class="keycap">Enter</span> or click to play the selected card.</div>
               <div>Press <span class="keycap">D</span> to draw a card, or click the button below.</div>
               <div>Press <span class="keycap">C</span> to open chat (<span class="keycap">Esc</span> to close).</div>
-
-              <v-btn @click.native="drawCard">
-                Draw a Card
-              </v-btn>
+              <div>
+                <v-btn @click.native="drawCard">Draw from deck</v-btn>
+              </div>
             </v-card-text>
 
             <v-card-text v-else-if="gameState.status === 'Playing'">
@@ -165,16 +176,19 @@
               </v-row>
 
               <v-row v-else class="pl-3">
-                Organize Cards
-                <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
-                <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
-                <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
+                <h2>Organize Cards</h2>
+                  <div>
+                    <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
+                    <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
+                    <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
+                  </div>
               </v-row>
             </v-card>
 
             <v-container
               class="card-container"
             >
+            <h2>Your Cards</h2>
               <Card
                 v-for="(card, i) in gameState.player_cards"
                 :ref="'player_cards'"
@@ -222,10 +236,11 @@
 
       <v-snackbar
         v-model="snackbar"
-        color="info"
+        :color="playerColor"
         :timeout='4000'
-        v-show="gameState.status === 'Playing' && playerName !== newMessageName"
-        >{{snackbarText}}
+        v-show="playerName !== newMessageName"
+      >
+        {{snackbarText}}
         <v-btn text @click="snackbar=false">
           Close
         </v-btn>
@@ -270,6 +285,7 @@ export default {
       snackbar: false,
       snackbarText: "",
       newMessageName: "",
+      playerColor: "",
     };
   },
 
@@ -287,7 +303,23 @@ export default {
       // TODO make sure startGame endpoint returns the game state and then remove this call to updateData()
       this.updateData(); 
     },
-
+    
+    invite(){
+      // sourced https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard
+      // to know how to work with clipboard
+      navigator.clipboard.writeText(window.location.origin + "#" + this.$route.params.id).then(() => {
+        /* clipboard successfully set */
+        this.newMessageName = this.playerName + "copy";
+        this.snackbarText = "Invite URL copied to clipboard. Share it with a friend!";
+        this.snackbar = true;
+      }, () => {
+        /* clipboard write failed */
+        this.newMessageName = this.playerName + "copy";
+        this.snackbarText = "Error getting invite link.";
+        this.snackbar = true;
+      });
+    },
+    
     // Methods for organizing the Cards, added by Andrew McMullin for the organize-cards issue
     decideSort() {
       if (this.sortByColor) {
@@ -324,9 +356,10 @@ export default {
       this.sortByColor = true;
     },
 
-    runsnackbar(name, message) {
+    runsnackbar(name, message, color) {
       this.newMessageName = name;
       this.snackbarText = name + " says: " + message;
+      this.playerColor = color;
       this.snackbar = true;
     },
 
@@ -402,6 +435,16 @@ export default {
       this.snackbarText = "Play a card with the number " + number + " or a card that is the color " + color + ".";
       this.snackbar = true;
     }, 
+
+    getTileBackgroundColor(player) {
+      if (player.isActive !== undefined && player.isActive !== null && player.isActive === false) {
+        return "error";
+      } else if (this.gameState.current_player !== undefined && this.gameState.current_player !== null && player.id === this.gameState.current_player.id) {
+        return "info"
+      } else {
+        return ""
+      }
+    },
   }, 
 
   created() {
