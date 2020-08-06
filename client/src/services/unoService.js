@@ -4,6 +4,10 @@ export default {
   async getAllGames() {
     return BaseService.get(`/api/games`);
   },
+  
+  async getGameSummary(gameId) {
+    return BaseService.get(`/api/games/summary/${gameId}`);
+  },
 
   async newGame(gameName, creatorName) {
     return BaseService.post(`/api/games`, {name: gameName, creator: creatorName});
@@ -31,7 +35,6 @@ export default {
   },
   
   async playCard(gameId, cardValue, cardColor) {
-    console.log(`cardValue`, cardValue);
     return BaseService.post(`/api/games/${gameId}/play`, {value: cardValue, color: cardColor});
   },
   
@@ -45,6 +48,12 @@ export default {
   
   async sendMessage(gameId, playerId, message) {
     return BaseService.post(`/api/chat/${gameId}/add`, { player: playerId, message: message});
+  },
+
+  async callUno(gameId, calledOnPlayerId) {
+    console.log(`gameId`, gameId);
+    console.log(`calledOnPlayerId`, calledOnPlayerId);
+    return BaseService.post(`/api/games/${gameId}/call`, calledOnPlayerId);
   },
 
 }
