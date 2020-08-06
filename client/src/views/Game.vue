@@ -55,27 +55,6 @@
                   :disabled="player.cards.length > 1"
                   class="pa-0"
                 >
-<<<<<<< HEAD
-                  <v-container
-                    class="pa-0 pl-2"
-                  >
-                    {{ player.name }}
-                    <v-btn
-                      v-if="gameState.status === 'Playing'"
-                      :class="player.protection ? 'protected_call_button' : 'unprotected_call_button'" 
-                      @click.native="callUno(player)"
-                      :disabled="player.cards && player.cards.length > 1"
-                    >
-                      Uno!
-                    </v-btn>              
-                  </v-container>
-                  <ul class="hand pl-2 pb-2">
-                    <li v-for="(card, index) of player.cards" :key="index">🃏</li>
-                  </ul>
-                </v-card>
-              </v-list-item-content>
-            </v-list-item>
-=======
                   Uno!
                 </v-btn>   
               </v-card-title>
@@ -85,7 +64,6 @@
                 </span>
               </v-card-text>
             </v-card>
->>>>>>> e3ecb2d4312a9c13af9399522a458d175dc22425
           </div>
         </v-list>
       </v-navigation-drawer>
