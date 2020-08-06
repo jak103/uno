@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mattwhite180/go-away"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jak103/uno/db"
 	"github.com/jak103/uno/model"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/mattwhite180/go-away"
 )
 
 var tokenSecret string = "usudevops"
@@ -19,7 +19,7 @@ var tokenSecret string = "usudevops"
 func setupRoutes(e *echo.Echo) {
 	// Routes that don't require a valid JWT
 	e.GET("/api/games", getGames)
-    e.GET("/api/games/summary/:id", getGame) 
+	e.GET("/api/games/summary/:id", getGame)
 	e.POST("/api/games", newGame)
 	e.POST("/api/games/:id/join", joinExistingGame)
 	e.GET("/api/games/:id/delete", deleteGame)
@@ -76,17 +76,17 @@ func getGame(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Could not find game: Failed to connect to db")
 	}
-    
-    gameID := c.Param("id")
-    
+
+	gameID := c.Param("id")
+
 	game, err := database.LookupGameByID(gameID)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Could not find game")
 	}
-    
-    summary := model.GameToSummary(*game)
-	
+
+	summary := model.GameToSummary(*game)
+
 	return c.JSON(http.StatusOK, summary)
 }
 
@@ -128,12 +128,12 @@ func newGame(c echo.Context) error {
 
 func deleteGame(c echo.Context) error {
 	gameID := c.Param("id")
-	deleterID, err := getPlayerFromContext(c)
-	if err != nil {
-		return err
-	}
+	// deleterID, err := getPlayerFromContext(c)
+	// if err != nil {
+	// 	return err
+	// }
 
-	err = deleteGameandPlayers(gameID, deleterID)
+	err := deleteGameandPlayers(gameID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Unable to Delete Game")
 	}

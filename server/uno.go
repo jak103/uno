@@ -90,33 +90,32 @@ func createNewGame(gameName string, creatorName string) (*model.Game, *model.Pla
 	return game, creator, nil
 }
 
-func deleteGameandPlayers(gameID string, deleterID string) error {
+func deleteGameandPlayers(gameID string) error {
 	database, err := db.GetDb()
 	if err != nil {
 		return err
 	}
 
-	// game, err := database.LookupGameByID(gameID)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// If the Status is not Playing and the Creator is Deleting it
-	// The problem is idk if the winning-condition team added a Status of "Done"
-	// Also if the creator doesn't delete the
-	// if game.Status != "Playing" && game.Creator.ID == deleterID {
-	// 	for i, player := range game.Players {
-	// 		err = database.DeletePlayer(player.ID)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 	}
-
-	err = database.DeleteGame(gameID)
+	game, err := database.LookupGameByID(gameID)
 	if err != nil {
 		return err
 	}
-	// }
+
+	// If the Status is "Finished" and the Creator is Deleting it
+	if game.Status == "Finished" {
+		for i, player := range game.Players {
+			fmt.Println(i, "Player Deleted:", player.Name)
+			err = database.DeletePlayer(player.ID)
+			if err != nil {
+				return err
+			}
+		}
+
+		err = database.DeleteGame(gameID)
+		if err != nil {
+			return err
+		}
+	}
 
 	return err
 }
@@ -403,7 +402,7 @@ func isCardPlayable(card model.Card, discardPile []model.Card) bool {
 
 	cardOnDiscardPile := discardPile[len(discardPile)-1]
 
-	if (card.Color == cardOnDiscardPile.Color || card.Value == cardOnDiscardPile.Value || isWild) {
+	if card.Color == cardOnDiscardPile.Color || card.Value == cardOnDiscardPile.Value || isWild {
 		return true
 	}
 

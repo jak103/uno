@@ -280,15 +280,23 @@ export default {
     },
     deleteItems () {
       let plural = (this.games.length > 1) ? 'these items' : 'this item';
+      let NotDeleted = [];
       if ( confirm(`Are you sure you want to delete ${plural}?`) ) {
         for ( var i = this.games.length - 1; i >= 0; i--) {
-
           if (this.games[i].selected) {
-            
-            unoService.deleteGame(this.games[i].id)
-            this.games.splice(i, 1);
+            if (this.games[i].status == "Finished") {
+              unoService.deleteGame(this.games[i].id);
+              this.games.splice(i, 1);
+            }else{
+              NotDeleted.push(this.games[i]);
+            }
           }
         }
+      }
+      if (NotDeleted.length > 0) {
+        // I know that the snackbar is going to be moved to the App.vue
+        this.snackbarText = "Games: " + NotDeleted + "Are not Finished yet, You are unable to Delete them.";
+        this.snackbar = true;
       }
     },
   },
