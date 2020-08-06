@@ -75,7 +75,10 @@
         <v-col>
           <!-- Game stats -->
           <v-row>
-            <v-card class="ma-3 pa-6" outlined tile>
+            <v-card class="pa-2" outlined tile>
+              <h4>
+                Game Information
+              </h4>
               <p>
                 Current Game id: {{ gameState.game_id }}
               </p>
@@ -103,10 +106,13 @@
             </v-card>
           </v-row>
 
-          <!-- Current Card and actions -->
+          <!-- Discard Pile and actions -->
           <v-col cols="12" v-if="gameState.status === 'Playing'">
             <v-row v-if="gameState.current_card != undefined">
-              <v-card class="center-text ma-3 pa-6" outlined tile>
+              <v-card class="center-text pa-2" outlined tile>
+                <h4>
+                  Discard Pile
+                </h4>
                 <Card
                   :number="gameState.current_card.value"
                   :key="gameState.current_card.color"
@@ -118,12 +124,13 @@
         </v-col>
 
         <!-- Current cards in the deck -->
-        <v-col class="mb-6">
+        <v-col>
           <v-card
-            class="ma-3 pa-6"
+            class="pl-6"
             outlined
             tile
           >
+            <h4>How To Play</h4>
             <v-card-text v-if="gameState.status === 'Waiting For Players'">
               <v-row v-if="gameState.creator != undefined && gameState.creator.id == gameState.player_id">
                 You are the creator of the game. When you are ready: <v-btn @click.native="startGame">Start Game</v-btn>
@@ -139,7 +146,20 @@
             </v-card-text>
             
             <v-card-text v-if="gameState.status === 'Playing' && gameState.player_id === gameState.current_player.id">
-              Click to play a card from your hand or <v-btn @click.native="drawCard">Draw from deck</v-btn>
+
+              <div>Select a card with
+                <span class="keycap">←</span>
+                <span class="keycap">↑</span>
+                <span class="keycap">→</span>
+                <span class="keycap">↓</span>
+                or the mouse.
+              </div>
+              <div>Press <span class="keycap">Enter</span> or click to play the selected card.</div>
+              <div>Press <span class="keycap">D</span> to draw a card, or click the button below.</div>
+              <div>Press <span class="keycap">C</span> to open chat (<span class="keycap">Esc</span> to close).</div>
+              <div>
+                <v-btn @click.native="drawCard">Draw from deck</v-btn>
+              </div>
             </v-card-text>
 
             <v-card-text v-else-if="gameState.status === 'Playing'">
@@ -150,30 +170,43 @@
           <div v-if="gameState.status === 'Playing'" >
 
             <!-- Organize Cards -->
-            <v-card :class="'ma-3 pl-6 pa-4'" outlined tile>
+            <v-card class="pl-6" outlined tile>
               <v-row v-if="loadingHand">
                 Loading Original Hand Layout
               </v-row>
 
               <v-row v-else class="pl-3">
-                Organize Cards
-                <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
-                <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
-                <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
+                <h4>Organize Cards</h4>
+                  <div>
+                    <v-btn class="org-btn" @click.native="orgByColor">by Color</v-btn>
+                    <v-btn class="org-btn" @click.native="orgByNum">by Number</v-btn>
+                    <v-btn class="org-btn" @click.native="orgOff">Off</v-btn>
+                  </div>
               </v-row>
             </v-card>
 
             <v-container
               class="card-container"
             >
+            <h4>Your Cards</h4>
               <Card
                 v-for="(card, i) in gameState.player_cards"
+                :ref="'player_cards'"
                 :key="i"
                 :number="card.value"
                 :color="card.color"
+                :tabidx="(i == 0) ? 0 : -1"
                 :showColorDialog="card.showColorDialog"
-                :ref="'player_cards'"
-                @click.native="(card.value == 'W' || card.value == 'W4') ? selectWildColor(i) : playCard(card)"
+                @click.native=" (card.value == 'W' || card.value == 'W4')
+                                ? selectWildColor(i)
+                                : playCard(card)"
+                @keydown.arrow-right.native="swapCardFocus(i, i + 1)"
+                @keydown.arrow-down.native="swapCardFocus(i, i + 1)"
+                @keydown.arrow-left.native="swapCardFocus(i, i - 1)"
+                @keydown.arrow-up.native="swapCardFocus(i, i - 1)"
+                @keypress.enter.native="(card.value == 'W' || card.value == 'W4')
+                                        ? selectWildColor(i)
+                                        : playCard(card)"
                 v-on:playWild="(color)=>playWildCard(color, i)"
               ></Card>
             </v-container>
@@ -197,8 +230,9 @@
     <div 
       v-if="gameState.status === 'Playing' && gameState.current_player != undefined" 
       @click="chatOpen = !chatOpen"
-      class="float-button">
-        Chat
+      class="float-button"
+      tabindex="0">
+      Chat
     </div>
 
       <v-snackbar
@@ -356,6 +390,7 @@ export default {
      
       if (res.data) {
         this.gameState = res.data;
+        this.decideSort();
       }
     },
 
@@ -369,9 +404,25 @@ export default {
       
       if (res.data) {
         this.gameState = res.data;
+        this.decideSort();
       }
     },
 
+    swapCardFocus(currentIndex, swapIndex) {
+      var cards = this.$refs.player_cards
+      var card = cards[currentIndex].$el
+      var other = cards[((swapIndex % cards.length) + cards.length) % cards.length].$el
+
+      var tmp = other.getAttribute("tabindex")
+      other.setAttribute("tabindex", card.getAttribute("tabindex"))
+      card.setAttribute("tabindex", tmp)
+
+      // This assumes that we just swapped a tabindex 0 card with a tabindex -1
+      // card, which is currently true, but might not always be the case.
+      // There's probably a better solution here.
+      other.focus()
+    },
+    
     async callUno(calledOnPlayer) {      
       let res = await unoService.callUno(this.gameState.game_id, calledOnPlayer)
       
@@ -406,6 +457,8 @@ export default {
     }, 2000);
   },
   mounted() {
+    document.addEventListener("keyup", _keyListener.bind(this))
+
     this.$emit('sendGameID', this.$route.params.id)
 
     unoService.getPlayerNameFromToken()
@@ -415,13 +468,60 @@ export default {
     .catch(err => {
       console.err("Could not get player name from assigned token\n", err)
     })
+
   },
   beforeDestroy (){
     if(this.updateInterval){
       clearInterval(this.updateInterval);
     }
+
+    document.removeEventListener("keyup", _keyListener)
   },
 };
+
+function _keyListener(e) {
+  // Handle closing chat, because chat eats all other keyboard inputs.
+  if (this.chatOpen) {
+    if (e.key === "Escape") {
+      this.chatOpen = false
+    }
+  }
+  else { // Handle all of the other keyboard inputs.
+    switch (e.key) {
+      case "c":
+        if (!this.chatOpen)
+        this.chatOpen = true
+        break;
+
+      case "d":
+        if (this.gameState.draw_pile != undefined) {
+          e.preventDefault()
+          this.drawCard()
+        }
+        break;
+
+      case "ArrowDown":
+      case "ArrowRight":
+        if (!document.activeElement.className.includes("card")) {
+          e.preventDefault()
+
+          this.$refs.player_cards[0].$el.focus()
+        }
+        break;
+
+      case "ArrowUp":
+      case "ArrowLeft":
+        if (!document.activeElement.className.includes("card")) {
+          e.preventDefault()
+
+          let cards = this.$refs.player_cards
+          cards[cards.length - 1].$el.focus()
+        }
+        break;
+    }
+  }
+}
+
 </script>
 
 <style scoped>
@@ -481,6 +581,23 @@ export default {
   max-height: 60vh;
 }
 
+/* Keycap style source: http://www.tutorius.com/keycap-style-css */
+span.keycap {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  white-space: nowrap;
+  border: 1px solid #aaa;
+  border-style: outset;
+  border-radius: 4px;
+  padding: 0px 3px 1px 3px;
+  margin: 0px 0px 0px 0px;
+  vertical-align: baseline;
+  line-height: 1.8em;
+  /* background: #fbfbfb; */
+}
+
 /* CSS for the Help buttons */
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
   
@@ -497,7 +614,7 @@ export default {
     display: inline-block;
   }
 /* Dropdown Content (Hidden by Default) */
-  .dropdown_content {
+  .dropdown_content { 
     display: none;
     position: absolute;
     min-width: 160px;
