@@ -238,12 +238,12 @@ func TestAddMessage(t *testing.T){
 	
 	// add the Message to the game
 	game, err = addMessage(game.ID, player.ID, m)
-	
+
 	// test to see if the new Message is in the game
 	assert.Contains(t, game.Messages, m)
 }
 
-func TestcheckGameExists(t *testing.T) {
+func TestCheckGameExists(t *testing.T) {
 	database, _ := db.GetDb()
 	game, _, _ := createNewGame("testGame", "testPlayer")
 	_, gameErr := database.LookupGameByID(game.ID)
